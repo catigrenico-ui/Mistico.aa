@@ -3,354 +3,712 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MÍSTICO — Reserva de Turnos</title>
+    <title>AUTO REGINA — Turnos y Servicios</title>
     <style>
-        *{margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Roboto, sans-serif;}
-        :root{--dorado:#d4af37; --azul-oscuro:#0a0f2b; --fondo:#0f1433; --gris:#1a1f45; --texto:#e0e0ff; --exito:#27ae60; --whatsapp:#25D366;}
-        body{background:var(--azul-oscuro); color:var(--texto); min-height:100vh; line-height:1.5;}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, 'Open Sans', sans-serif; }
+        :root {
+            --primario: #0F2B48;
+            --secundario: #165DFF;
+            --acento: #F59E0B;
+            --exito: #10B981;
+            --alerta: #EF4444;
+            --fondo: #F8FAFC;
+            --blanco: #FFFFFF;
+            --texto: #1E293B;
+            --textoClaro: #64748B;
+            --borde: #E2E8F0;
+            --sombra: 0 4px 20px rgba(15, 43, 72, 0.08);
+            --sombraFuerte: 0 8px 30px rgba(15, 43, 72, 0.15);
+        }
+        body { background: linear-gradient(135deg, #EEF2F8 0%, #E6EBF5 100%); min-height: 100vh; padding: 16px; }
+        .contenedor { max-width: 720px; margin: 0 auto; background: var(--blanco); border-radius: 24px; box-shadow: var(--sombraFuerte); overflow: hidden; }
 
-        /* CABECERA CON LOGO Y NOMBRE */
-        .cabecera{text-align:center; padding:30px 20px 20px; background:linear-gradient(to bottom, rgba(10,15,43,1), rgba(15,20,51,0));}
-        .logo{max-width:180px; max-height:180px; margin-bottom:15px; filter:drop-shadow(0 0 15px rgba(212,175,55,0.4));}
-        .nombre-mistico{color:var(--dorado); font-size:38px; font-weight:bold; letter-spacing:6px; margin-bottom:5px; text-shadow:0 0 20px rgba(212,175,55,0.3);}
-        .subtitulo{color:#9999cc; font-size:15px; letter-spacing:2px;}
+        /* === CABECERA === */
+        .cabecera { background: linear-gradient(135deg, var(--primario) 0%, #1A3A5C 100%); padding: 28px 24px; text-align: center; }
+        .logo-nombre { font-size: 28px; font-weight: 900; color: white; letter-spacing: 1px; margin-bottom: 6px; }
+        .logo-servicios { font-size: 14px; color: #FCD34D; font-weight: 600; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .logo-servicios span { display: flex; align-items: center; gap: 4px; }
 
-        .nav{background:rgba(10,15,43,0.9); padding:12px 20px; display:flex; justify-content:center; gap:12px; position:sticky; top:0; z-index:100; border-bottom:1px solid rgba(212,175,55,0.2); backdrop-filter:blur(10px);}
-        .btn-nav{background:transparent; color:#e0e0ff; border:1px solid var(--dorado); padding:8px 16px; border-radius:6px; cursor:pointer; font-size:14px; transition:all 0.3s;}
-        .btn-nav.activo{background:var(--dorado); color:#000; font-weight:600;}
-        .btn-nav:hover{border-color:#e0c860;}
+        /* === BOTONES GENERALES === */
+        button { border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; font-size: 15px; }
+        button:active { transform: scale(0.97); }
+        .btn-volver { background: transparent; color: var(--textoClaro); padding: 10px 14px; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
+        .btn-volver:hover { background: var(--fondo); color: var(--primario); }
+        .btn-primario { background: linear-gradient(135deg, var(--acento) 0%, #D97706 100%); color: white; width: 100%; padding: 14px; font-size: 16px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
+        .btn-primario:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35); }
+        .btn-exito { background: linear-gradient(135deg, var(--exito) 0%, #059669 100%); color: white; padding: 14px 20px; width: 100%; font-size: 16px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .btn-exito:hover { transform: translateY(-2px); }
+        .btn-azul { background: linear-gradient(135deg, var(--secundario) 0%, #2563EB 100%); color: white; padding: 10px 16px; font-size: 13px; }
+        .btn-rojo { background: linear-gradient(135deg, var(--alerta) 0%, #DC2626 100%); color: white; padding: 10px 16px; font-size: 13px; }
+        .btn-gris { background: var(--fondo); color: var(--texto); padding: 10px 16px; font-size: 13px; }
+        .btn-chico { padding: 10px 16px; font-size: 13px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; margin: 4px; }
 
-        .container{max-width:600px; margin:0 auto; padding:20px 15px;}
-        .oculto{display:none !important;}
+        /* === SECCIONES === */
+        .cuerpo { padding: 24px; }
+        .seccion { display: none; }
+        .seccion.visible { display: block; animation: aparecer 0.3s ease; }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card{background:var(--gris); border-radius:12px; padding:24px; margin-bottom:20px; border:1px solid rgba(212,175,55,0.15); box-shadow:0 8px 32px rgba(0,0,0,0.4);}
-        h2{color:var(--dorado); margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid rgba(212,175,55,0.2); font-size:20px; letter-spacing:1px;}
+        h1 { color: var(--primario); font-size: 24px; margin-bottom: 6px; text-align: center; font-weight: 800; }
+        h2 { color: var(--primario); font-size: 20px; margin: 28px 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--fondo); font-weight: 700; }
+        h3 { color: var(--texto); font-size: 16px; margin: 22px 0 12px; font-weight: 600; }
+        .subtitulo { text-align: center; color: var(--textoClaro); margin-bottom: 24px; font-size: 14px; }
 
-        label{display:block; margin:14px 0 6px; color:#b0b0e0; font-size:14px; font-weight:500;}
-        input, select, button{width:100%; padding:14px; border:none; border-radius:8px; font-size:16px;}
-        input, select{background:var(--fondo); color:#fff; border:2px solid rgba(212,175,55,0.2); outline:none;}
-        input:focus, select:focus{border-color:var(--dorado);}
+        /* === FORMULARIOS === */
+        label { display: block; margin: 18px 0 8px; font-weight: 600; color: var(--texto); font-size: 14px; }
+        input, select, textarea {
+            width: 100%; padding: 14px 16px; border: 2px solid var(--borde); border-radius: 12px; font-size: 15px;
+            background: var(--fondo); color: var(--texto); transition: all 0.2s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none; border-color: var(--secundario); background: white; box-shadow: 0 0 0 4px rgba(22, 93, 255, 0.1);
+        }
+        textarea { resize: vertical; min-height: 100px; }
 
-        .btn{background:var(--dorado); color:#000; font-weight:700; margin-top:12px; cursor:pointer; border:none; transition:all 0.3s;}
-        .btn:hover{background:#e0c860; transform:translateY(-1px);}
+        .fila { display: flex; flex-wrap: wrap; gap: 12px; margin: 8px 0; }
+        .campo { flex: 1; min-width: 110px; }
 
-        .btn-whatsapp{background:var(--whatsapp); color:#fff; font-size:18px; padding:18px; font-weight:bold; border-radius:10px; cursor:pointer; margin-top:20px; width:100%; border:none; box-shadow:0 4px 20px rgba(37,211,102,0.3); text-decoration:none; display:block; text-align:center; transition:all 0.3s;}
-        .btn-whatsapp:hover{background:#12b850; transform:translateY(-2px);}
+        /* === ACCESO TALLER === */
+        .acceso-tarjeta { background: var(--fondo); border-radius: 16px; padding: 20px; margin: 24px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .acceso-tarjeta .texto { color: var(--texto); font-weight: 500; }
+        .btn-taller { background: var(--primario); color: white; padding: 12px 20px; border-radius: 12px; }
+        .btn-taller:hover { background: #1A3A5C; }
 
-        .resumen-turno{background:var(--fondo); border-radius:8px; padding:18px; margin:15px 0; line-height:2.2; font-size:15px; border-left:3px solid var(--dorado);}
-        .resumen-turno strong{color:var(--dorado);}
+        /* === PESTAÑAS === */
+        .pestañas { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; }
+        .pestaña {
+            padding: 12px 16px; border-radius: 12px; font-weight: 600; color: var(--textoClaro); background: var(--fondo); white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .pestaña.activa { background: var(--primario); color: white; box-shadow: 0 4px 10px rgba(15, 43, 72, 0.2); }
+        .pestaña.salir { margin-left: auto; background: #FEE2E2; color: var(--alerta); }
 
-        .aviso{background:rgba(50,40,20,0.5); border:1px solid rgba(212,175,55,0.3); border-radius:8px; padding:12px; margin:15px 0; color:#ffd700; font-size:14px; text-align:center;}
+        /* === TARJETAS === */
+        .tarjeta { border-radius: 16px; padding: 18px; margin: 12px 0; border: 2px solid transparent; transition: all 0.2s ease; }
+        .tarjeta:hover { transform: translateY(-2px); box-shadow: var(--sombra); }
+        .tarjeta.espera { background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border-color: #FCD34D; }
+        .tarjeta.listo { background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-color: #6EE7B5; }
+        .tarjeta.cancelado { background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%); border-color: #FCA5A5; }
+        .etiqueta { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 12px; margin-bottom: 10px; }
+        .etiqueta.espera { background: var(--acento); color: white; }
+        .etiqueta.listo { background: var(--exito); color: white; }
+        .etiqueta.cancelado { background: var(--alerta); color: white; }
+        .folio { font-size: 18px; font-weight: 800; color: var(--primario); margin-bottom: 8px; }
 
-        .msg-exito{background:rgba(39,174,96,0.15); border:1px solid var(--exito); color:#90ffb0; padding:15px; border-radius:8px; margin:15px 0; text-align:center; font-weight:bold;}
-        
-        .btn-chico{width:auto; padding:8px 12px; font-size:13px; margin:0;}
-        .fila-botones{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;}
+        /* === TABLA === */
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 20px 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--borde); }
+        th, td { padding: 12px 10px; text-align: center; font-size: 14px; }
+        th { background: var(--primario); color: white; font-weight: 700; }
+        tr:nth-child(even) { background: var(--fondo); }
+        td input { border: none; background: transparent; padding: 6px; text-align: center; }
+        td input:focus { box-shadow: none; border-bottom: 2px solid var(--secundario); }
+
+        .total { text-align: right; font-size: 22px; font-weight: 800; color: var(--primario); margin-top: 12px; padding-right: 8px; }
+
+        /* === CAJA COPIAR === */
+        .caja-mensaje { margin-top: 24px; padding: 20px; background: var(--fondo); border-radius: 16px; border: 2px solid var(--exito); display: none; }
+        .caja-mensaje textarea { background: white; border: 1px solid var(--borde); margin-top: 10px; }
+
+        /* === MODAL ACCESO === */
+        .modal { position: fixed; inset: 0; background: rgba(15, 43, 72, 0.85); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
+        .modal-caja { background: white; padding: 32px; border-radius: 20px; max-width: 400px; width: 100%; box-shadow: var(--sombraFuerte); }
+        .modal-caja h2 { text-align: center; margin-top: 0; border: none; }
+        .error { color: var(--alerta); margin-top: 12px; display: none; text-align: center; font-weight: 500; }
+
+        /* === IMPRESIÓN === */
+        @media print {
+            body { background: white; padding: 0; }
+            .contenedor { box-shadow: none; border-radius: 0; }
+            .no-imprimir, .pestañas, .btn-volver, .caja-mensaje, .acceso-tarjeta, .modal { display: none !important; }
+            .seccion { display: block !important; }
+            .cabecera { background: var(--primario) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>
-
-<!-- CABECERA CON LOGO Y NOMBRE -->
-<div class="cabecera">
-    <img src="https://i.imgur.com/8ZxXQfL.png" alt="Logo Místico" class="logo">
-    <h1 class="nombre-mistico">MÍSTICO</h1>
-    <p class="subtitulo">Reserva tu turno</p>
-</div>
-
-<div class="nav">
-    <button class="btn-nav activo" id="btnReservar" onclick="mostrarSeccion('reservar')">📅 Reservar</button>
-    <button class="btn-nav" id="btnAdmin" onclick="mostrarSeccion('admin')">🔧 Configuración</button>
-</div>
-
-<div class="container">
-
-<section id="reservar">
-    <div class="card">
-        <h2>📅 Pedí tu Turno</h2>
-
-        <div id="formReserva">
-            <label>1️⃣ Barbero *</label>
-            <select id="selBarbero" onchange="cargarHorarios()">
-                <option value="">— Elegí —</option>
-            </select>
-
-            <label>2️⃣ Servicio *</label>
-            <select id="selServicio">
-                <option value="">— Elegí —</option>
-            </select>
-
-            <label>3️⃣ Fecha *</label>
-            <input type="date" id="selFecha" onchange="cargarHorarios()">
-
-            <label>4️⃣ Horario *</label>
-            <select id="selHorario">
-                <option value="">— Elegí barbero y fecha —</option>
-            </select>
-
-            <label>Tu Nombre Completo *</label>
-            <input type="text" id="inpNombre" placeholder="Ej: Juan Pérez">
-
-            <label>Tu WhatsApp / Teléfono *</label>
-            <input type="tel" id="inpTel" placeholder="+54 9 294 ...">
-
-            <button class="btn" onclick="armarTurno()">✅ ARMAR TURNO</button>
+    <div class="contenedor">
+        <!-- CABECERA -->
+        <div class="cabecera">
+            <div class="logo-nombre">AUTO REGINA</div>
+            <div class="logo-servicios">
+                <span>⚙️ Mecánica</span>
+                <span>⚡ Electricidad</span>
+                <span>🖥️ Inyección</span>
+            </div>
         </div>
 
-        <div id="seccionConfirmado" class="oculto">
-            <div class="msg-exito">✅ ¡TURNO CONFIRMADO!</div>
-            
-            <div class="resumen-turno">
-                <strong>👤 Cliente:</strong> <span id="resNombre"></span><br>
-                <strong>✂️ Barbero:</strong> <span id="resBarbero"></span><br>
-                <strong>💇 Servicio:</strong> <span id="resServicio"></span><br>
-                <strong>📅 Fecha:</strong> <span id="resFecha"></span><br>
-                <strong>⏰ Hora:</strong> <span id="resHora"></span>
+        <div class="cuerpo">
+            <!-- PANTALLA CLIENTE -->
+            <div class="seccion visible" id="cliente-pedir">
+                <button class="btn-volver no-imprimir" onclick="location.reload()">← Volver</button>
+                
+                <h1>Pedí tu Turno</h1>
+                <p class="subtitulo">Juan Rotter 316 • Villa Regina • 📞 2984548329</p>
+
+                <label>📅 Fecha</label>
+                <input type="date" id="fecha-cliente">
+
+                <label>⏰ Horario</label>
+                <select id="horario-cliente">
+                    <option value="">Seleccioná horario</option>
+                    <option>09:00 a 12:00 (Mañana)</option>
+                    <option>15:00 a 18:00 (Tarde)</option>
+                    <option>Otro horario</option>
+                </select>
+
+                <label>👤 Tu Nombre Completo</label>
+                <input type="text" id="nombre-cliente" placeholder="Ej: Juan Pérez">
+
+                <label>📞 Teléfono / WhatsApp</label>
+                <input type="tel" id="tel-cliente" placeholder="Ej: 2984 548329">
+
+                <label>🚘 Vehículo</label>
+                <div class="fila">
+                    <div class="campo"><input type="text" id="marca-cliente" placeholder="Marca (Ej: Toyota)"></div>
+                    <div class="campo"><input type="text" id="modelo-cliente" placeholder="Modelo (Ej: Hilux)"></div>
+                    <div class="campo"><input type="text" id="anio-cliente" placeholder="Año (Ej: 2015)"></div>
+                </div>
+
+                <label>🔧 Tipo de Servicio</label>
+                <select id="detalle-cliente">
+                    <option value="">Seleccioná el servicio</option>
+                    <option>Mecánica General</option>
+                    <option>Electricidad del Vehículo</option>
+                    <option>Inyección Electrónica</option>
+                    <option>Revisión / Mantenimiento</option>
+                    <option>Cambio de Aceite y Filtros</option>
+                    <option>Frenos / Embrague</option>
+                    <option>Otro Servicio</option>
+                </select>
+
+                <button class="btn-primario" onclick="armarMensajeTurno()">✅ PREPARAR MENSAJE</button>
+
+                <div class="caja-mensaje" id="caja-msg-turno">
+                    <p style="font-weight:600;">📋 Mensaje listo — Copiá y enviá por WhatsApp:</p>
+                    <textarea id="texto-turno" rows="7" readonly></textarea>
+                    <button class="btn-exito" onclick="copiarTexto('texto-turno')">📋 COPIAR MENSAJE</button>
+                </div>
+
+                <div class="acceso-tarjeta no-imprimir">
+                    <span class="texto">🔧 ¿Sos del taller?</span>
+                    <button class="btn-taller" onclick="mostrarAccesoTaller()">Acceso Taller</button>
+                </div>
             </div>
 
-            <div class="aviso">👇 Tocá el botón verde — se abre WhatsApp con el mensaje ya listo</div>
+            <!-- MODAL ACCESO -->
+            <div class="modal" id="pantalla-acceso" style="display:none;">
+                <div class="modal-caja">
+                    <h2>🔧 ACCESO TALLER</h2>
+                    <label>Contraseña</label>
+                    <input type="password" id="pass-taller" placeholder="Ingresá la contraseña">
+                    <button class="btn-primario" style="margin-top:10px;" onclick="verificarAcceso()">INGRESAR</button>
+                    <button class="btn-gris" style="width:100%; margin-top:10px;" onclick="cerrarAcceso()">Volver</button>
+                    <p class="error" id="error-acceso">Contraseña incorrecta</p>
+                </div>
+            </div>
 
-            <a id="botonWA" class="btn-whatsapp" href="" target="_blank" rel="noopener noreferrer">
-                💬 ENVIAR POR WHATSAPP
-            </a>
+            <!-- ZONA TALLER -->
+            <div id="zona-taller" style="display:none;">
+                <div class="pestañas no-imprimir">
+                    <div class="pestaña activa" onclick="mostrarSeccion('lista-turnos')">📋 Turnos</div>
+                    <div class="pestaña" onclick="mostrarSeccion('lista-clientes')">👥 Clientes</div>
+                    <div class="pestaña" onclick="mostrarSeccion('orden-nueva')">🔩 Nueva Orden</div>
+                    <div class="pestaña" onclick="mostrarSeccion('lista-ordenes')">📂 Historial</div>
+                    <div class="pestaña salir" onclick="salirTaller()">🚪</div>
+                </div>
 
-            <button class="btn" style="margin-top:20px; background:#333; color:#fff;" onclick="nuevoTurno()">🔄 Hacer otra reserva</button>
+                <!-- LISTA TURNOS -->
+                <div class="seccion visible" id="lista-turnos">
+                    <h2>📋 Turnos Recibidos</h2>
+                    <p class="subtitulo" style="text-align:left; margin:0 0 16px;">Cambiá el estado cuando quieras</p>
+                    <div id="ver-turnos"><p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay turnos pendientes</p></div>
+                </div>
+
+                <!-- CLIENTES -->
+                <div class="seccion" id="lista-clientes">
+                    <h2>👥 Registro de Clientes</h2>
+                    <p class="subtitulo" style="text-align:left; margin:0 0 16px;">Se guardan automáticamente al pedir turno o cargalos manualmente</p>
+                    
+                    <div style="background:var(--fondo); border-radius:16px; padding:20px; margin-bottom:24px;">
+                        <h3 style="color:var(--acento); margin-top:0;">➕ Agregar Cliente Manualmente</h3>
+                        <div class="fila">
+                            <div class="campo"><label>Nombre Completo</label><input type="text" id="manual-nombre" placeholder="Nombre y apellido"></div>
+                        </div>
+                        <div class="fila">
+                            <div class="campo"><label>Teléfono / WhatsApp</label><input type="tel" id="manual-telefono" placeholder="Ej: 2984 548329"></div>
+                            <div class="campo"><label>Marca</label><input type="text" id="manual-marca" placeholder="Marca"></div>
+                            <div class="campo"><label>Modelo</label><input type="text" id="manual-modelo" placeholder="Modelo"></div>
+                            <div class="campo"><label>Año</label><input type="text" id="manual-anio" placeholder="Año"></div>
+                        </div>
+                        <button class="btn-exito" style="margin-top:12px;" onclick="agregarClienteManual()">✅ Guardar Cliente</button>
+                    </div>
+                    
+                    <div id="ver-clientes"><p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay clientes registrados</p></div>
+                </div>
+
+                <!-- ORDEN NUEVA -->
+                <div class="seccion" id="orden-nueva">
+                    <h2>🔩 Orden de Trabajo</h2>
+                    <div class="folio">Folio N°: <span id="nro-folio">000001</span></div>
+
+                    <h3>👤 Seleccionar Cliente</h3>
+                    <select id="seleccionar-cliente" onchange="cargarClienteSeleccionado()">
+                        <option value="">— Elegí un cliente registrado —</option>
+                    </select>
+                    <p style="font-size:13px; color:var(--secundario); margin:8px 0 16px;">O completá los datos abajo si es un cliente nuevo 👇</p>
+
+                    <h3>🚘 Datos del Vehículo</h3>
+                    <div class="fila">
+                        <div class="campo"><label>Marca</label><input type="text" id="marca" placeholder="Ej: Toyota"></div>
+                        <div class="campo"><label>Modelo</label><input type="text" id="modelo" placeholder="Ej: Hilux"></div>
+                        <div class="campo"><label>Año</label><input type="text" id="anio" placeholder="Ej: 2015"></div>
+                        <div class="campo"><label>Patente</label><input type="text" id="patente" placeholder="ABC123"></div>
+                    </div>
+                    <div class="fila">
+                        <div class="campo"><label>Kilómetros</label><input type="number" id="km" placeholder="0"></div>
+                        <div class="campo"><label>Fecha Ingreso</label><input type="date" id="fecha-ing"></div>
+                        <div class="campo"><label>Fecha Entrega</label><input type="date" id="fecha-ent"></div>
+                    </div>
+
+                    <h3>👤 Datos del Cliente</h3>
+                    <div class="fila">
+                        <div class="campo"><label>Nombre Completo</label><input type="text" id="nombre-cli" placeholder="Nombre y apellido"></div>
+                        <div class="campo"><label>Teléfono / WhatsApp</label><input type="tel" id="tel-cli" placeholder="Ej: 2984 548329"></div>
+                        <div class="campo"><label>Mecánico</label>
+                            <select id="mecanico">
+                                <option value="">Seleccionar</option>
+                                <option>Nico</option>
+                                <option>General</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h3>🔧 Servicios Realizados</h3>
+                    <table id="tabla-servicios">
+                        <thead>
+                            <tr>
+                                <th>Cant</th>
+                                <th>Descripción</th>
+                                <th>Precio $</th>
+                                <th>Subtotal $</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="number" class="cant" value="1" oninput="calcularFila(this)"></td>
+                                <td><input type="text" class="desc" placeholder="Servicio"></td>
+                                <td><input type="number" class="precio" step="0.01" oninput="calcularFila(this)"></td>
+                                <td><input type="number" class="importe" readonly></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn-azul btn-chico" onclick="agregarFila()">+ Agregar línea</button>
+
+                    <div class="total">TOTAL: $ <span id="total-final">0.00</span></div>
+
+                    <h3>📝 Observaciones</h3>
+                    <textarea id="observaciones" placeholder="Repuestos utilizados, detalles del trabajo..."></textarea>
+
+                    <div style="display:flex; gap:10px; margin-top:24px; flex-wrap:wrap;" class="no-imprimir">
+                        <button class="btn-primario" style="flex:1; width:auto;" onclick="guardarOrden()">💾 Guardar Orden</button>
+                        <button class="btn-exito" style="flex:1; width:auto;" onclick="prepararEnvio()">📋 Preparar Mensaje</button>
+                        <button class="btn-gris" onclick="window.print()">🖨️ Imprimir</button>
+                    </div>
+
+                    <div class="caja-mensaje" id="caja-envio-orden">
+                        <p style="font-weight:600;">✅ Orden lista — Copiá y enviá por WhatsApp:</p>
+                        <textarea id="texto-orden" rows="11" readonly></textarea>
+                        <button class="btn-exito" onclick="copiarTexto('texto-orden')">📋 COPIAR MENSAJE</button>
+                    </div>
+                </div>
+
+                <!-- HISTORIAL -->
+                <div class="seccion" id="lista-ordenes">
+                    <h2>📂 Historial de Órdenes</h2>
+                    <p class="subtitulo" style="text-align:left; margin:0 0 16px;">Todas las órdenes guardadas</p>
+                    <div id="ver-ordenes"><p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay órdenes registradas</p></div>
+                </div>
+            </div>
         </div>
     </div>
-</section>
-
-<section id="admin" class="oculto">
-    <div class="card">
-        <h2>🔧 Configuración</h2>
-
-        <label>Contraseña</label>
-        <input type="password" id="passAdmin" placeholder="Ingresar contraseña">
-        <button class="btn" onclick="ingresar()">Ingresar</button>
-
-        <div id="panelConfig" class="oculto" style="margin-top:25px;">
-            <h3>📱 Tu WhatsApp</h3>
-            <p style="color:#8888bb; font-size:13px; margin-bottom:10px;">Solo números, sin espacios, sin +<br>Formato: 549 + código + número</p>
-            <input type="tel" id="numWA" placeholder="Ej: 5492941234567">
-            <button class="btn" onclick="guardarNumero()">💾 GUARDAR</button>
-            <div id="guardadoOK" class="msg-exito oculto">✅ ¡Guardado correctamente!</div>
-
-            <h3 style="margin-top:25px;">✂️ Barberos</h3>
-            <div class="fila-botones">
-                <input type="text" id="nuevoBarbero" placeholder="Nombre del barbero" style="flex:1;">
-                <button class="btn-chico btn" onclick="agregarBarbero()">+ Agregar</button>
-            </div>
-            <div id="listaB" style="margin-top:15px;"></div>
-
-            <h3 style="margin-top:25px;">⏰ Horarios</h3>
-            <div class="fila-botones">
-                <input type="text" id="nuevoHorario" placeholder="Ej: 14:30" style="flex:1;">
-                <button class="btn-chico btn" onclick="agregarHorario()">+ Agregar</button>
-            </div>
-            <div id="listaH" style="margin-top:15px;"></div>
-
-            <h3 style="margin-top:25px;">💇 Servicios</h3>
-            <div class="fila-botones">
-                <input type="text" id="nomServicio" placeholder="Nombre del servicio" style="flex:1;">
-                <input type="number" id="precioServicio" placeholder="Precio $" style="width:120px;">
-                <button class="btn-chico btn" onclick="agregarServicio()">+ Agregar</button>
-            </div>
-            <div id="listaS" style="margin-top:15px;"></div>
-        </div>
-    </div>
-</section>
-
-</div>
 
 <script>
-const DEF_CONFIG = { pass:'admin123', whatsapp:'' };
-const DEF_BARBEROS = ['Carlos','Martín','Juan'];
-const DEF_SERVICIOS = [
-    {nombre:'Corte de cabello', precio:5000},
-    {nombre:'Arreglo de barba', precio:3500},
-    {nombre:'Corte + Barba', precio:7500},
-    {nombre:'Afeitado clásico', precio:4000}
-];
-const DEF_HORARIOS = ['09:00','09:30','10:00','10:30','11:00','11:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'];
+const PASS_TALLER = '1234';
+let mensajeOrdenActual = '';
 
-function cargarDatos(){
-    if(!localStorage.getItem('config')) localStorage.setItem('config', JSON.stringify(DEF_CONFIG));
-    if(!localStorage.getItem('barberos')) localStorage.setItem('barberos', JSON.stringify(DEF_BARBEROS));
-    if(!localStorage.getItem('servicios')) localStorage.setItem('servicios', JSON.stringify(DEF_SERVICIOS));
-    if(!localStorage.getItem('horarios')) localStorage.setItem('horarios', JSON.stringify(DEF_HORARIOS));
-}
-function db(){
-    return {
-        config:JSON.parse(localStorage.getItem('config')),
-        barberos:JSON.parse(localStorage.getItem('barberos')),
-        servicios:JSON.parse(localStorage.getItem('servicios')),
-        horarios:JSON.parse(localStorage.getItem('horarios'))
-    };
-}
-function guardar(clave, valor){ localStorage.setItem(clave, JSON.stringify(valor)); }
-
-function mostrarSeccion(nombre){
-    document.querySelectorAll('section').forEach(s=>s.classList.add('oculto'));
-    document.getElementById(nombre).classList.remove('oculto');
-    document.querySelectorAll('.btn-nav').forEach(b=>b.classList.remove('activo'));
-    document.getElementById('btn'+nombre.charAt(0).toUpperCase()+nombre.slice(1)).classList.add('activo');
-    if(nombre==='reservar'){ cargarFormulario(); establecerFechaMinima(); }
-}
-
-function establecerFechaMinima(){
+document.addEventListener('DOMContentLoaded', () => {
     const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById('selFecha').min = hoy;
+    document.getElementById('fecha-cliente').value = hoy;
+    document.getElementById('fecha-ing').value = hoy;
+    cargarFolio(); cargarTurnos(); cargarClientes(); cargarListaClientesSelector();
+});
+
+// === NAVEGACIÓN ===
+function mostrarAccesoTaller() { document.getElementById('pantalla-acceso').style.display = 'flex'; document.getElementById('pass-taller').value = ''; document.getElementById('error-acceso').style.display = 'none'; }
+function cerrarAcceso() { document.getElementById('pantalla-acceso').style.display = 'none'; }
+function verificarAcceso() {
+    if (document.getElementById('pass-taller').value === PASS_TALLER) {
+        cerrarAcceso();
+        document.getElementById('cliente-pedir').style.display = 'none';
+        document.getElementById('zona-taller').style.display = 'block';
+        cargarOrdenes(); cargarTurnos(); cargarClientes(); cargarListaClientesSelector();
+    } else { document.getElementById('error-acceso').style.display = 'block'; }
+}
+function salirTaller() { document.getElementById('zona-taller').style.display = 'none'; document.getElementById('cliente-pedir').style.display = 'block'; }
+function mostrarSeccion(id) {
+    document.querySelectorAll('.seccion').forEach(s => s.classList.remove('visible'));
+    document.querySelectorAll('.pestaña').forEach(p => p.classList.remove('activa'));
+    document.getElementById(id).classList.add('visible');
+    event.target.classList.add('activa');
+    if (id === 'orden-nueva') cargarListaClientesSelector();
 }
 
-function ingresar(){
-    if(document.getElementById('passAdmin').value === db().config.pass){
-        document.getElementById('panelConfig').classList.remove('oculto');
-        document.getElementById('numWA').value = db().config.whatsapp;
-        listarBarberos(); listarServicios(); listarHorarios();
-    }else{ alert('❌ Contraseña incorrecta'); }
+// === CLIENTES ===
+function cargarListaClientesSelector() {
+    const select = document.getElementById('seleccionar-cliente');
+    if (!select) return;
+    const sel = select.value;
+    select.innerHTML = '<option value="">— Elegí un cliente —</option>';
+    const lista = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
+    lista.forEach(cli => {
+        const op = document.createElement('option');
+        op.value = cli.id;
+        op.textContent = `${cli.nombre} — ${cli.telefono}`;
+        select.appendChild(op);
+    });
+    select.value = sel;
 }
-
-function guardarNumero(){
-    const num = document.getElementById('numWA').value.replace(/[^0-9]/g,'');
-    if(num.length < 10){ alert('⚠️ Número muy corto. Formato: 549 + código + número'); return; }
-    const c = db().config; c.whatsapp = num; guardar('config', c);
-    document.getElementById('guardadoOK').classList.remove('oculto');
-    setTimeout(()=>document.getElementById('guardadoOK').classList.add('oculto'), 2500);
-}
-
-function cargarFormulario(){
-    const d = db();
-    const selB = document.getElementById('selBarbero');
-    const selS = document.getElementById('selServicio');
-
-    selB.innerHTML = '<option value="">— Elegí —</option>';
-    d.barberos.forEach(b=> selB.innerHTML += <option value="${b}">${b}</option>);
-
-    selS.innerHTML = '<option value="">— Elegí —</option>';
-    d.servicios.forEach(s=> selS.innerHTML += <option value="${s.nombre}">${s.nombre} — $${s.precio}</option>);
-}
-
-function cargarHorarios(){
-    const selH = document.getElementById('selHorario');
-    const fecha = document.getElementById('selFecha').value;
-    const barbero = document.getElementById('selBarbero').value;
-    selH.innerHTML = '<option value="">— Elegí —</option>';
-    if(!barbero || !fecha) return;
-
-    db().horarios.forEach(h=> selH.innerHTML += <option value="${h}">${h}</option>);
-}
-
-function armarTurno(){
-    const barbero = document.getElementById('selBarbero').value;
-    const servicio = document.getElementById('selServicio').value;
-    const fecha = document.getElementById('selFecha').value;
-    const horario = document.getElementById('selHorario').value;
-    const nombre = document.getElementById('inpNombre').value.trim();
-    const tel = document.getElementById('inpTel').value.trim();
-    const numNegocio = db().config.whatsapp;
-
-    if(!barbero||!servicio||!fecha||!horario||!nombre||!tel){
-        alert('⚠️ Completá TODOS los campos'); return;
+function cargarClienteSeleccionado() {
+    const id = document.getElementById('seleccionar-cliente').value;
+    if (!id) return;
+    const cli = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]').find(c => c.id == id);
+    if (!cli) return;
+    document.getElementById('nombre-cli').value = cli.nombre;
+    document.getElementById('tel-cli').value = cli.telefono;
+    if (cli.vehiculo && cli.vehiculo !== 'No especificado') {
+        const partes = cli.vehiculo.split(' | ');
+        document.getElementById('marca').value = partes[0] || '';
+        document.getElementById('modelo').value = partes[1] || '';
+        document.getElementById('anio').value = partes[2] || '';
     }
-    if(!numNegocio){
-        alert('⚠️ Falta configurar tu WhatsApp. Andá a Configuración');
-        mostrarSeccion('admin'); return;
+}
+function guardarCliente(nombre, telefono, marca, modelo, anio) {
+    if (!nombre || !telefono) return false;
+    let c = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
+    const existe = c.find(x => x.telefono === telefono);
+    const vehiculoCompleto = `${marca || ''} | ${modelo || ''} | ${anio || ''}`;
+    if (existe) {
+        existe.ultimaVisita = new Date().toLocaleString('es-AR');
+        existe.cantidadTurnos = (existe.cantidadTurnos || 1) + 1;
+        if (marca && !existe.vehiculo) existe.vehiculo = vehiculoCompleto;
+        localStorage.setItem('clientesRegistrados', JSON.stringify(c));
+        return 'actualizado';
     }
-
-    const mensaje = `Hola! Quisiera reservar un turno en MÍSTICO:
-
-👤 Nombre: ${nombre}
-📞 Mi WhatsApp: ${tel}
-✂️ Barbero: ${barbero}
-💇 Servicio: ${servicio}
-📅 Fecha: ${fecha}
-⏰ Hora: ${horario}
-
-¡Gracias!`;
-
-    const enlace = https://wa.me/${numNegocio}?text=${encodeURIComponent(mensaje)};
-
-    document.getElementById('formReserva').classList.add('oculto');
-    document.getElementById('seccionConfirmado').classList.remove('oculto');
-
-    document.getElementById('resNombre').textContent = nombre;
-    document.getElementById('resBarbero').textContent = barbero;
-    document.getElementById('resServicio').textContent = servicio;
-    document.getElementById('resFecha').textContent = fecha;
-    document.getElementById('resHora').textContent = horario;
-
-    document.getElementById('botonWA').href = enlace;
+    c.unshift({
+        id: Date.now(), nombre, telefono,
+        vehiculo: vehiculoCompleto || 'No especificado',
+        fechaRegistro: new Date().toLocaleString('es-AR'),
+        ultimaVisita: new Date().toLocaleString('es-AR'),
+        cantidadTurnos: 1
+    });
+    localStorage.setItem('clientesRegistrados', JSON.stringify(c));
+    return 'nuevo';
 }
-
-function nuevoTurno(){
-    document.getElementById('formReserva').classList.remove('oculto');
-    document.getElementById('seccionConfirmado').classList.add('oculto');
-    document.getElementById('selBarbero').value='';
-    document.getElementById('selServicio').value='';
-    document.getElementById('selFecha').value='';
-    document.getElementById('selHorario').innerHTML='<option value="">— Elegí barbero y fecha —</option>';
-    document.getElementById('inpNombre').value='';
-    document.getElementById('inpTel').value='';
+function agregarClienteManual() {
+    const n = document.getElementById('manual-nombre').value.trim();
+    const t = document.getElementById('manual-telefono').value.trim();
+    const m = document.getElementById('manual-marca').value.trim();
+    const mod = document.getElementById('manual-modelo').value.trim();
+    const a = document.getElementById('manual-anio').value.trim();
+    if (!n || !t) { alert('Completá nombre y teléfono'); return; }
+    guardarCliente(n, t, m, mod, a);
+    alert('✅ Cliente guardado');
+    document.getElementById('manual-nombre').value = '';
+    document.getElementById('manual-telefono').value = '';
+    document.getElementById('manual-marca').value = '';
+    document.getElementById('manual-modelo').value = '';
+    document.getElementById('manual-anio').value = '';
+    cargarClientes(); cargarListaClientesSelector();
 }
-
-function agregarBarbero(){
-    const nom = document.getElementById('nuevoBarbero').value.trim();
-    if(!nom) return;
-    const b = db().barberos; b.push(nom); guardar('barberos', b);
-    document.getElementById('nuevoBarbero').value=''; listarBarberos(); cargarFormulario();
-}
-function listarBarberos(){
-    const cont = document.getElementById('listaB'); cont.innerHTML='';
-    db().barberos.forEach((b,i)=>{
-        cont.innerHTML += `<div style="padding:8px 0; border-bottom:1px solid rgba(212,175,55,0.15); display:flex; justify-content:space-between; align-items:center;">
-            <span>${b}</span>
-            <button style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="eliminarB(${i})">X</button>
+function cargarClientes() {
+    const lista = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
+    const caja = document.getElementById('ver-clientes');
+    if (!lista.length) { caja.innerHTML = '<p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay clientes registrados</p>'; return; }
+    caja.innerHTML = '';
+    lista.forEach(cli => {
+        const partes = cli.vehiculo.split(' | ');
+        caja.innerHTML += `
+        <div class="tarjeta">
+            <strong style="font-size:16px;">${cli.nombre}</strong><br>
+            📞 ${cli.telefono}<br>
+            🚘 ${partes[0] || '-'} ${partes[1] || '-'} ${partes[2] ? `(${partes[2]})` : ''}<br>
+            <small style="color:var(--textoClaro);">Visitas: ${cli.cantidadTurnos||1} • Última: ${cli.ultimaVisita}</small>
+            <div style="margin-top:10px;">
+                <button class="btn-azul btn-chico" onclick="cargarClienteEnOrden(${cli.id})">📋 Cargar en Orden</button>
+            </div>
         </div>`;
     });
 }
-function eliminarB(i){
-    const b = db().barberos; b.splice(i,1); guardar('barberos', b); listarBarberos(); cargarFormulario();
+function cargarClienteEnOrden(id) {
+    const cli = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]').find(c => c.id === id);
+    if (!cli) return;
+    mostrarSeccion('orden-nueva');
+    document.getElementById('seleccionar-cliente').value = id;
+    document.getElementById('nombre-cli').value = cli.nombre;
+    document.getElementById('tel-cli').value = cli.telefono;
+    if (cli.vehiculo && cli.vehiculo !== 'No especificado') {
+        const partes = cli.vehiculo.split(' | ');
+        document.getElementById('marca').value = partes[0] || '';
+        document.getElementById('modelo').value = partes[1] || '';
+        document.getElementById('anio').value = partes[2] || '';
+    }
 }
 
-function agregarHorario(){
-    const h = document.getElementById('nuevoHorario').value.trim();
-    if(!h) return;
-    const lista = db().horarios; lista.push(h); guardar('horarios', lista);
-    document.getElementById('nuevoHorario').value=''; listarHorarios();
+// === TURNOS ===
+function armarMensajeTurno() {
+    const fecha = document.getElementById('fecha-cliente').value;
+    const horario = document.getElementById('horario-cliente').value;
+    const nombre = document.getElementById('nombre-cliente').value.trim();
+    const tel = document.getElementById('tel-cliente').value.trim();
+    const marca = document.getElementById('marca-cliente').value.trim();
+    const modelo = document.getElementById('modelo-cliente').value.trim();
+    const anio = document.getElementById('anio-cliente').value.trim();
+    const detalle = document.getElementById('detalle-cliente').value;
+    
+    if (!fecha || !horario || !nombre || !tel || !detalle) { alert('⚠️ Completá todos los datos'); return; }
+    
+    const turnos = JSON.parse(localStorage.getItem('turnosRecibidos') || '[]');
+    if (turnos.find(t => t.fecha === fecha && t.horario === horario && t.estado !== 'cancelada')) {
+        alert('❌ Ese horario ya fue tomado. Elegí otro.'); return;
+    }
+    
+    const vehiculoTexto = `${marca} ${modelo} ${anio ? `(${anio})` : ''}`.trim() || 'No especificado';
+    const nuevo = {
+        id: Date.now(), fecha, horario, nombre, telefono: tel,
+        marca, modelo, anio, servicio: detalle, estado: 'en-espera'
+    };
+    turnos.unshift(nuevo);
+    localStorage.setItem('turnosRecibidos', JSON.stringify(turnos));
+    guardarCliente(nombre, tel, marca, modelo, anio);
+    
+    const msg = `🔔 NUEVO TURNO — AUTO REGINA
+──────────────────────
+👤 NOMBRE: ${nombre}
+📞 TELÉFONO: ${tel}
+📅 FECHA: ${fecha}
+⏰ HORARIO: ${horario}
+🚘 VEHÍCULO: ${vehiculoTexto}
+🔧 SERVICIO: ${detalle}
+📋 ESTADO: En espera
+──────────────────────`;
+    document.getElementById('texto-turno').value = msg;
+    document.getElementById('caja-msg-turno').style.display = 'block';
+    cargarTurnos();
 }
-function listarHorarios(){
-    const cont = document.getElementById('listaH'); cont.innerHTML='';
-    db().horarios.forEach((h,i)=>{
-        cont.innerHTML += `<div style="padding:8px 0; border-bottom:1px solid rgba(212,175,55,0.15); display:flex; justify-content:space-between; align-items:center;">
-            <span>${h}</span>
-            <button style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="eliminarH(${i})">X</button>
+
+function copiarTexto(id) {
+    document.getElementById(id).select();
+    document.execCommand('copy');
+    alert('✅ Copiado al portapapeles! Ahora pegá en WhatsApp y enviá');
+}
+
+function cargarTurnos() {
+    const lista = JSON.parse(localStorage.getItem('turnosRecibidos') || '[]');
+    const caja = document.getElementById('ver-turnos');
+    if (!lista.length) { caja.innerHTML = '<p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay turnos recibidos</p>'; return; }
+    caja.innerHTML = '';
+    lista.forEach(t => {
+        const et = { 'en-espera':'espera', 'atendida':'listo', 'cancelada':'cancelado' };
+        const tx = { 'en-espera':'⏳ En Espera', 'atendida':'✅ Atendido', 'cancelada':'❌ Cancelado' };
+        const vehText = `${t.marca||''} ${t.modelo||''} ${t.anio ? `(${t.anio})` : ''}`.trim() || 'No especificado';
+        caja.innerHTML += `
+        <div class="tarjeta ${et[t.estado]}">
+            <span class="etiqueta ${et[t.estado]}">${tx[t.estado]}</span><br>
+            <strong style="font-size:16px;">${t.nombre}</strong><br>
+            📅 ${t.fecha} — ⏰ ${t.horario}<br>
+            📞 ${t.telefono} • 🚘 ${vehText}<br>
+            🔧 ${t.servicio}
+            ${esTaller() ? `<div style="margin-top:12px;">
+                <button class="btn-exito btn-chico" onclick="cambiarEstadoTurno(${t.id},'atendida')">✅ Atendido</button>
+                <button class="btn-azul btn-chico" onclick="cambiarEstadoTurno(${t.id},'en-espera')">⏳ En Espera</button>
+                <button class="btn-rojo btn-chico" onclick="cambiarEstadoTurno(${t.id},'cancelada')">❌ Cancelar</button>
+                <button class="btn-chico" style="background:var(--primario); color:white;" onclick="cargarDesdeTurno('${t.nombre}','${t.telefono}','${t.marca||''}','${t.modelo||''}','${t.anio||''}')">📋 Crear Orden</button>
+            </div>` : ''}
         </div>`;
     });
 }
-function eliminarH(i){
-    const lista = db().horarios; lista.splice(i,1); guardar('horarios', lista); listarHorarios();
+function cargarDesdeTurno(nombre, tel, marca, modelo, anio) {
+    mostrarSeccion('orden-nueva');
+    document.getElementById('nombre-cli').value = nombre;
+    document.getElementById('tel-cli').value = tel;
+    document.getElementById('marca').value = marca;
+    document.getElementById('modelo').value = modelo;
+    document.getElementById('anio').value = anio;
+}
+function esTaller() { return document.getElementById('zona-taller').style.display === 'block'; }
+function cambiarEstadoTurno(id, est) {
+    let l = JSON.parse(localStorage.getItem('turnosRecibidos') || '[]').map(t => t.id === id ? {...t, estado:est} : t);
+    localStorage.setItem('turnosRecibidos', JSON.stringify(l));
+    cargarTurnos();
 }
 
-function agregarServicio(){
-    const nom = document.getElementById('nomServicio').value.trim();
-    const pre = parseInt(document.getElementById('precioServicio').value);
-    if(!nom||!pre) return;
-    const s = db().servicios; s.push({nombre:nom, precio:pre}); guardar('servicios', s);
-    document.getElementById('nomServicio').value=''; document.getElementById('precioServicio').value=''; listarServicios(); cargarFormulario();
+// === FOLIO ===
+function cargarFolio() {
+    document.getElementById('nro-folio').textContent = String(parseInt(localStorage.getItem('ultimoFolio') || '1')).padStart(6, '0');
 }
-function listarServicios(){
-    const cont = document.getElementById('listaS'); cont.innerHTML='';
-    db().servicios.forEach((s,i)=>{
-        cont.innerHTML += `<div style="padding:8px 0; border-bottom:1px solid rgba(212,175,55,0.15); display:flex; justify-content:space-between; align-items:center;">
-            <span>${s.nombre} — $${s.precio}</span>
-            <button style="background:#e74c3c; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick="eliminarS(${i})">X</button>
+
+// === TABLA ===
+function calcularFila(inp) {
+    const f = inp.closest('tr');
+    const c = parseFloat(f.querySelector('.cant').value) || 0;
+    const p = parseFloat(f.querySelector('.precio').value) || 0;
+    f.querySelector('.importe').value = (c * p).toFixed(2);
+    calcularTotal();
+}
+function calcularTotal() {
+    let t = 0;
+    document.querySelectorAll('.importe').forEach(i => t += parseFloat(i.value) || 0);
+    document.getElementById('total-final').textContent = t.toFixed(2);
+}
+function agregarFila() {
+    const tb = document.querySelector('#tabla-servicios tbody');
+    tb.innerHTML += `<tr>
+        <td><input type="number" class="cant" value="1" oninput="calcularFila(this)"></td>
+        <td><input type="text" class="desc" placeholder="Servicio"></td>
+        <td><input type="number" class="precio" step="0.01" oninput="calcularFila(this)"></td>
+        <td><input type="number" class="importe" readonly></td>
+    </tr>`;
+}
+
+// === GUARDAR ORDEN ===
+function guardarOrden() {
+    const folio = document.getElementById('nro-folio').textContent;
+    const marca = document.getElementById('marca').value.trim();
+    const modelo = document.getElementById('modelo').value.trim();
+    const anio = document.getElementById('anio').value.trim();
+    const patente = document.getElementById('patente').value.trim();
+    const km = document.getElementById('km').value;
+    const fechaIng = document.getElementById('fecha-ing').value;
+    const fechaEnt = document.getElementById('fecha-ent').value;
+    const nombreCli = document.getElementById('nombre-cli').value.trim();
+    const telCli = document.getElementById('tel-cli').value.trim();
+    const mecanico = document.getElementById('mecanico').value;
+    const observaciones = document.getElementById('observaciones').value.trim();
+    
+    const filas = document.querySelectorAll('#tabla-servicios tbody tr');
+    const servicios = []; let total = 0;
+    filas.forEach(f => {
+        const cant = parseFloat(f.querySelector('.cant').value) || 0;
+        const desc = f.querySelector('.desc').value.trim();
+        const prec = parseFloat(f.querySelector('.precio').value) || 0;
+        if (desc) {
+            servicios.push({cant, descripcion:desc, precio:prec, subtotal:(cant*prec).toFixed(2)});
+            total += cant * prec;
+        }
+    });
+    
+    if (!nombreCli || servicios.length === 0) { alert('⚠️ Completá nombre del cliente y al menos un servicio'); return; }
+    
+    let ordenes = JSON.parse(localStorage.getItem('ordenesTaller') || '[]');
+    ordenes.unshift({
+        folio, marca, modelo, anio, patente, km, fechaIng, fechaEnt,
+        nombreCli, telCli, mecanico, observaciones, servicios,
+        total: total.toFixed(2), estado:'en-espera', fechaCreacion: new Date().toLocaleString('es-AR')
+    });
+    localStorage.setItem('ordenesTaller', JSON.stringify(ordenes));
+    
+    localStorage.setItem('ultimoFolio', parseInt(localStorage.getItem('ultimoFolio') || '1') + 1);
+    guardarCliente(nombreCli, telCli, marca, modelo, anio);
+    
+    alert('✅ Orden guardada — Folio ' + folio);
+    limpiarFormulario();
+    cargarFolio(); cargarOrdenes(); cargarListaClientesSelector();
+}
+function limpiarFormulario() {
+    document.getElementById('seleccionar-cliente').value = '';
+    document.getElementById('marca').value = '';
+    document.getElementById('modelo').value = '';
+    document.getElementById('anio').value = '';
+    document.getElementById('patente').value = '';
+    document.getElementById('km').value = '';
+    document.getElementById('fecha-ent').value = '';
+    document.getElementById('nombre-cli').value = '';
+    document.getElementById('tel-cli').value = '';
+    document.getElementById('mecanico').value = '';
+    document.getElementById('observaciones').value = '';
+    document.querySelector('#tabla-servicios tbody').innerHTML = `<tr><td><input type="number" class="cant" value="1" oninput="calcularFila(this)"></td><td><input type="text" class="desc" placeholder="Servicio"></td><td><input type="number" class="precio" step="0.01" oninput="calcularFila(this)"></td><td><input type="number" class="importe" readonly></td></tr>`;
+    document.getElementById('total-final').textContent = '0.00';
+    document.getElementById('caja-envio-orden').style.display = 'none';
+}
+
+// === PREPARAR MENSAJE ===
+function prepararEnvio() {
+    const folio = document.getElementById('nro-folio').textContent;
+    const marca = document.getElementById('marca').value.trim() || '-';
+    const modelo = document.getElementById('modelo').value.trim() || '-';
+    const anio = document.getElementById('anio').value.trim() || '-';
+    const patente = document.getElementById('patente').value.trim() || '-';
+    const km = document.getElementById('km').value || '-';
+    const fechaIng = document.getElementById('fecha-ing').value;
+    const fechaEnt = document.getElementById('fecha-ent').value || '-';
+    const nombreCli = document.getElementById('nombre-cli').value.trim() || '-';
+    const telCli = document.getElementById('tel-cli').value.trim() || '-';
+    const mecanico = document.getElementById('mecanico').value || '-';
+    const observaciones = document.getElementById('observaciones').value.trim() || 'Ninguna';
+    
+    let textoServicios = '';
+    document.querySelectorAll('#tabla-servicios tbody tr').forEach(f => {
+        const cant = f.querySelector('.cant').value;
+        const desc = f.querySelector('.desc').value.trim();
+        const prec = f.querySelector('.precio').value;
+        if (desc) textoServicios += `${cant} x ${desc} — $${prec}\n`;
+    });
+    const total = document.getElementById('total-final').textContent;
+    
+    mensajeOrdenActual = `🔧 ORDEN DE SERVICIO — AUTO REGINA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FOLIO: ${folio}
+
+👤 CLIENTE: ${nombreCli}
+📞 TELÉFONO: ${telCli}
+🚘 VEHÍCULO: ${marca} ${modelo} (${anio})
+📋 PATENTE: ${patente}
+📏 KM: ${km}
+🔧 MECÁNICO: ${mecanico}
+📅 INGRESO: ${fechaIng}
+📅 ENTREGA: ${fechaEnt}
+
+📝 TRABAJOS:
+${textoServicios}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 TOTAL: $${total}
+
+📌 OBSERVACIONES:
+${observaciones}
+
+Gracias por elegirnos! ✅`;
+    document.getElementById('texto-orden').value = mensajeOrdenActual;
+    document.getElementById('caja-envio-orden').style.display = 'block';
+}
+
+// === HISTORIAL ===
+function cargarOrdenes() {
+    const lista = JSON.parse(localStorage.getItem('ordenesTaller') || '[]');
+    const caja = document.getElementById('ver-ordenes');
+    if (!lista.length) { caja.innerHTML = '<p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay órdenes guardadas</p>'; return; }
+    caja.innerHTML = '';
+    lista.forEach(o => {
+        caja.innerHTML += `
+        <div class="tarjeta espera">
+            <div class="folio">Folio: ${o.folio}</div>
+            <span class="etiqueta espera">En espera</span><br>
+            <strong>${o.nombreCli}</strong><br>
+            🚘 ${o.marca} ${o.modelo} (${o.anio || '-'}) • ${o.patente}<br>
+            🔧 ${o.mecanico} • 💰 $${o.total}<br>
+            <small style="color:var(--textoClaro);">📅 ${o.fechaIng}</small>
         </div>`;
     });
 }
-function eliminarS(i){
-    const s = db().servicios; s.splice(i,1); guardar('servicios', s); listarServicios(); cargarFormulario();
-}
-
-cargarDatos();
 </script>
-
 </body>
 </html>
