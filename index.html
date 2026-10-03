@@ -1,713 +1,700 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUTO REGINA — Turnos y Servicios</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, 'Open Sans', sans-serif; }
-        :root {
-            --primario: #0F2B48;
-            --secundario: #165DFF;
-            --acento: #F59E0B;
-            --exito: #10B981;
-            --alerta: #EF4444;
-            --fondo: #F8FAFC;
-            --blanco: #FFFFFF;
-            --texto: #1E293B;
-            --textoClaro: #64748B;
-            --borde: #E2E8F0;
-            --sombra: 0 4px 20px rgba(15, 43, 72, 0.08);
-            --sombraFuerte: 0 8px 30px rgba(15, 43, 72, 0.15);
-        }
-        body { background: linear-gradient(135deg, #EEF2F8 0%, #E6EBF5 100%); min-height: 100vh; padding: 16px; }
-        .contenedor { max-width: 720px; margin: 0 auto; background: var(--blanco); border-radius: 24px; box-shadow: var(--sombraFuerte); overflow: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FINANZAS</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#4F46E5">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent;}
+:root{
+  --pri:#4F46E5; --priClaro:#7C3AED;
+  --empr:#2563EB; --casa:#EC4899;
+  --exito:#10B981; --alerta:#EF4444; --aviso:#F59E0B;
+  --fondo:#EEF2FF; --tarjeta:#FFFFFF; --texto:#1E293B; --textoSuave:#64748B;
+  --borde:#E2E8F0; --sombra:0 2px 8px rgba(79,70,229,.12);
+}
+body{background:var(--fondo);min-height:100vh;padding:16px;max-width:540px;margin:0 auto;padding-bottom:80px;}
+.oculto{display:none!important}
 
-        /* === CABECERA === */
-        .cabecera { background: linear-gradient(135deg, var(--primario) 0%, #1A3A5C 100%); padding: 28px 24px; text-align: center; }
-        .logo-nombre { font-size: 28px; font-weight: 900; color: white; letter-spacing: 1px; margin-bottom: 6px; }
-        .logo-servicios { font-size: 14px; color: #FCD34D; font-weight: 600; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
-        .logo-servicios span { display: flex; align-items: center; gap: 4px; }
+#pantalla-login{position:fixed;inset:0;background:linear-gradient(135deg,#4F46E5,#7C3AED);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:999}
+.login-tarjeta{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.login-tarjeta h2{text-align:center;color:var(--pri);margin-bottom:24px}
+.login-tarjeta input{width:100%;padding:12px 16px;margin-bottom:12px;border:2px solid var(--borde);border-radius:12px;font-size:16px}
+.btn{border:none;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:600;cursor:pointer;transition:transform .15s}
+.btn:active{transform:scale(.97)}
+.btn-principal{background:var(--pri);color:#fff;width:100%}
+.btn-principal:hover{opacity:.92}
+.btn-secundario{background:#F1F5F9;color:var(--texto);margin-top:8px}
 
-        /* === BOTONES GENERALES === */
-        button { border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; font-size: 15px; }
-        button:active { transform: scale(0.97); }
-        .btn-volver { background: transparent; color: var(--textoClaro); padding: 10px 14px; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px; font-weight: 500; }
-        .btn-volver:hover { background: var(--fondo); color: var(--primario); }
-        .btn-primario { background: linear-gradient(135deg, var(--acento) 0%, #D97706 100%); color: white; width: 100%; padding: 14px; font-size: 16px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
-        .btn-primario:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35); }
-        .btn-exito { background: linear-gradient(135deg, var(--exito) 0%, #059669 100%); color: white; padding: 14px 20px; width: 100%; font-size: 16px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-        .btn-exito:hover { transform: translateY(-2px); }
-        .btn-azul { background: linear-gradient(135deg, var(--secundario) 0%, #2563EB 100%); color: white; padding: 10px 16px; font-size: 13px; }
-        .btn-rojo { background: linear-gradient(135deg, var(--alerta) 0%, #DC2626 100%); color: white; padding: 10px 16px; font-size: 13px; }
-        .btn-gris { background: var(--fondo); color: var(--texto); padding: 10px 16px; font-size: 13px; }
-        .btn-chico { padding: 10px 16px; font-size: 13px; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px; margin: 4px; }
+.nav{position:sticky;top:0;background:#fff;border-radius:14px;padding:10px;display:flex;gap:6px;margin-bottom:20px;box-shadow:var(--sombra);z-index:10}
+.nav-btn{flex:1;border:none;background:transparent;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:600;color:var(--textoSuave)}
+.nav-btn.activo{background:var(--pri);color:#fff}
 
-        /* === SECCIONES === */
-        .cuerpo { padding: 24px; }
-        .seccion { display: none; }
-        .seccion.visible { display: block; animation: aparecer 0.3s ease; }
-        @keyframes aparecer { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.tarjeta{background:var(--tarjeta);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:var(--sombra)}
+.tarjeta h3{font-size:17px;margin-bottom:14px;color:var(--texto);display:flex;align-items:center;justify-content:space-between}
+.etiqueta{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-left:4px}
+.et-unidad{background:#E0F2FE;color:#0369A1}
+.et-kilo{background:#D1FAE5;color:#047857}
+.et-oferta{background:#FEF3C7;color:#92400E}
+.et-pagado{background:#D1FAE5;color:#065F46}
+.et-no{background:#FEE2E2;color:#991B1B}
+.et-efectivo{background:#FEF3C7;color:#92400E}
+.et-transf{background:#E0E7FF;color:#3730A3}
 
-        h1 { color: var(--primario); font-size: 24px; margin-bottom: 6px; text-align: center; font-weight: 800; }
-        h2 { color: var(--primario); font-size: 20px; margin: 28px 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--fondo); font-weight: 700; }
-        h3 { color: var(--texto); font-size: 16px; margin: 22px 0 12px; font-weight: 600; }
-        .subtitulo { text-align: center; color: var(--textoClaro); margin-bottom: 24px; font-size: 14px; }
+.grupo{margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--textoSuave);margin-bottom:4px}
+input,select,textarea{width:100%;padding:11px 14px;border:2px solid var(--borde);border-radius:10px;font-size:15px;background:#fff}
+input:focus,select:focus,textarea:focus{border-color:var(--pri);outline:none}
+.fila-doble{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fila-triple{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.btn-chico{padding:8px 12px;font-size:14px;border-radius:10px;border:none;cursor:pointer}
+.btn-verde{background:var(--exito);color:#fff}
+.btn-rojo{background:var(--alerta);color:#fff}
+.btn-amarillo{background:var(--aviso);color:#fff}
+.btn-oferta{background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff}
 
-        /* === FORMULARIOS === */
-        label { display: block; margin: 18px 0 8px; font-weight: 600; color: var(--texto); font-size: 14px; }
-        input, select, textarea {
-            width: 100%; padding: 14px 16px; border: 2px solid var(--borde); border-radius: 12px; font-size: 15px;
-            background: var(--fondo); color: var(--texto); transition: all 0.2s ease;
-        }
-        input:focus, select:focus, textarea:focus {
-            outline: none; border-color: var(--secundario); background: white; box-shadow: 0 0 0 4px rgba(22, 93, 255, 0.1);
-        }
-        textarea { resize: vertical; min-height: 100px; }
+.calc-pantalla{background:#F8FAFC;border-radius:12px;padding:16px;text-align:right;font-size:28px;font-weight:700;margin-bottom:12px;border:2px solid var(--borde)}
+.calc-botones{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cb{border:none;border-radius:10px;padding:14px;font-size:18px;font-weight:600;cursor:pointer;background:#E2E8F0}
+.cb.oper{background:#DDD6FE;color:#4338CA}
+.cb.igual{background:var(--pri);color:#fff;grid-column:span 2}
+.cb.limpiar{background:#FECACA;color:#991B1B}
 
-        .fila { display: flex; flex-wrap: wrap; gap: 12px; margin: 8px 0; }
-        .campo { flex: 1; min-width: 110px; }
+.lista-item{padding:14px;border-bottom:1px solid var(--borde);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lista-item:last-child{border-bottom:none}
+.item-acciones{display:flex;gap:6px}
+.sin-datos{text-align:center;color:var(--textoSuave);padding:24px;font-size:14px}
 
-        /* === ACCESO TALLER === */
-        .acceso-tarjeta { background: var(--fondo); border-radius: 16px; padding: 20px; margin: 24px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-        .acceso-tarjeta .texto { color: var(--texto); font-weight: 500; }
-        .btn-taller { background: var(--primario); color: white; padding: 12px 20px; border-radius: 12px; }
-        .btn-taller:hover { background: #1A3A5C; }
+.resumen-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.res-caja{border-radius:12px;padding:14px;text-align:center}
+.res-caja h4{font-size:13px;font-weight:500;margin-bottom:4px;opacity:.8}
+.res-caja .monto{font-size:19px;font-weight:700}
+.empr{background:#EFF6FF;color:#1E40AF}
+.casa{background:#FDF2F8;color:#BE185D}
 
-        /* === PESTAÑAS === */
-        .pestañas { display: flex; gap: 8px; margin-bottom: 24px; overflow-x: auto; padding-bottom: 4px; }
-        .pestaña {
-            padding: 12px 16px; border-radius: 12px; font-weight: 600; color: var(--textoClaro); background: var(--fondo); white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .pestaña.activa { background: var(--primario); color: white; box-shadow: 0 4px 10px rgba(15, 43, 72, 0.2); }
-        .pestaña.salir { margin-left: auto; background: #FEE2E2; color: var(--alerta); }
+.pie{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--borde);padding:10px 16px;display:flex;justify-content:space-between;max-width:540px;margin:0 auto;border-radius:16px 16px 0 0}
+.usuario{font-size:13px;color:var(--textoSuave)}
+.salir{border:none;background:#FEE2E2;color:#991B1B;padding:8px 14px;border-radius:10px;font-weight:600;cursor:pointer}
 
-        /* === TARJETAS === */
-        .tarjeta { border-radius: 16px; padding: 18px; margin: 12px 0; border: 2px solid transparent; transition: all 0.2s ease; }
-        .tarjeta:hover { transform: translateY(-2px); box-shadow: var(--sombra); }
-        .tarjeta.espera { background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border-color: #FCD34D; }
-        .tarjeta.listo { background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); border-color: #6EE7B5; }
-        .tarjeta.cancelado { background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%); border-color: #FCA5A5; }
-        .etiqueta { display: inline-block; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 12px; margin-bottom: 10px; }
-        .etiqueta.espera { background: var(--acento); color: white; }
-        .etiqueta.listo { background: var(--exito); color: white; }
-        .etiqueta.cancelado { background: var(--alerta); color: white; }
-        .folio { font-size: 18px; font-weight: 800; color: var(--primario); margin-bottom: 8px; }
-
-        /* === TABLA === */
-        table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 20px 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--borde); }
-        th, td { padding: 12px 10px; text-align: center; font-size: 14px; }
-        th { background: var(--primario); color: white; font-weight: 700; }
-        tr:nth-child(even) { background: var(--fondo); }
-        td input { border: none; background: transparent; padding: 6px; text-align: center; }
-        td input:focus { box-shadow: none; border-bottom: 2px solid var(--secundario); }
-
-        .total { text-align: right; font-size: 22px; font-weight: 800; color: var(--primario); margin-top: 12px; padding-right: 8px; }
-
-        /* === CAJA COPIAR === */
-        .caja-mensaje { margin-top: 24px; padding: 20px; background: var(--fondo); border-radius: 16px; border: 2px solid var(--exito); display: none; }
-        .caja-mensaje textarea { background: white; border: 1px solid var(--borde); margin-top: 10px; }
-
-        /* === MODAL ACCESO === */
-        .modal { position: fixed; inset: 0; background: rgba(15, 43, 72, 0.85); display: flex; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
-        .modal-caja { background: white; padding: 32px; border-radius: 20px; max-width: 400px; width: 100%; box-shadow: var(--sombraFuerte); }
-        .modal-caja h2 { text-align: center; margin-top: 0; border: none; }
-        .error { color: var(--alerta); margin-top: 12px; display: none; text-align: center; font-weight: 500; }
-
-        /* === IMPRESIÓN === */
-        @media print {
-            body { background: white; padding: 0; }
-            .contenedor { box-shadow: none; border-radius: 0; }
-            .no-imprimir, .pestañas, .btn-volver, .caja-mensaje, .acceso-tarjeta, .modal { display: none !important; }
-            .seccion { display: block !important; }
-            .cabecera { background: var(--primario) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        }
-    </style>
+.oferta-item{background:#FFFBEB;border:2px solid #FCD34D;border-radius:10px;padding:10px;margin-bottom:8px}
+.oferta-titulo{font-weight:700;color:#92400E;margin-bottom:4px}
+</style>
 </head>
 <body>
-    <div class="contenedor">
-        <!-- CABECERA -->
-        <div class="cabecera">
-            <div class="logo-nombre">AUTO REGINA</div>
-            <div class="logo-servicios">
-                <span>⚙️ Mecánica</span>
-                <span>⚡ Electricidad</span>
-                <span>🖥️ Inyección</span>
-            </div>
-        </div>
 
-        <div class="cuerpo">
-            <!-- PANTALLA CLIENTE -->
-            <div class="seccion visible" id="cliente-pedir">
-                <button class="btn-volver no-imprimir" onclick="location.reload()">← Volver</button>
-                
-                <h1>Pedí tu Turno</h1>
-                <p class="subtitulo">Juan Rotter 316 • Villa Regina • 📞 2984548329</p>
+<div id="pantalla-login">
+  <div class="login-tarjeta">
+    <h2>💰 FINANZAS</h2>
+    <input id="usuario-nombre" placeholder="Tu nombre" autocomplete="username">
+    <button class="btn btn-principal" onclick="entrar()">Ingresar</button>
+    <button class="btn btn-secundario" onclick="cambiarUsuario()">Cambiar usuario</button>
+  </div>
+</div>
 
-                <label>📅 Fecha</label>
-                <input type="date" id="fecha-cliente">
+<div id="app" class="oculto">
+  <div class="nav">
+    <button class="nav-btn activo" data-pantalla="resumen" onclick="irA('resumen')">Resumen</button>
+    <button class="nav-btn" data-pantalla="emprendimiento" onclick="irA('emprendimiento')">Emprendimiento</button>
+    <button class="nav-btn" data-pantalla="casa" onclick="irA('casa')">Casa</button>
+    <button class="nav-btn" data-pantalla="calculadora" onclick="irA('calculadora')">Calculadora</button>
+  </div>
 
-                <label>⏰ Horario</label>
-                <select id="horario-cliente">
-                    <option value="">Seleccioná horario</option>
-                    <option>09:00 a 12:00 (Mañana)</option>
-                    <option>15:00 a 18:00 (Tarde)</option>
-                    <option>Otro horario</option>
-                </select>
-
-                <label>👤 Tu Nombre Completo</label>
-                <input type="text" id="nombre-cliente" placeholder="Ej: Juan Pérez">
-
-                <label>📞 Teléfono / WhatsApp</label>
-                <input type="tel" id="tel-cliente" placeholder="Ej: 2984 548329">
-
-                <label>🚘 Vehículo</label>
-                <div class="fila">
-                    <div class="campo"><input type="text" id="marca-cliente" placeholder="Marca (Ej: Toyota)"></div>
-                    <div class="campo"><input type="text" id="modelo-cliente" placeholder="Modelo (Ej: Hilux)"></div>
-                    <div class="campo"><input type="text" id="anio-cliente" placeholder="Año (Ej: 2015)"></div>
-                </div>
-
-                <label>🔧 Tipo de Servicio</label>
-                <select id="detalle-cliente">
-                    <option value="">Seleccioná el servicio</option>
-                    <option>Mecánica General</option>
-                    <option>Electricidad del Vehículo</option>
-                    <option>Inyección Electrónica</option>
-                    <option>Revisión / Mantenimiento</option>
-                    <option>Cambio de Aceite y Filtros</option>
-                    <option>Frenos / Embrague</option>
-                    <option>Otro Servicio</option>
-                </select>
-
-                <button class="btn-primario" onclick="armarMensajeTurno()">✅ PREPARAR MENSAJE</button>
-
-                <div class="caja-mensaje" id="caja-msg-turno">
-                    <p style="font-weight:600;">📋 Mensaje listo — Copiá y enviá por WhatsApp:</p>
-                    <textarea id="texto-turno" rows="7" readonly></textarea>
-                    <button class="btn-exito" onclick="copiarTexto('texto-turno')">📋 COPIAR MENSAJE</button>
-                </div>
-
-                <div class="acceso-tarjeta no-imprimir">
-                    <span class="texto">🔧 ¿Sos del taller?</span>
-                    <button class="btn-taller" onclick="mostrarAccesoTaller()">Acceso Taller</button>
-                </div>
-            </div>
-
-            <!-- MODAL ACCESO -->
-            <div class="modal" id="pantalla-acceso" style="display:none;">
-                <div class="modal-caja">
-                    <h2>🔧 ACCESO TALLER</h2>
-                    <label>Contraseña</label>
-                    <input type="password" id="pass-taller" placeholder="Ingresá la contraseña">
-                    <button class="btn-primario" style="margin-top:10px;" onclick="verificarAcceso()">INGRESAR</button>
-                    <button class="btn-gris" style="width:100%; margin-top:10px;" onclick="cerrarAcceso()">Volver</button>
-                    <p class="error" id="error-acceso">Contraseña incorrecta</p>
-                </div>
-            </div>
-
-            <!-- ZONA TALLER -->
-            <div id="zona-taller" style="display:none;">
-                <div class="pestañas no-imprimir">
-                    <div class="pestaña activa" onclick="mostrarSeccion('lista-turnos')">📋 Turnos</div>
-                    <div class="pestaña" onclick="mostrarSeccion('lista-clientes')">👥 Clientes</div>
-                    <div class="pestaña" onclick="mostrarSeccion('orden-nueva')">🔩 Nueva Orden</div>
-                    <div class="pestaña" onclick="mostrarSeccion('lista-ordenes')">📂 Historial</div>
-                    <div class="pestaña salir" onclick="salirTaller()">🚪</div>
-                </div>
-
-                <!-- LISTA TURNOS -->
-                <div class="seccion visible" id="lista-turnos">
-                    <h2>📋 Turnos Recibidos</h2>
-                    <p class="subtitulo" style="text-align:left; margin:0 0 16px;">Cambiá el estado cuando quieras</p>
-                    <div id="ver-turnos"><p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay turnos pendientes</p></div>
-                </div>
-
-                <!-- CLIENTES -->
-                <div class="seccion" id="lista-clientes">
-                    <h2>👥 Registro de Clientes</h2>
-                    <p class="subtitulo" style="text-align:left; margin:0 0 16px;">Se guardan automáticamente al pedir turno o cargalos manualmente</p>
-                    
-                    <div style="background:var(--fondo); border-radius:16px; padding:20px; margin-bottom:24px;">
-                        <h3 style="color:var(--acento); margin-top:0;">➕ Agregar Cliente Manualmente</h3>
-                        <div class="fila">
-                            <div class="campo"><label>Nombre Completo</label><input type="text" id="manual-nombre" placeholder="Nombre y apellido"></div>
-                        </div>
-                        <div class="fila">
-                            <div class="campo"><label>Teléfono / WhatsApp</label><input type="tel" id="manual-telefono" placeholder="Ej: 2984 548329"></div>
-                            <div class="campo"><label>Marca</label><input type="text" id="manual-marca" placeholder="Marca"></div>
-                            <div class="campo"><label>Modelo</label><input type="text" id="manual-modelo" placeholder="Modelo"></div>
-                            <div class="campo"><label>Año</label><input type="text" id="manual-anio" placeholder="Año"></div>
-                        </div>
-                        <button class="btn-exito" style="margin-top:12px;" onclick="agregarClienteManual()">✅ Guardar Cliente</button>
-                    </div>
-                    
-                    <div id="ver-clientes"><p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay clientes registrados</p></div>
-                </div>
-
-                <!-- ORDEN NUEVA -->
-                <div class="seccion" id="orden-nueva">
-                    <h2>🔩 Orden de Trabajo</h2>
-                    <div class="folio">Folio N°: <span id="nro-folio">000001</span></div>
-
-                    <h3>👤 Seleccionar Cliente</h3>
-                    <select id="seleccionar-cliente" onchange="cargarClienteSeleccionado()">
-                        <option value="">— Elegí un cliente registrado —</option>
-                    </select>
-                    <p style="font-size:13px; color:var(--secundario); margin:8px 0 16px;">O completá los datos abajo si es un cliente nuevo 👇</p>
-
-                    <h3>🚘 Datos del Vehículo</h3>
-                    <div class="fila">
-                        <div class="campo"><label>Marca</label><input type="text" id="marca" placeholder="Ej: Toyota"></div>
-                        <div class="campo"><label>Modelo</label><input type="text" id="modelo" placeholder="Ej: Hilux"></div>
-                        <div class="campo"><label>Año</label><input type="text" id="anio" placeholder="Ej: 2015"></div>
-                        <div class="campo"><label>Patente</label><input type="text" id="patente" placeholder="ABC123"></div>
-                    </div>
-                    <div class="fila">
-                        <div class="campo"><label>Kilómetros</label><input type="number" id="km" placeholder="0"></div>
-                        <div class="campo"><label>Fecha Ingreso</label><input type="date" id="fecha-ing"></div>
-                        <div class="campo"><label>Fecha Entrega</label><input type="date" id="fecha-ent"></div>
-                    </div>
-
-                    <h3>👤 Datos del Cliente</h3>
-                    <div class="fila">
-                        <div class="campo"><label>Nombre Completo</label><input type="text" id="nombre-cli" placeholder="Nombre y apellido"></div>
-                        <div class="campo"><label>Teléfono / WhatsApp</label><input type="tel" id="tel-cli" placeholder="Ej: 2984 548329"></div>
-                        <div class="campo"><label>Mecánico</label>
-                            <select id="mecanico">
-                                <option value="">Seleccionar</option>
-                                <option>Nico</option>
-                                <option>General</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <h3>🔧 Servicios Realizados</h3>
-                    <table id="tabla-servicios">
-                        <thead>
-                            <tr>
-                                <th>Cant</th>
-                                <th>Descripción</th>
-                                <th>Precio $</th>
-                                <th>Subtotal $</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><input type="number" class="cant" value="1" oninput="calcularFila(this)"></td>
-                                <td><input type="text" class="desc" placeholder="Servicio"></td>
-                                <td><input type="number" class="precio" step="0.01" oninput="calcularFila(this)"></td>
-                                <td><input type="number" class="importe" readonly></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button class="btn-azul btn-chico" onclick="agregarFila()">+ Agregar línea</button>
-
-                    <div class="total">TOTAL: $ <span id="total-final">0.00</span></div>
-
-                    <h3>📝 Observaciones</h3>
-                    <textarea id="observaciones" placeholder="Repuestos utilizados, detalles del trabajo..."></textarea>
-
-                    <div style="display:flex; gap:10px; margin-top:24px; flex-wrap:wrap;" class="no-imprimir">
-                        <button class="btn-primario" style="flex:1; width:auto;" onclick="guardarOrden()">💾 Guardar Orden</button>
-                        <button class="btn-exito" style="flex:1; width:auto;" onclick="prepararEnvio()">📋 Preparar Mensaje</button>
-                        <button class="btn-gris" onclick="window.print()">🖨️ Imprimir</button>
-                    </div>
-
-                    <div class="caja-mensaje" id="caja-envio-orden">
-                        <p style="font-weight:600;">✅ Orden lista — Copiá y enviá por WhatsApp:</p>
-                        <textarea id="texto-orden" rows="11" readonly></textarea>
-                        <button class="btn-exito" onclick="copiarTexto('texto-orden')">📋 COPIAR MENSAJE</button>
-                    </div>
-                </div>
-
-                <!-- HISTORIAL -->
-                <div class="seccion" id="lista-ordenes">
-                    <h2>📂 Historial de Órdenes</h2>
-                    <p class="subtitulo" style="text-align:left; margin:0 0 16px;">Todas las órdenes guardadas</p>
-                    <div id="ver-ordenes"><p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay órdenes registradas</p></div>
-                </div>
-            </div>
-        </div>
+  <div id="resumen" class="pantalla">
+    <div class="resumen-grid">
+      <div class="res-caja empr">
+        <h4>Emprendimiento</h4>
+        <div class="monto" id="res-empr">$0</div>
+      </div>
+      <div class="res-caja casa">
+        <h4>Casa</h4>
+        <div class="monto" id="res-casa">$0</div>
+      </div>
     </div>
 
+    <div class="tarjeta">
+      <h3>🔥 Ofertas y Paquetes</h3>
+      <div class="grupo">
+        <label>Nombre de la oferta</label>
+        <input id="oferta-nombre" placeholder="ej: Sticker, Tarjeta...">
+      </div>
+      <div class="fila-doble grupo">
+        <div>
+          <label>Cantidad</label>
+          <input type="number" id="oferta-cantidad" min="1" placeholder="ej: 4">
+        </div>
+        <div>
+          <label>Precio oferta $</label>
+          <input type="number" id="oferta-precio" placeholder="ej: 1000">
+        </div>
+      </div>
+      <button class="btn btn-oferta" style="width:auto" onclick="guardarOferta()">Agregar Oferta</button>
+      <div id="lista-ofertas" style="margin-top:14px">
+        <div class="sin-datos" style="padding:10px 0;font-size:13px">Sin ofertas cargadas</div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h3>📦 Productos / Servicios por Unidad</h3>
+      <div class="grupo">
+        <label>Nombre</label>
+        <input id="prod-u-nombre" placeholder="ej: Impresión A4, Sticker...">
+      </div>
+      <div class="fila-doble grupo">
+        <div>
+          <label>Precio por unidad</label>
+          <input type="number" id="prod-u-precio" placeholder="0">
+        </div>
+        <div>
+          <label>Stock</label>
+          <input type="number" id="prod-u-stock" placeholder="0">
+        </div>
+      </div>
+      <button class="btn btn-principal" style="width:auto" onclick="guardarProductoUnidad()">Agregar</button>
+    </div>
+
+    <div class="tarjeta">
+      <h3>⚖️ Productos por Kilo</h3>
+      <div class="grupo">
+        <label>Nombre</label>
+        <input id="prod-k-nombre" placeholder="ej: Masa, Producto...">
+      </div>
+      <div class="fila-triple grupo">
+        <div>
+          <label>½ kg</label>
+          <input type="number" id="prod-k-mediokg" placeholder="0">
+        </div>
+        <div>
+          <label>1 kg</label>
+          <input type="number" id="prod-k-1kg" placeholder="0">
+        </div>
+        <div>
+          <label>2 kg</label>
+          <input type="number" id="prod-k-2kg" placeholder="0">
+        </div>
+      </div>
+      <div class="grupo">
+        <label>Stock</label>
+        <input type="number" id="prod-k-stock" placeholder="0">
+      </div>
+      <button class="btn btn-principal" style="width:auto" onclick="guardarProductoKilo()">Agregar</button>
+    </div>
+
+    <div class="tarjeta">
+      <h3>🛒 Registrar Venta</h3>
+      <div class="grupo">
+        <label>Tipo de producto</label>
+        <select id="venta-tipo" onchange="cambiarTipoVenta()">
+          <option value="">Seleccionar tipo</option>
+          <option value="oferta">🔥 Oferta / Paquete</option>
+          <option value="unidad">📦 Por Unidad</option>
+          <option value="kilo">⚖️ Por Kilo</option>
+        </select>
+      </div>
+      
+      <div id="bloque-oferta" class="oculto">
+        <div class="grupo">
+          <label>Oferta</label>
+          <select id="venta-oferta" onchange="calcularTotalOferta()">
+            <option value="">Seleccionar oferta</option>
+          </select>
+        </div>
+        <div class="grupo">
+          <label>Total</label>
+          <input type="text" id="venta-o-total" value="$0" readonly style="font-weight:bold;background:#FFFBEB">
+        </div>
+      </div>
+      
+      <div id="bloque-unidad" class="oculto">
+        <div class="grupo">
+          <label>Producto / Servicio</label>
+          <select id="venta-u-producto" onchange="calcularTotalUnidad()">
+            <option value="">Seleccionar</option>
+          </select>
+        </div>
+        <div class="fila-doble grupo">
+          <div>
+            <label>Cantidad</label>
+            <input type="number" id="venta-u-cantidad" min="1" value="1" oninput="calcularTotalUnidad()">
+          </div>
+          <div>
+            <label>Total</label>
+            <input type="text" id="venta-u-total" value="$0" readonly style="font-weight:bold">
+          </div>
+        </div>
+      </div>
+      
+      <div id="bloque-kilo" class="oculto">
+        <div class="grupo">
+          <label>Producto</label>
+          <select id="venta-k-producto" onchange="calcularTotalKilo()">
+            <option value="">Seleccionar</option>
+          </select>
+        </div>
+        <div class="grupo">
+          <label>Formato</label>
+          <select id="venta-k-formato" onchange="calcularTotalKilo()">
+            <option value="">Elegir</option>
+            <option value="medio">½ kg</option>
+            <option value="uno">1 kg</option>
+            <option value="dos">2 kg</option>
+          </select>
+        </div>
+        <div class="grupo">
+          <label>Total</label>
+          <input type="text" id="venta-k-total" value="$0" readonly style="font-weight:bold">
+        </div>
+      </div>
+      
+      <div class="grupo">
+        <label>Cliente</label>
+        <input id="venta-cliente" placeholder="Nombre del cliente">
+      </div>
+      <button class="btn btn-verde btn-chico" onclick="registrarVenta()">✅ Registrar Venta</button>
+    </div>
+
+    <div class="tarjeta">
+      <h3>📋 Historial de Ventas</h3>
+      <div id="lista-ventas"><div class="sin-datos">Sin ventas registradas</div></div>
+    </div>
+  </div>
+
+  <div id="emprendimiento" class="pantalla oculto">
+    <div class="tarjeta">
+      <h3>💵 Ingreso Manual</h3>
+      <div class="grupo">
+        <label>Concepto</label>
+        <input id="empr-ing-concepto" placeholder="ej: Venta">
+      </div>
+      <div class="grupo">
+        <label>Monto</label>
+        <input type="number" id="empr-ing-monto" placeholder="0">
+      </div>
+      <button class="btn btn-verde btn-chico" onclick="agregarMov('empr','ingreso')">Agregar Ingreso</button>
+    </div>
+    <div class="tarjeta">
+      <h3>📤 Gasto / Inversión</h3>
+      <div class="grupo">
+        <label>Concepto</label>
+        <input id="empr-egr-concepto" placeholder="ej: Materiales">
+      </div>
+      <div class="grupo">
+        <label>Monto</label>
+        <input type="number" id="empr-egr-monto" placeholder="0">
+      </div>
+      <button class="btn btn-rojo btn-chico" onclick="agregarMov('empr','egreso')">Agregar Egreso</button>
+    </div>
+    <div class="tarjeta">
+      <h3>Movimientos</h3>
+      <div id="lista-empr"><div class="sin-datos">Sin movimientos</div></div>
+    </div>
+  </div>
+
+  <div id="casa" class="pantalla oculto">
+    <div class="tarjeta">
+      <h3>💵 Ingreso</h3>
+      <div class="grupo">
+        <label>Concepto</label>
+        <input id="casa-ing-concepto" placeholder="ej: Sueldo">
+      </div>
+      <div class="grupo">
+        <label>Monto</label>
+        <input type="number" id="casa-ing-monto" placeholder="0">
+      </div>
+      <button class="btn btn-verde btn-chico" onclick="agregarMov('casa','ingreso')">Agregar Ingreso</button>
+    </div>
+    <div class="tarjeta">
+      <h3>📤 Gasto</h3>
+      <div class="grupo">
+        <label>Concepto</label>
+        <input id="casa-egr-concepto" placeholder="ej: Luz, Compras">
+      </div>
+      <div class="grupo">
+        <label>Monto</label>
+        <input type="number" id="casa-egr-monto" placeholder="0">
+      </div>
+      <button class="btn btn-rojo btn-chico" onclick="agregarMov('casa','egreso')">Agregar Gasto</button>
+    </div>
+    <div class="tarjeta">
+      <h3>Movimientos</h3>
+      <div id="lista-casa"><div class="sin-datos">Sin movimientos</div></div>
+    </div>
+  </div>
+
+  <div id="calculadora" class="pantalla oculto">
+    <div class="tarjeta">
+      <div class="calc-pantalla" id="calc-pant">0</div>
+      <div class="calc-botones">
+        <button class="cb limpiar" onclick="calcLimpiar()">C</button>
+        <button class="cb oper" onclick="calcPoner('(')">(</button>
+        <button class="cb oper" onclick="calcPoner(')')">)</button>
+        <button class="cb oper" onclick="calcPoner('/')">÷</button>
+        <button class="cb" onclick="calcPoner('7')">7</button>
+        <button class="cb" onclick="calcPoner('8')">8</button>
+        <button class="cb" onclick="calcPoner('9')">9</button>
+        <button class="cb oper" onclick="calcPoner('*')">×</button>
+        <button class="cb" onclick="calcPoner('4')">4</button>
+        <button class="cb" onclick="calcPoner('5')">5</button>
+        <button class="cb" onclick="calcPoner('6')">6</button>
+        <button class="cb oper" onclick="calcPoner('-')">−</button>
+        <button class="cb" onclick="calcPoner('1')">1</button>
+        <button class="cb" onclick="calcPoner('2')">2</button>
+        <button class="cb" onclick="calcPoner('3')">3</button>
+        <button class="cb oper" onclick="calcPoner('+')">+</button>
+        <button class="cb" onclick="calcPoner('0')">0</button>
+        <button class="cb" onclick="calcPoner('.')">.</button>
+        <button class="cb igual" onclick="calcIgual()">=</button>
+      </div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <button class="btn btn-verde" onclick="registrarCalc('empr','ingreso')">💰 Emprendimiento → Ingreso</button>
+        <button class="btn btn-rojo" onclick="registrarCalc('empr','egreso')">📤 Emprendimiento → Gasto</button>
+        <button class="btn btn-verde" onclick="registrarCalc('casa','ingreso')">🏠 Casa → Ingreso</button>
+        <button class="btn btn-rojo" onclick="registrarCalc('casa','egreso')">🏠 Casa → Gasto</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pie">
+    <span class="usuario" id="nombre-usuario"></span>
+    <button class="salir" onclick="salir()">Salir</button>
+  </div>
+</div>
+
 <script>
-const PASS_TALLER = '1234';
-let mensajeOrdenActual = '';
+let usuarioActivo = localStorage.getItem('finanzas_usuario') || '';
+let calcValor = '0';
 
-document.addEventListener('DOMContentLoaded', () => {
-    const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById('fecha-cliente').value = hoy;
-    document.getElementById('fecha-ing').value = hoy;
-    cargarFolio(); cargarTurnos(); cargarClientes(); cargarListaClientesSelector();
-});
-
-// === NAVEGACIÓN ===
-function mostrarAccesoTaller() { document.getElementById('pantalla-acceso').style.display = 'flex'; document.getElementById('pass-taller').value = ''; document.getElementById('error-acceso').style.display = 'none'; }
-function cerrarAcceso() { document.getElementById('pantalla-acceso').style.display = 'none'; }
-function verificarAcceso() {
-    if (document.getElementById('pass-taller').value === PASS_TALLER) {
-        cerrarAcceso();
-        document.getElementById('cliente-pedir').style.display = 'none';
-        document.getElementById('zona-taller').style.display = 'block';
-        cargarOrdenes(); cargarTurnos(); cargarClientes(); cargarListaClientesSelector();
-    } else { document.getElementById('error-acceso').style.display = 'block'; }
+function datos(){
+  const clave = 'finanzas_' + usuarioActivo;
+  let d = JSON.parse(localStorage.getItem(clave) || '{}');
+  if(!d.ofertas) d={
+    ofertas:[],
+    productosUnidad:[],
+    productosKilo:[],
+    ventas:[],
+    empr:{ingresos:[],egresos:[]},
+    casa:{ingresos:[],egresos:[]}
+  };
+  return d;
 }
-function salirTaller() { document.getElementById('zona-taller').style.display = 'none'; document.getElementById('cliente-pedir').style.display = 'block'; }
-function mostrarSeccion(id) {
-    document.querySelectorAll('.seccion').forEach(s => s.classList.remove('visible'));
-    document.querySelectorAll('.pestaña').forEach(p => p.classList.remove('activa'));
-    document.getElementById(id).classList.add('visible');
-    event.target.classList.add('activa');
-    if (id === 'orden-nueva') cargarListaClientesSelector();
+function guardar(d){
+  localStorage.setItem('finanzas_' + usuarioActivo, JSON.stringify(d));
 }
 
-// === CLIENTES ===
-function cargarListaClientesSelector() {
-    const select = document.getElementById('seleccionar-cliente');
-    if (!select) return;
-    const sel = select.value;
-    select.innerHTML = '<option value="">— Elegí un cliente —</option>';
-    const lista = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
-    lista.forEach(cli => {
-        const op = document.createElement('option');
-        op.value = cli.id;
-        op.textContent = `${cli.nombre} — ${cli.telefono}`;
-        select.appendChild(op);
+function entrar(){
+  const nom=document.getElementById('usuario-nombre').value.trim();
+  if(!nom) return alert('Escribe tu nombre');
+  usuarioActivo=nom;
+  localStorage.setItem('finanzas_usuario',nom);
+  document.getElementById('pantalla-login').classList.add('oculto');
+  document.getElementById('app').classList.remove('oculto');
+  document.getElementById('nombre-usuario').textContent=nom;
+  actualizarTodo();
+}
+function cambiarUsuario(){ localStorage.removeItem('finanzas_usuario'); document.getElementById('usuario-nombre').value=''; }
+function salir(){
+  usuarioActivo=''; localStorage.removeItem('finanzas_usuario');
+  document.getElementById('app').classList.add('oculto');
+  document.getElementById('pantalla-login').classList.remove('oculto');
+}
+if(usuarioActivo){ document.getElementById('usuario-nombre').value=usuarioActivo; entrar(); }
+
+function irA(id){
+  document.querySelectorAll('.pantalla').forEach(p=>p.classList.add('oculto'));
+  document.getElementById(id).classList.remove('oculto');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('activo'));
+  document.querySelector(`[data-pantalla="${id}"]`).classList.add('activo');
+}
+
+function cambiarTipoVenta(){
+  const t=document.getElementById('venta-tipo').value;
+  document.getElementById('bloque-oferta').classList.toggle('oculto', t!=='oferta');
+  document.getElementById('bloque-unidad').classList.toggle('oculto', t!=='unidad');
+  document.getElementById('bloque-kilo').classList.toggle('oculto', t!=='kilo');
+}
+
+function guardarOferta(){
+  const d=datos();
+  const nom=document.getElementById('oferta-nombre').value.trim();
+  const cant=Number(document.getElementById('oferta-cantidad').value);
+  const precio=Number(document.getElementById('oferta-precio').value);
+  if(!nom || !cant || !precio) return alert('Completa todos los datos');
+  d.ofertas.push({id:Date.now(), nombre:nom, cantidad:cant, precio:precio});
+  guardar(d);
+  document.getElementById('oferta-nombre').value='';
+  document.getElementById('oferta-cantidad').value='';
+  document.getElementById('oferta-precio').value='';
+  cargarOfertas();
+  alert('✅ Oferta guardada');
+}
+function cargarOfertas(){
+  const d=datos();
+  const lista=document.getElementById('lista-ofertas');
+  const sel=document.getElementById('venta-oferta');
+  
+  if(!d.ofertas.length){
+    lista.innerHTML='<div class="sin-datos" style="padding:10px 0;font-size:13px">Sin ofertas cargadas</div>';
+  }else{
+    lista.innerHTML=d.ofertas.map(o=>`
+      <div class="oferta-item">
+        <div class="oferta-titulo">${o.nombre}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span>${o.cantidad} unidades → $${o.precio.toLocaleString()}</span>
+          <button class="btn-chico btn-rojo" style="padding:4px 8px;font-size:12px" onclick="eliminarOferta(${o.id})">✕</button>
+        </div>
+      </div>`).join('');
+  }
+  
+  sel.innerHTML='<option value="">Seleccionar oferta</option>';
+  d.ofertas.forEach(o=>{
+    const op=document.createElement('option');
+    op.value=o.id; op.textContent=`${o.nombre} — ${o.cantidad}x = $${o.precio.toLocaleString()}`;
+    sel.appendChild(op);
+  });
+}
+function eliminarOferta(id){
+  if(!confirm('¿Eliminar esta oferta?'))return;
+  const d=datos();
+  d.ofertas=d.ofertas.filter(x=>x.id!==id);
+  guardar(d); cargarOfertas();
+}
+function calcularTotalOferta(){
+  const oid=Number(document.getElementById('venta-oferta').value);
+  const o=datos().ofertas.find(x=>x.id===oid);
+  document.getElementById('venta-o-total').value=o ? '$'+o.precio.toLocaleString() : '$0';
+}
+
+function guardarProductoUnidad(){
+  const d=datos();
+  const nom=document.getElementById('prod-u-nombre').value.trim();
+  const precio=Number(document.getElementById('prod-u-precio').value)||0;
+  if(!nom || !precio) return alert('Nombre y precio son obligatorios');
+  d.productosUnidad.push({
+    id:Date.now(), nombre:nom, precio:precio, stock:Number(document.getElementById('prod-u-stock').value)||0
+  });
+  guardar(d);
+  document.getElementById('prod-u-nombre').value='';
+  document.getElementById('prod-u-precio').value='';
+  document.getElementById('prod-u-stock').value='';
+  cargarSelectUnidad();
+  alert('✅ Producto por unidad guardado');
+}
+function cargarSelectUnidad(){
+  const sel=document.getElementById('venta-u-producto');
+  sel.innerHTML='<option value="">Seleccionar</option>';
+  datos().productosUnidad.forEach(p=>{
+    const o=document.createElement('option');
+    o.value=p.id; o.textContent=`${p.nombre} - $${p.precio.toLocaleString()}`;
+    sel.appendChild(o);
+  });
+}
+function calcularTotalUnidad(){
+  const pid=Number(document.getElementById('venta-u-producto').value);
+  const cant=Number(document.getElementById('venta-u-cantidad').value)||1;
+  const p=datos().productosUnidad.find(x=>x.id===pid);
+  document.getElementById('venta-u-total').value=p ? '$'+(p.precio*cant).toLocaleString() : '$0';
+}
+
+function guardarProductoKilo(){
+  const d=datos();
+  const nom=document.getElementById('prod-k-nombre').value.trim();
+  if(!nom) return alert('Escribe el nombre');
+  d.productosKilo.push({
+    id:Date.now(), nombre:nom,
+    medio:Number(document.getElementById('prod-k-mediokg').value)||0,
+    uno:Number(document.getElementById('prod-k-1kg').value)||0,
+    dos:Number(document.getElementById('prod-k-2kg').value)||0,
+    stock:Number(document.getElementById('prod-k-stock').value)||0
+  });
+  guardar(d);
+  document.getElementById('prod-k-nombre').value='';
+  document.getElementById('prod-k-mediokg').value='';
+  document.getElementById('prod-k-1kg').value='';
+  document.getElementById('prod-k-2kg').value='';
+  document.getElementById('prod-k-stock').value='';
+  cargarSelectKilo();
+  alert('✅ Producto por kilo guardado');
+}
+function cargarSelectKilo(){
+  const sel=document.getElementById('venta-k-producto');
+  sel.innerHTML='<option value="">Seleccionar</option>';
+  datos().productosKilo.forEach(p=>{
+    const o=document.createElement('option');
+    o.value=p.id; o.textContent=p.nombre; sel.appendChild(o);
+  });
+}
+function calcularTotalKilo(){
+  const pid=Number(document.getElementById('venta-k-producto').value);
+  const fmt=document.getElementById('venta-k-formato').value;
+  const p=datos().productosKilo.find(x=>x.id===pid);
+  let monto=0;
+  if(p && fmt==='medio') monto=p.medio;
+  if(p && fmt==='uno') monto=p.uno;
+  if(p && fmt==='dos') monto=p.dos;
+  document.getElementById('venta-k-total').value='$'+monto.toLocaleString();
+}
+
+function registrarVenta(){
+  const tipo=document.getElementById('venta-tipo').value;
+  const cliente=document.getElementById('venta-cliente').value.trim()||'Sin nombre';
+  const d=datos();
+  let montoVenta=0;
+  let nombreVenta='';
+  
+  if(tipo==='oferta'){
+    const oid=Number(document.getElementById('venta-oferta').value);
+    const o=d.ofertas.find(x=>x.id===oid);
+    if(!o) return alert('Selecciona una oferta');
+    montoVenta=o.precio;
+    nombreVenta=`${o.nombre} — ${o.cantidad} unidades`;
+    d.ventas.unshift({
+      id:Date.now(), tipo:'oferta', nombre:o.nombre, cantidad:o.cantidad, monto:o.precio, cliente,
+      fecha:new Date().toLocaleString('es-AR'), pagado:false, metodo:''
     });
-    select.value = sel;
-}
-function cargarClienteSeleccionado() {
-    const id = document.getElementById('seleccionar-cliente').value;
-    if (!id) return;
-    const cli = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]').find(c => c.id == id);
-    if (!cli) return;
-    document.getElementById('nombre-cli').value = cli.nombre;
-    document.getElementById('tel-cli').value = cli.telefono;
-    if (cli.vehiculo && cli.vehiculo !== 'No especificado') {
-        const partes = cli.vehiculo.split(' | ');
-        document.getElementById('marca').value = partes[0] || '';
-        document.getElementById('modelo').value = partes[1] || '';
-        document.getElementById('anio').value = partes[2] || '';
-    }
-}
-function guardarCliente(nombre, telefono, marca, modelo, anio) {
-    if (!nombre || !telefono) return false;
-    let c = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
-    const existe = c.find(x => x.telefono === telefono);
-    const vehiculoCompleto = `${marca || ''} | ${modelo || ''} | ${anio || ''}`;
-    if (existe) {
-        existe.ultimaVisita = new Date().toLocaleString('es-AR');
-        existe.cantidadTurnos = (existe.cantidadTurnos || 1) + 1;
-        if (marca && !existe.vehiculo) existe.vehiculo = vehiculoCompleto;
-        localStorage.setItem('clientesRegistrados', JSON.stringify(c));
-        return 'actualizado';
-    }
-    c.unshift({
-        id: Date.now(), nombre, telefono,
-        vehiculo: vehiculoCompleto || 'No especificado',
-        fechaRegistro: new Date().toLocaleString('es-AR'),
-        ultimaVisita: new Date().toLocaleString('es-AR'),
-        cantidadTurnos: 1
+  }else if(tipo==='unidad'){
+    const pid=Number(document.getElementById('venta-u-producto').value);
+    const cant=Number(document.getElementById('venta-u-cantidad').value)||1;
+    const p=d.productosUnidad.find(x=>x.id===pid);
+    if(!p) return alert('Selecciona un producto');
+    montoVenta=p.precio*cant;
+    nombreVenta=`${p.nombre} × ${cant} unid.`;
+    d.ventas.unshift({
+      id:Date.now(), tipo:'unidad', nombre:p.nombre, cantidad:cant, monto:montoVenta, cliente,
+      fecha:new Date().toLocaleString('es-AR'), pagado:false, metodo:''
     });
-    localStorage.setItem('clientesRegistrados', JSON.stringify(c));
-    return 'nuevo';
-}
-function agregarClienteManual() {
-    const n = document.getElementById('manual-nombre').value.trim();
-    const t = document.getElementById('manual-telefono').value.trim();
-    const m = document.getElementById('manual-marca').value.trim();
-    const mod = document.getElementById('manual-modelo').value.trim();
-    const a = document.getElementById('manual-anio').value.trim();
-    if (!n || !t) { alert('Completá nombre y teléfono'); return; }
-    guardarCliente(n, t, m, mod, a);
-    alert('✅ Cliente guardado');
-    document.getElementById('manual-nombre').value = '';
-    document.getElementById('manual-telefono').value = '';
-    document.getElementById('manual-marca').value = '';
-    document.getElementById('manual-modelo').value = '';
-    document.getElementById('manual-anio').value = '';
-    cargarClientes(); cargarListaClientesSelector();
-}
-function cargarClientes() {
-    const lista = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]');
-    const caja = document.getElementById('ver-clientes');
-    if (!lista.length) { caja.innerHTML = '<p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay clientes registrados</p>'; return; }
-    caja.innerHTML = '';
-    lista.forEach(cli => {
-        const partes = cli.vehiculo.split(' | ');
-        caja.innerHTML += `
-        <div class="tarjeta">
-            <strong style="font-size:16px;">${cli.nombre}</strong><br>
-            📞 ${cli.telefono}<br>
-            🚘 ${partes[0] || '-'} ${partes[1] || '-'} ${partes[2] ? `(${partes[2]})` : ''}<br>
-            <small style="color:var(--textoClaro);">Visitas: ${cli.cantidadTurnos||1} • Última: ${cli.ultimaVisita}</small>
-            <div style="margin-top:10px;">
-                <button class="btn-azul btn-chico" onclick="cargarClienteEnOrden(${cli.id})">📋 Cargar en Orden</button>
-            </div>
-        </div>`;
+  }else if(tipo==='kilo'){
+    const pid=Number(document.getElementById('venta-k-producto').value);
+    const fmt=document.getElementById('venta-k-formato').value;
+    const p=d.productosKilo.find(x=>x.id===pid);
+    if(!p || !fmt) return alert('Completa todos los datos');
+    let fmtTexto='';
+    if(fmt==='medio'){ montoVenta=p.medio; fmtTexto='½ kg'; }
+    if(fmt==='uno'){ montoVenta=p.uno; fmtTexto='1 kg'; }
+    if(fmt==='dos'){ montoVenta=p.dos; fmtTexto='2 kg'; }
+    nombreVenta=`${p.nombre} — ${fmtTexto}`;
+    d.ventas.unshift({
+      id:Date.now(), tipo:'kilo', nombre:p.nombre, formato:fmt, monto:montoVenta, cliente,
+      fecha:new Date().toLocaleString('es-AR'), pagado:false, metodo:''
     });
+  }else{
+    return alert('Elige tipo de producto');
+  }
+  
+  // ✅ Agrega automáticamente a los ingresos del emprendimiento
+  d.empr.ingresos.unshift({
+    id:Date.now(),
+    concepto:`Venta: ${nombreVenta} — Cliente: ${cliente}`,
+    monto:montoVenta,
+    fecha:new Date().toLocaleString('es-AR'),
+    fuente:'venta'
+  });
+  
+  guardar(d);
+  document.getElementById('venta-tipo').value='';
+  document.getElementById('venta-cliente').value='';
+  cambiarTipoVenta();
+  actualizarTodo();
+  alert('✅ Venta registrada y cargada en Emprendimiento');
 }
-function cargarClienteEnOrden(id) {
-    const cli = JSON.parse(localStorage.getItem('clientesRegistrados') || '[]').find(c => c.id === id);
-    if (!cli) return;
-    mostrarSeccion('orden-nueva');
-    document.getElementById('seleccionar-cliente').value = id;
-    document.getElementById('nombre-cli').value = cli.nombre;
-    document.getElementById('tel-cli').value = cli.telefono;
-    if (cli.vehiculo && cli.vehiculo !== 'No especificado') {
-        const partes = cli.vehiculo.split(' | ');
-        document.getElementById('marca').value = partes[0] || '';
-        document.getElementById('modelo').value = partes[1] || '';
-        document.getElementById('anio').value = partes[2] || '';
-    }
+function togglePagado(id){
+  const d=datos();
+  const v=d.ventas.find(x=>x.id===id);
+  v.pagado=!v.pagado;
+  if(v.pagado){
+    let m=(prompt('¿Efectivo o transferencia?')||'').trim().toLowerCase();
+    v.metodo=m.includes('efec')?'efectivo':'transferencia';
+  }else{v.metodo='';}
+  guardar(d); actualizarTodo();
 }
-
-// === TURNOS ===
-function armarMensajeTurno() {
-    const fecha = document.getElementById('fecha-cliente').value;
-    const horario = document.getElementById('horario-cliente').value;
-    const nombre = document.getElementById('nombre-cliente').value.trim();
-    const tel = document.getElementById('tel-cliente').value.trim();
-    const marca = document.getElementById('marca-cliente').value.trim();
-    const modelo = document.getElementById('modelo-cliente').value.trim();
-    const anio = document.getElementById('anio-cliente').value.trim();
-    const detalle = document.getElementById('detalle-cliente').value;
-    
-    if (!fecha || !horario || !nombre || !tel || !detalle) { alert('⚠️ Completá todos los datos'); return; }
-    
-    const turnos = JSON.parse(localStorage.getItem('turnosRecibidos') || '[]');
-    if (turnos.find(t => t.fecha === fecha && t.horario === horario && t.estado !== 'cancelada')) {
-        alert('❌ Ese horario ya fue tomado. Elegí otro.'); return;
-    }
-    
-    const vehiculoTexto = `${marca} ${modelo} ${anio ? `(${anio})` : ''}`.trim() || 'No especificado';
-    const nuevo = {
-        id: Date.now(), fecha, horario, nombre, telefono: tel,
-        marca, modelo, anio, servicio: detalle, estado: 'en-espera'
-    };
-    turnos.unshift(nuevo);
-    localStorage.setItem('turnosRecibidos', JSON.stringify(turnos));
-    guardarCliente(nombre, tel, marca, modelo, anio);
-    
-    const msg = `🔔 NUEVO TURNO — AUTO REGINA
-──────────────────────
-👤 NOMBRE: ${nombre}
-📞 TELÉFONO: ${tel}
-📅 FECHA: ${fecha}
-⏰ HORARIO: ${horario}
-🚘 VEHÍCULO: ${vehiculoTexto}
-🔧 SERVICIO: ${detalle}
-📋 ESTADO: En espera
-──────────────────────`;
-    document.getElementById('texto-turno').value = msg;
-    document.getElementById('caja-msg-turno').style.display = 'block';
-    cargarTurnos();
+function eliminarVenta(id){
+  if(!confirm('¿Eliminar esta venta?'))return;
+  const d=datos();
+  d.ventas=d.ventas.filter(x=>x.id!==id);
+  // Opcional: también eliminar el ingreso correspondiente
+  guardar(d); actualizarTodo();
 }
 
-function copiarTexto(id) {
-    document.getElementById(id).select();
-    document.execCommand('copy');
-    alert('✅ Copiado al portapapeles! Ahora pegá en WhatsApp y enviá');
+function agregarMov(area,tipo){
+  const c=document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-concepto`).value.trim();
+  const m=Number(document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-monto`).value);
+  if(!c || !m) return alert('Completa datos');
+  const d=datos();
+  d[area][tipo+'s'].unshift({id:Date.now(), concepto:c, monto:m, fecha:new Date().toLocaleString('es-AR')});
+  guardar(d);
+  document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-concepto`).value='';
+  document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-monto`).value='';
+  actualizarTodo();
+}
+function eliminarMov(area,tipo,id){
+  if(!confirm('¿Eliminar?'))return;
+  const d=datos(); d[area][tipo+'s']=d[area][tipo+'s'].filter(x=>x.id!==id); guardar(d); actualizarTodo();
 }
 
-function cargarTurnos() {
-    const lista = JSON.parse(localStorage.getItem('turnosRecibidos') || '[]');
-    const caja = document.getElementById('ver-turnos');
-    if (!lista.length) { caja.innerHTML = '<p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay turnos recibidos</p>'; return; }
-    caja.innerHTML = '';
-    lista.forEach(t => {
-        const et = { 'en-espera':'espera', 'atendida':'listo', 'cancelada':'cancelado' };
-        const tx = { 'en-espera':'⏳ En Espera', 'atendida':'✅ Atendido', 'cancelada':'❌ Cancelado' };
-        const vehText = `${t.marca||''} ${t.modelo||''} ${t.anio ? `(${t.anio})` : ''}`.trim() || 'No especificado';
-        caja.innerHTML += `
-        <div class="tarjeta ${et[t.estado]}">
-            <span class="etiqueta ${et[t.estado]}">${tx[t.estado]}</span><br>
-            <strong style="font-size:16px;">${t.nombre}</strong><br>
-            📅 ${t.fecha} — ⏰ ${t.horario}<br>
-            📞 ${t.telefono} • 🚘 ${vehText}<br>
-            🔧 ${t.servicio}
-            ${esTaller() ? `<div style="margin-top:12px;">
-                <button class="btn-exito btn-chico" onclick="cambiarEstadoTurno(${t.id},'atendida')">✅ Atendido</button>
-                <button class="btn-azul btn-chico" onclick="cambiarEstadoTurno(${t.id},'en-espera')">⏳ En Espera</button>
-                <button class="btn-rojo btn-chico" onclick="cambiarEstadoTurno(${t.id},'cancelada')">❌ Cancelar</button>
-                <button class="btn-chico" style="background:var(--primario); color:white;" onclick="cargarDesdeTurno('${t.nombre}','${t.telefono}','${t.marca||''}','${t.modelo||''}','${t.anio||''}')">📋 Crear Orden</button>
-            </div>` : ''}
-        </div>`;
+function calcPoner(v){ if(calcValor==='0' && !isNaN(Number(v)) && v!=='.') calcValor=''; calcValor+=v; document.getElementById('calc-pant').textContent=calcValor; }
+function calcLimpiar(){ calcValor='0'; document.getElementById('calc-pant').textContent='0'; }
+function calcIgual(){try{calcValor=String(eval(calcValor));document.getElementById('calc-pant').textContent=calcValor;}catch{alert('Error');calcLimpiar();}}
+function registrarCalc(area,tipo){
+  const m=Number(calcValor); if(!m)return alert('Calcula primero');
+  const d=datos();
+  d[area][tipo+'s'].unshift({id:Date.now(), concepto:'Calculadora — '+new Date().toLocaleDateString('es-AR'), monto:m, fecha:new Date().toLocaleString('es-AR')});
+  guardar(d); actualizarTodo(); alert('✅ Registrado');
+}
+
+function actualizarTodo(){
+  cargarOfertas(); cargarSelectUnidad(); cargarSelectKilo();
+  const d=datos();
+  
+  const sEmpr=d.empr.ingresos.reduce((a,b)=>a+b.monto,0)-d.empr.egresos.reduce((a,b)=>a+b.monto,0);
+  const sCasa=d.casa.ingresos.reduce((a,b)=>a+b.monto,0)-d.casa.egresos.reduce((a,b)=>a+b.monto,0);
+  document.getElementById('res-empr').textContent='$'+sEmpr.toLocaleString();
+  document.getElementById('res-casa').textContent='$'+sCasa.toLocaleString();
+  
+  const lv=document.getElementById('lista-ventas');
+  if(!d.ventas.length){lv.innerHTML='<div class="sin-datos">Sin ventas</div>';}
+  else{
+    lv.innerHTML=d.ventas.map(v=>{
+      let detalle='', etiquetaTipo='';
+      if(v.tipo==='oferta'){
+        detalle=`🔥 ${v.nombre} — ${v.cantidad} unidades`;
+        etiquetaTipo='<span class="etiqueta et-oferta">OFERTA</span>';
+      }else if(v.tipo==='unidad'){
+        detalle=`${v.nombre} × ${v.cantidad} unid.`;
+        etiquetaTipo='<span class="etiqueta et-unidad">Unidad</span>';
+      }else{
+        const fmtTexto={medio:'½ kg',uno:'1 kg',dos:'2 kg'}[v.formato];
+        detalle=`${v.nombre} — ${fmtTexto}`;
+        etiquetaTipo='<span class="etiqueta et-kilo">Kilo</span>';
+      }
+      return `
+      <div class="lista-item">
+        <div>
+          <div><strong>${detalle}</strong> ${etiquetaTipo}</div>
+          <div style="font-size:13px;color:var(--textoSuave)">Cliente: ${v.cliente} | ${v.fecha}</div>
+          <div style="font-weight:700">$${v.monto.toLocaleString()}</div>
+          <span class="etiqueta ${v.pagado?'et-pagado':'et-no'}">${v.pagado?'Pagado':'No pagado'}</span>
+          ${v.pagado?`<span class="etiqueta ${v.metodo==='efectivo'?'et-efectivo':'et-transf'}">${v.metodo}</span>`:''}
+        </div>
+        <div class="item-acciones">
+          <button class="btn-chico ${v.pagado?'btn-amarillo':'btn-verde'}" onclick="togglePagado(${v.id})">${v.pagado?'Cambiar':'Pagar'}</button>
+          <button class="btn-chico btn-rojo" onclick="eliminarVenta(${v.id})">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  
+  ['empr','casa'].forEach(area=>{
+    const lista=document.getElementById(`lista-${area}`);
+    const ing=d[area].ingresos, eg=d[area].egresos;
+    if(!ing.length && !eg.length){lista.innerHTML='<div class="sin-datos">Sin movimientos</div>';return;}
+    let html='';
+    ing.forEach(m=>{
+      const etiquetaFuente = m.fuente==='venta' ? '<span class="etiqueta et-oferta" style="font-size:10px">VENTA</span>' : '';
+      html+=`<div class="lista-item"><div><div style="color:var(--exito)">⬆ INGRESO ${etiquetaFuente}</div><strong>${m.concepto}</strong><div style="font-size:12px;color:var(--textoSuave)">${m.fecha}</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--exito)">+$${m.monto.toLocaleString()}</div><button class="btn-chico btn-rojo" onclick="eliminarMov('${area}','ingreso',${m.id})">✕</button></div></div>`;
     });
-}
-function cargarDesdeTurno(nombre, tel, marca, modelo, anio) {
-    mostrarSeccion('orden-nueva');
-    document.getElementById('nombre-cli').value = nombre;
-    document.getElementById('tel-cli').value = tel;
-    document.getElementById('marca').value = marca;
-    document.getElementById('modelo').value = modelo;
-    document.getElementById('anio').value = anio;
-}
-function esTaller() { return document.getElementById('zona-taller').style.display === 'block'; }
-function cambiarEstadoTurno(id, est) {
-    let l = JSON.parse(localStorage.getItem('turnosRecibidos') || '[]').map(t => t.id === id ? {...t, estado:est} : t);
-    localStorage.setItem('turnosRecibidos', JSON.stringify(l));
-    cargarTurnos();
-}
-
-// === FOLIO ===
-function cargarFolio() {
-    document.getElementById('nro-folio').textContent = String(parseInt(localStorage.getItem('ultimoFolio') || '1')).padStart(6, '0');
-}
-
-// === TABLA ===
-function calcularFila(inp) {
-    const f = inp.closest('tr');
-    const c = parseFloat(f.querySelector('.cant').value) || 0;
-    const p = parseFloat(f.querySelector('.precio').value) || 0;
-    f.querySelector('.importe').value = (c * p).toFixed(2);
-    calcularTotal();
-}
-function calcularTotal() {
-    let t = 0;
-    document.querySelectorAll('.importe').forEach(i => t += parseFloat(i.value) || 0);
-    document.getElementById('total-final').textContent = t.toFixed(2);
-}
-function agregarFila() {
-    const tb = document.querySelector('#tabla-servicios tbody');
-    tb.innerHTML += `<tr>
-        <td><input type="number" class="cant" value="1" oninput="calcularFila(this)"></td>
-        <td><input type="text" class="desc" placeholder="Servicio"></td>
-        <td><input type="number" class="precio" step="0.01" oninput="calcularFila(this)"></td>
-        <td><input type="number" class="importe" readonly></td>
-    </tr>`;
-}
-
-// === GUARDAR ORDEN ===
-function guardarOrden() {
-    const folio = document.getElementById('nro-folio').textContent;
-    const marca = document.getElementById('marca').value.trim();
-    const modelo = document.getElementById('modelo').value.trim();
-    const anio = document.getElementById('anio').value.trim();
-    const patente = document.getElementById('patente').value.trim();
-    const km = document.getElementById('km').value;
-    const fechaIng = document.getElementById('fecha-ing').value;
-    const fechaEnt = document.getElementById('fecha-ent').value;
-    const nombreCli = document.getElementById('nombre-cli').value.trim();
-    const telCli = document.getElementById('tel-cli').value.trim();
-    const mecanico = document.getElementById('mecanico').value;
-    const observaciones = document.getElementById('observaciones').value.trim();
-    
-    const filas = document.querySelectorAll('#tabla-servicios tbody tr');
-    const servicios = []; let total = 0;
-    filas.forEach(f => {
-        const cant = parseFloat(f.querySelector('.cant').value) || 0;
-        const desc = f.querySelector('.desc').value.trim();
-        const prec = parseFloat(f.querySelector('.precio').value) || 0;
-        if (desc) {
-            servicios.push({cant, descripcion:desc, precio:prec, subtotal:(cant*prec).toFixed(2)});
-            total += cant * prec;
-        }
-    });
-    
-    if (!nombreCli || servicios.length === 0) { alert('⚠️ Completá nombre del cliente y al menos un servicio'); return; }
-    
-    let ordenes = JSON.parse(localStorage.getItem('ordenesTaller') || '[]');
-    ordenes.unshift({
-        folio, marca, modelo, anio, patente, km, fechaIng, fechaEnt,
-        nombreCli, telCli, mecanico, observaciones, servicios,
-        total: total.toFixed(2), estado:'en-espera', fechaCreacion: new Date().toLocaleString('es-AR')
-    });
-    localStorage.setItem('ordenesTaller', JSON.stringify(ordenes));
-    
-    localStorage.setItem('ultimoFolio', parseInt(localStorage.getItem('ultimoFolio') || '1') + 1);
-    guardarCliente(nombreCli, telCli, marca, modelo, anio);
-    
-    alert('✅ Orden guardada — Folio ' + folio);
-    limpiarFormulario();
-    cargarFolio(); cargarOrdenes(); cargarListaClientesSelector();
-}
-function limpiarFormulario() {
-    document.getElementById('seleccionar-cliente').value = '';
-    document.getElementById('marca').value = '';
-    document.getElementById('modelo').value = '';
-    document.getElementById('anio').value = '';
-    document.getElementById('patente').value = '';
-    document.getElementById('km').value = '';
-    document.getElementById('fecha-ent').value = '';
-    document.getElementById('nombre-cli').value = '';
-    document.getElementById('tel-cli').value = '';
-    document.getElementById('mecanico').value = '';
-    document.getElementById('observaciones').value = '';
-    document.querySelector('#tabla-servicios tbody').innerHTML = `<tr><td><input type="number" class="cant" value="1" oninput="calcularFila(this)"></td><td><input type="text" class="desc" placeholder="Servicio"></td><td><input type="number" class="precio" step="0.01" oninput="calcularFila(this)"></td><td><input type="number" class="importe" readonly></td></tr>`;
-    document.getElementById('total-final').textContent = '0.00';
-    document.getElementById('caja-envio-orden').style.display = 'none';
-}
-
-// === PREPARAR MENSAJE ===
-function prepararEnvio() {
-    const folio = document.getElementById('nro-folio').textContent;
-    const marca = document.getElementById('marca').value.trim() || '-';
-    const modelo = document.getElementById('modelo').value.trim() || '-';
-    const anio = document.getElementById('anio').value.trim() || '-';
-    const patente = document.getElementById('patente').value.trim() || '-';
-    const km = document.getElementById('km').value || '-';
-    const fechaIng = document.getElementById('fecha-ing').value;
-    const fechaEnt = document.getElementById('fecha-ent').value || '-';
-    const nombreCli = document.getElementById('nombre-cli').value.trim() || '-';
-    const telCli = document.getElementById('tel-cli').value.trim() || '-';
-    const mecanico = document.getElementById('mecanico').value || '-';
-    const observaciones = document.getElementById('observaciones').value.trim() || 'Ninguna';
-    
-    let textoServicios = '';
-    document.querySelectorAll('#tabla-servicios tbody tr').forEach(f => {
-        const cant = f.querySelector('.cant').value;
-        const desc = f.querySelector('.desc').value.trim();
-        const prec = f.querySelector('.precio').value;
-        if (desc) textoServicios += `${cant} x ${desc} — $${prec}\n`;
-    });
-    const total = document.getElementById('total-final').textContent;
-    
-    mensajeOrdenActual = `🔧 ORDEN DE SERVICIO — AUTO REGINA
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FOLIO: ${folio}
-
-👤 CLIENTE: ${nombreCli}
-📞 TELÉFONO: ${telCli}
-🚘 VEHÍCULO: ${marca} ${modelo} (${anio})
-📋 PATENTE: ${patente}
-📏 KM: ${km}
-🔧 MECÁNICO: ${mecanico}
-📅 INGRESO: ${fechaIng}
-📅 ENTREGA: ${fechaEnt}
-
-📝 TRABAJOS:
-${textoServicios}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💰 TOTAL: $${total}
-
-📌 OBSERVACIONES:
-${observaciones}
-
-Gracias por elegirnos! ✅`;
-    document.getElementById('texto-orden').value = mensajeOrdenActual;
-    document.getElementById('caja-envio-orden').style.display = 'block';
-}
-
-// === HISTORIAL ===
-function cargarOrdenes() {
-    const lista = JSON.parse(localStorage.getItem('ordenesTaller') || '[]');
-    const caja = document.getElementById('ver-ordenes');
-    if (!lista.length) { caja.innerHTML = '<p style="color:var(--textoClaro); text-align:center; padding:40px;">No hay órdenes guardadas</p>'; return; }
-    caja.innerHTML = '';
-    lista.forEach(o => {
-        caja.innerHTML += `
-        <div class="tarjeta espera">
-            <div class="folio">Folio: ${o.folio}</div>
-            <span class="etiqueta espera">En espera</span><br>
-            <strong>${o.nombreCli}</strong><br>
-            🚘 ${o.marca} ${o.modelo} (${o.anio || '-'}) • ${o.patente}<br>
-            🔧 ${o.mecanico} • 💰 $${o.total}<br>
-            <small style="color:var(--textoClaro);">📅 ${o.fechaIng}</small>
-        </div>`;
-    });
+    eg.forEach(m=>html+=`<div class="lista-item"><div><div style="color:var(--alerta)">⬇ EGRESO</div><strong>${m.concepto}</strong><div style="font-size:12px;color:var(--textoSuave)">${m.fecha}</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--alerta)">-$${m.monto.toLocaleString()}</div><button class="btn-chico btn-rojo" onclick="eliminarMov('${area}','egreso',${m.id})">✕</button></div></div>`);
+    lista.innerHTML=html;
+  });
 }
 </script>
 </body>
