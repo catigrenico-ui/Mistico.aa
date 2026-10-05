@@ -1,701 +1,607 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FINANZAS</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#4F46E5">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent;}
-:root{
-  --pri:#4F46E5; --priClaro:#7C3AED;
-  --empr:#2563EB; --casa:#EC4899;
-  --exito:#10B981; --alerta:#EF4444; --aviso:#F59E0B;
-  --fondo:#EEF2FF; --tarjeta:#FFFFFF; --texto:#1E293B; --textoSuave:#64748B;
-  --borde:#E2E8F0; --sombra:0 2px 8px rgba(79,70,229,.12);
-}
-body{background:var(--fondo);min-height:100vh;padding:16px;max-width:540px;margin:0 auto;padding-bottom:80px;}
-.oculto{display:none!important}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTO REGINA — Turnos y Servicios</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+        import { 
+            getFirestore, collection, addDoc, getDocs, doc, setDoc,
+            updateDoc, deleteDoc, query, orderBy, serverTimestamp, where, getDoc
+        } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-#pantalla-login{position:fixed;inset:0;background:linear-gradient(135deg,#4F46E5,#7C3AED);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:999}
-.login-tarjeta{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.15)}
-.login-tarjeta h2{text-align:center;color:var(--pri);margin-bottom:24px}
-.login-tarjeta input{width:100%;padding:12px 16px;margin-bottom:12px;border:2px solid var(--borde);border-radius:12px;font-size:16px}
-.btn{border:none;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:600;cursor:pointer;transition:transform .15s}
-.btn:active{transform:scale(.97)}
-.btn-principal{background:var(--pri);color:#fff;width:100%}
-.btn-principal:hover{opacity:.92}
-.btn-secundario{background:#F1F5F9;color:var(--texto);margin-top:8px}
+        const firebaseConfig = {
+            apiKey: "AIzaSyAPKOuYBpHuqyEVNJOENPUH1113OBvykyk",
+            authDomain: "autoregina.firebaseapp.com",
+            projectId: "autoregina",
+            storageBucket: "autoregina.firebasestorage.app",
+            messagingSenderId: "525939629424",
+            appId: "1:525939629424:web:2a609a232758782859c3b5"
+        };
 
-.nav{position:sticky;top:0;background:#fff;border-radius:14px;padding:10px;display:flex;gap:6px;margin-bottom:20px;box-shadow:var(--sombra);z-index:10}
-.nav-btn{flex:1;border:none;background:transparent;padding:10px 6px;border-radius:10px;font-size:12px;font-weight:600;color:var(--textoSuave)}
-.nav-btn.activo{background:var(--pri);color:#fff}
-
-.tarjeta{background:var(--tarjeta);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:var(--sombra)}
-.tarjeta h3{font-size:17px;margin-bottom:14px;color:var(--texto);display:flex;align-items:center;justify-content:space-between}
-.etiqueta{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-left:4px}
-.et-unidad{background:#E0F2FE;color:#0369A1}
-.et-kilo{background:#D1FAE5;color:#047857}
-.et-oferta{background:#FEF3C7;color:#92400E}
-.et-pagado{background:#D1FAE5;color:#065F46}
-.et-no{background:#FEE2E2;color:#991B1B}
-.et-efectivo{background:#FEF3C7;color:#92400E}
-.et-transf{background:#E0E7FF;color:#3730A3}
-
-.grupo{margin-bottom:12px}
-label{display:block;font-size:13px;color:var(--textoSuave);margin-bottom:4px}
-input,select,textarea{width:100%;padding:11px 14px;border:2px solid var(--borde);border-radius:10px;font-size:15px;background:#fff}
-input:focus,select:focus,textarea:focus{border-color:var(--pri);outline:none}
-.fila-doble{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fila-triple{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.btn-chico{padding:8px 12px;font-size:14px;border-radius:10px;border:none;cursor:pointer}
-.btn-verde{background:var(--exito);color:#fff}
-.btn-rojo{background:var(--alerta);color:#fff}
-.btn-amarillo{background:var(--aviso);color:#fff}
-.btn-oferta{background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff}
-
-.calc-pantalla{background:#F8FAFC;border-radius:12px;padding:16px;text-align:right;font-size:28px;font-weight:700;margin-bottom:12px;border:2px solid var(--borde)}
-.calc-botones{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.cb{border:none;border-radius:10px;padding:14px;font-size:18px;font-weight:600;cursor:pointer;background:#E2E8F0}
-.cb.oper{background:#DDD6FE;color:#4338CA}
-.cb.igual{background:var(--pri);color:#fff;grid-column:span 2}
-.cb.limpiar{background:#FECACA;color:#991B1B}
-
-.lista-item{padding:14px;border-bottom:1px solid var(--borde);display:flex;justify-content:space-between;align-items:center;gap:8px}
-.lista-item:last-child{border-bottom:none}
-.item-acciones{display:flex;gap:6px}
-.sin-datos{text-align:center;color:var(--textoSuave);padding:24px;font-size:14px}
-
-.resumen-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.res-caja{border-radius:12px;padding:14px;text-align:center}
-.res-caja h4{font-size:13px;font-weight:500;margin-bottom:4px;opacity:.8}
-.res-caja .monto{font-size:19px;font-weight:700}
-.empr{background:#EFF6FF;color:#1E40AF}
-.casa{background:#FDF2F8;color:#BE185D}
-
-.pie{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--borde);padding:10px 16px;display:flex;justify-content:space-between;max-width:540px;margin:0 auto;border-radius:16px 16px 0 0}
-.usuario{font-size:13px;color:var(--textoSuave)}
-.salir{border:none;background:#FEE2E2;color:#991B1B;padding:8px 14px;border-radius:10px;font-weight:600;cursor:pointer}
-
-.oferta-item{background:#FFFBEB;border:2px solid #FCD34D;border-radius:10px;padding:10px;margin-bottom:8px}
-.oferta-titulo{font-weight:700;color:#92400E;margin-bottom:4px}
-</style>
+        const app = initializeApp(firebaseConfig);
+        window.db = getFirestore(app);
+        window.Firestore = { 
+            collection, addDoc, getDocs, updateDoc, deleteDoc, setDoc,
+            doc, query, orderBy, serverTimestamp, where, getDoc
+        };
+    </script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif;}
+        body{background:#F0F4FC;min-height:100vh;padding:16px;max-width:620px;margin:0 auto;padding-bottom:40px;}
+        .cabecera{background:linear-gradient(180deg,#0F2B5C 0%,#0F2B48 100%);color:white;padding:24px 20px;border-radius:20px;text-align:center;margin-bottom:16px;}
+        .cabecera h1{font-size:22px;margin-bottom:6px;}
+        .servicios{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#F5D76E;font-weight:600;}
+        .aviso{background:#FFF7E0;border:2px solid #F59E0B;border-radius:14px;padding:16px;margin-bottom:20px;text-align:center;}
+        .numero-grande{font-size:20px;font-weight:900;color:#B45309;margin:6px 0;letter-spacing:1px;}
+        .pestañas{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;}
+        .pestaña{padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;white-space:nowrap;cursor:pointer;border:none;}
+        .pestaña.activa{background:#0F2B48;color:white;}
+        .pestaña.inactiva{background:white;color:#64748B;}
+        .pestaña.salir{background:#FEE2E2;color:#B91C1C;margin-left:auto;}
+        .form-seccion{background:white;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(15,43,72,.08);}
+        h2{font-size:20px;font-weight:800;color:#0F2B48;margin-bottom:16px;}
+        h3{font-size:16px;font-weight:700;color:#0F2B48;margin:20px 0 12px;padding-bottom:6px;border-bottom:2px solid #0F2B48;}
+        label{display:block;margin:14px 0 6px;font-weight:600;color:#334155;font-size:14px;}
+        input,select,textarea{width:100%;padding:12px 14px;border:2px solid #E2E8F0;border-radius:10px;font-size:15px;background:#FAFCFF;}
+        input:focus,select:focus,textarea:focus{outline:none;border-color:#0F2B48;}
+        .fila{display:flex;gap:10px;flex-wrap:wrap;}
+        .fila>div{flex:1;min-width:100px;}
+        .btn-principal{width:100%;background:#0F2B48;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:800;margin-top:20px;cursor:pointer;}
+        .btn-copiar{width:100%;background:#10B981;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:700;margin-top:16px;cursor:pointer;transition:all .2s;}
+        .btn-copiar:active{transform:scale(.98);}
+        .btn-copiado{background:#059669 !important;}
+        .btn-chico{padding:8px 12px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin:4px;}
+        .btn-guardar{background:#10B981;color:white;}
+        .btn-eliminar{background:#FEE2E2;color:#B91C1C;}
+        .btn-editar{background:#DBEAFE;color:#1E40AF;}
+        .acceso-taller{width:100%;background:transparent;color:#0F2B48;border:2px solid #0F2B48;padding:14px;border-radius:12px;font-size:15px;font-weight:700;margin-top:20px;cursor:pointer;}
+        .modal{position:fixed;inset:0;background:rgba(15,43,72,.85);display:none;align-items:center;justify-content:center;padding:20px;z-index:100;}
+        .modal-caja{background:white;padding:24px;border-radius:16px;width:100%;max-width:340px;}
+        .modal-caja button{width:100%;padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:700;margin-top:10px;cursor:pointer;}
+        .btn-ingresar{background:#0F2B48;color:white;}
+        .btn-volver{background:#E5E7EB;color:#374151;}
+        .error{color:#EF4444;text-align:center;margin-top:12px;display:none;}
+        .vista-previa{background:white;border:2px solid #0F2B48;border-radius:16px;padding:20px;margin-top:20px;white-space:pre-wrap;font-size:13px;line-height:1.6;}
+        .oculto{display:none !important;}
+        .lista-item{background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+        .sin-datos{text-align:center;padding:30px;color:#64748B;}
+        .acciones{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+        .area-copiado{position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none;}
+        .tabla-trabajos{width:100%;border-collapse:collapse;margin:12px 0;}
+        .tabla-trabajos th,.tabla-trabajos td{border:1px solid #E2E8F0;padding:10px 8px;text-align:left;font-size:14px;}
+        .tabla-trabajos th{background:#F1F5F9;font-weight:700;color:#0F2B48;}
+        .tabla-trabajos td input{border:none;background:transparent;padding:4px;width:100%;font-size:14px;}
+        .fila-total{background:#E0F2FE;font-weight:800;font-size:18px !important;color:#0F2B48;}
+        .fila-total td{border:none;padding-top:16px;text-align:right;}
+        .cargando{text-align:center;padding:20px;color:#165DFF;font-weight:600;}
+        .estado{display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;}
+        .estado-pendiente{background:#FEF3C7;color:#92400E;}
+        .estado-confirmado{background:#DBEAFE;color:#1E40AF;}
+        .estado-atendido{background:#D1FAE5;color:#065F46;}
+        .aviso-exito{background:#D1FAE5;border:2px solid #10B981;border-radius:12px;padding:12px;text-align:center;margin-top:12px;color:#065F46;font-weight:600;}
+        .ia-mensajes{max-height:350px;overflow-y:auto;padding:16px;background:#F8FAFC;border-radius:16px;margin-bottom:12px;}
+        .ia-mensaje{margin-bottom:14px;padding:12px 16px;border-radius:16px;max-width:90%;line-height:1.6;white-space:pre-wrap;}
+        .ia-usuario{background:#DBEAFE;color:#1E3A8A;margin-left:auto;border-bottom-right-radius:6px;}
+        .ia-asistente{background:#E0F2FE;color:#0C4A6E;margin-right:auto;border-bottom-left-radius:6px;}
+        .ia-pensando{font-style:italic;color:#64748B;}
+        .ia-rapidas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+        .ia-pregunta{background:#F1F5F9;border:1px solid #CBD5E1;border-radius:20px;padding:10px 16px;font-size:13px;cursor:pointer;transition:.2s;}
+        .ia-pregunta:hover{background:#E0F2FE;border-color:#0F2B48;}
+        .ia-fila{display:flex;gap:10px;}
+        .ia-fila input{flex:1;margin:0;}
+        .ia-enviar{background:linear-gradient(135deg,#0F2B48,#165DFF);color:white;border:none;border-radius:12px;padding:14px 20px;font-weight:700;cursor:pointer;white-space:nowrap;}
+        .mecanico-tarjeta{background:linear-gradient(135deg,#0F2B48,#165DFF);color:white;border-radius:16px;padding:20px;margin-bottom:16px;}
+        .mecanico-dato{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.2);}
+        .mecanico-dato:last-child{border-bottom:none;}
+        .obd2-busqueda{display:flex;gap:8px;margin-bottom:16px;}
+        .obd2-busqueda input{flex:1;margin:0;text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+        .obd2-resultado{background:#EFF6FF;border-left:4px solid #165DFF;padding:16px;border-radius:0 12px 12px 0;margin-bottom:16px;}
+        .obd2-codigo{font-size:22px;font-weight:900;color:#0F2B48;margin-bottom:8px;font-family:monospace;}
+        .obd2-titulo{font-weight:700;color:#1E40AF;margin-bottom:6px;}
+        .obd2-causas{background:#F8FAFC;padding:12px;border-radius:8px;margin:8px 0;}
+        .obd2-gravedad{display:inline-block;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;margin-bottom:10px;}
+        .gravedad-baja{background:#D1FAE5;color:#065F46;}
+        .gravedad-media{background:#FEF3C7;color:#92400E;}
+        .gravedad-alta{background:#FEE2E2;color:#B91C1C;}
+        .obd2-lista-codigos{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:12px;}
+        .obd2-codigo-item{background:#F1F5F9;padding:10px;border-radius:8px;text-align:center;cursor:pointer;font-weight:600;font-family:monospace;transition:.2s;}
+        .obd2-codigo-item:hover{background:#DBEAFE;}
+    </style>
 </head>
 <body>
 
-<div id="pantalla-login">
-  <div class="login-tarjeta">
-    <h2>💰 FINANZAS</h2>
-    <input id="usuario-nombre" placeholder="Tu nombre" autocomplete="username">
-    <button class="btn btn-principal" onclick="entrar()">Ingresar</button>
-    <button class="btn btn-secundario" onclick="cambiarUsuario()">Cambiar usuario</button>
-  </div>
+<textarea id="area-copiado" class="area-copiado"></textarea>
+
+<div id="pantalla-cliente">
+    <div class="cabecera">
+        <h1>AUTO REGINA</h1>
+        <div class="servicios">
+            <span>⚙️ Mecánica</span>
+            <span>⚡ Electricidad</span>
+            <span>🖥️ Inyección</span>
+        </div>
+    </div>
+
+    <div class="aviso">
+        <p>📞 <strong>ANTES DE PEDIR TU TURNO:</strong></p>
+        <p>1️⃣ Guardá: <span class="numero-grande">+54 9 2984 54-8329</span></p>
+        <p>2️⃣ Completá tus datos abajo 👇</p>
+        <p>3️⃣ Tocá el botón para copiar y mandalo por WhatsApp</p>
+    </div>
+
+    <div class="form-seccion">
+        <h2 style="text-align:center;">📅 Pedí tu Turno</h2>
+        <label>Fecha</label>
+        <input type="date" id="fecha">
+        <label>Horario</label>
+        <select id="horario">
+            <option value="">Seleccioná</option>
+            <option>Mañana — 09:00 a 12:00</option>
+            <option>Tarde — 15:00 a 18:00</option>
+        </select>
+        <label>Tu Nombre</label>
+        <input type="text" id="nombre" placeholder="Nombre y Apellido">
+        <label>Teléfono / WhatsApp</label>
+        <input type="tel" id="telefono" placeholder="2984 548329">
+        <label>Vehículo</label>
+        <input type="text" id="vehiculo" placeholder="Marca, modelo, año">
+        <label>Servicio</label>
+        <select id="servicio">
+            <option value="">Seleccioná</option>
+            <option>Mecánica General</option>
+            <option>Electricidad</option>
+            <option>Inyección Electrónica</option>
+            <option>Revisión / Mantenimiento</option>
+            <option>Cambio de aceite</option>
+            <option>Frenos / Embrague</option>
+            <option>Diagnóstico / Escaneo OBD2</option>
+            <option>Otros</option>
+        </select>
+        <button class="btn-principal" onclick="generarTurno()">✅ GENERAR TURNO</button>
+        <div id="caja-turno" class="oculto">
+            <div class="aviso-exito">✅ ¡Listo! Mensaje generado</div>
+            <div class="vista-previa" id="texto-turno"></div>
+            <button id="btn-copiar-turno" class="btn-copiar" onclick="copiarTurno()">📋 TOCÁ ACÁ PARA COPIAR</button>
+            <p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp y mandalo</p>
+        </div>
+    </div>
+
+    <button class="acceso-taller" onclick="abrirAcceso()">🔧 Acceso del Taller</button>
 </div>
 
-<div id="app" class="oculto">
-  <div class="nav">
-    <button class="nav-btn activo" data-pantalla="resumen" onclick="irA('resumen')">Resumen</button>
-    <button class="nav-btn" data-pantalla="emprendimiento" onclick="irA('emprendimiento')">Emprendimiento</button>
-    <button class="nav-btn" data-pantalla="casa" onclick="irA('casa')">Casa</button>
-    <button class="nav-btn" data-pantalla="calculadora" onclick="irA('calculadora')">Calculadora</button>
-  </div>
-
-  <div id="resumen" class="pantalla">
-    <div class="resumen-grid">
-      <div class="res-caja empr">
-        <h4>Emprendimiento</h4>
-        <div class="monto" id="res-empr">$0</div>
-      </div>
-      <div class="res-caja casa">
-        <h4>Casa</h4>
-        <div class="monto" id="res-casa">$0</div>
-      </div>
+<div class="modal" id="modal-acceso">
+    <div class="modal-caja">
+        <h3 style="text-align:center;color:#0F2B48;">🔧 ACCESO TALLER</h3>
+        <label>Contraseña</label>
+        <input type="password" id="clave" placeholder="Escribí la contraseña">
+        <button class="btn-ingresar" onclick="ingresar()">INGRESAR</button>
+        <button class="btn-volver" onclick="cerrarAcceso()">Volver</button>
+        <p class="error" id="error-clave">Contraseña incorrecta</p>
     </div>
+</div>
 
-    <div class="tarjeta">
-      <h3>🔥 Ofertas y Paquetes</h3>
-      <div class="grupo">
-        <label>Nombre de la oferta</label>
-        <input id="oferta-nombre" placeholder="ej: Sticker, Tarjeta...">
-      </div>
-      <div class="fila-doble grupo">
-        <div>
-          <label>Cantidad</label>
-          <input type="number" id="oferta-cantidad" min="1" placeholder="ej: 4">
+<div id="pantalla-taller" class="oculto">
+    <div class="cabecera">
+        <h1>AUTO REGINA — TALLER</h1>
+        <div class="servicios">
+            <span>⚙️ Mecánica</span>
+            <span>⚡ Electricidad</span>
+            <span>🖥️ Inyección</span>
         </div>
-        <div>
-          <label>Precio oferta $</label>
-          <input type="number" id="oferta-precio" placeholder="ej: 1000">
-        </div>
-      </div>
-      <button class="btn btn-oferta" style="width:auto" onclick="guardarOferta()">Agregar Oferta</button>
-      <div id="lista-ofertas" style="margin-top:14px">
-        <div class="sin-datos" style="padding:10px 0;font-size:13px">Sin ofertas cargadas</div>
-      </div>
     </div>
 
-    <div class="tarjeta">
-      <h3>📦 Productos / Servicios por Unidad</h3>
-      <div class="grupo">
-        <label>Nombre</label>
-        <input id="prod-u-nombre" placeholder="ej: Impresión A4, Sticker...">
-      </div>
-      <div class="fila-doble grupo">
-        <div>
-          <label>Precio por unidad</label>
-          <input type="number" id="prod-u-precio" placeholder="0">
-        </div>
-        <div>
-          <label>Stock</label>
-          <input type="number" id="prod-u-stock" placeholder="0">
-        </div>
-      </div>
-      <button class="btn btn-principal" style="width:auto" onclick="guardarProductoUnidad()">Agregar</button>
+    <div class="pestañas">
+        <button class="pestaña activa" onclick="mostrar('turnos')">📋 Turnos</button>
+        <button class="pestaña inactiva" onclick="mostrar('clientes')">👥 Clientes</button>
+        <button class="pestaña inactiva" onclick="mostrar('orden')">📝 Orden</button>
+        <button class="pestaña inactiva" onclick="mostrar('obd2')">🔍 OBD2</button>
+        <button class="pestaña inactiva" onclick="mostrar('mecanico')">🔧 Mecánico</button>
+        <button class="pestaña inactiva" onclick="mostrar('asistente')">🤖 IA</button>
+        <button class="pestaña salir" onclick="salir()">🚪 Salir</button>
     </div>
 
-    <div class="tarjeta">
-      <h3>⚖️ Productos por Kilo</h3>
-      <div class="grupo">
-        <label>Nombre</label>
-        <input id="prod-k-nombre" placeholder="ej: Masa, Producto...">
-      </div>
-      <div class="fila-triple grupo">
-        <div>
-          <label>½ kg</label>
-          <input type="number" id="prod-k-mediokg" placeholder="0">
-        </div>
-        <div>
-          <label>1 kg</label>
-          <input type="number" id="prod-k-1kg" placeholder="0">
-        </div>
-        <div>
-          <label>2 kg</label>
-          <input type="number" id="prod-k-2kg" placeholder="0">
-        </div>
-      </div>
-      <div class="grupo">
-        <label>Stock</label>
-        <input type="number" id="prod-k-stock" placeholder="0">
-      </div>
-      <button class="btn btn-principal" style="width:auto" onclick="guardarProductoKilo()">Agregar</button>
+    <div id="sec-turnos">
+        <h2>📋 Turnos Recibidos</h2>
+        <div id="lista-turnos"><p class="cargando">Cargando...</p></div>
     </div>
 
-    <div class="tarjeta">
-      <h3>🛒 Registrar Venta</h3>
-      <div class="grupo">
-        <label>Tipo de producto</label>
-        <select id="venta-tipo" onchange="cambiarTipoVenta()">
-          <option value="">Seleccionar tipo</option>
-          <option value="oferta">🔥 Oferta / Paquete</option>
-          <option value="unidad">📦 Por Unidad</option>
-          <option value="kilo">⚖️ Por Kilo</option>
-        </select>
-      </div>
-      
-      <div id="bloque-oferta" class="oculto">
-        <div class="grupo">
-          <label>Oferta</label>
-          <select id="venta-oferta" onchange="calcularTotalOferta()">
-            <option value="">Seleccionar oferta</option>
-          </select>
+    <div id="sec-clientes" class="oculto">
+        <h2>👥 Clientes</h2>
+        <div class="form-seccion">
+            <h3>Agregar Cliente</h3>
+            <label>Nombre *</label>
+            <input type="text" id="cli-nombre" placeholder="Nombre y Apellido">
+            <label>Teléfono *</label>
+            <input type="tel" id="cli-tel" placeholder="2984 548329">
+            <label>Vehículo</label>
+            <input type="text" id="cli-auto" placeholder="Marca, modelo, año">
+            <div class="fila">
+                <button class="btn-guardar" onclick="guardarCliente()">✅ GUARDAR</button>
+            </div>
         </div>
-        <div class="grupo">
-          <label>Total</label>
-          <input type="text" id="venta-o-total" value="$0" readonly style="font-weight:bold;background:#FFFBEB">
-        </div>
-      </div>
-      
-      <div id="bloque-unidad" class="oculto">
-        <div class="grupo">
-          <label>Producto / Servicio</label>
-          <select id="venta-u-producto" onchange="calcularTotalUnidad()">
-            <option value="">Seleccionar</option>
-          </select>
-        </div>
-        <div class="fila-doble grupo">
-          <div>
-            <label>Cantidad</label>
-            <input type="number" id="venta-u-cantidad" min="1" value="1" oninput="calcularTotalUnidad()">
-          </div>
-          <div>
-            <label>Total</label>
-            <input type="text" id="venta-u-total" value="$0" readonly style="font-weight:bold">
-          </div>
-        </div>
-      </div>
-      
-      <div id="bloque-kilo" class="oculto">
-        <div class="grupo">
-          <label>Producto</label>
-          <select id="venta-k-producto" onchange="calcularTotalKilo()">
-            <option value="">Seleccionar</option>
-          </select>
-        </div>
-        <div class="grupo">
-          <label>Formato</label>
-          <select id="venta-k-formato" onchange="calcularTotalKilo()">
-            <option value="">Elegir</option>
-            <option value="medio">½ kg</option>
-            <option value="uno">1 kg</option>
-            <option value="dos">2 kg</option>
-          </select>
-        </div>
-        <div class="grupo">
-          <label>Total</label>
-          <input type="text" id="venta-k-total" value="$0" readonly style="font-weight:bold">
-        </div>
-      </div>
-      
-      <div class="grupo">
-        <label>Cliente</label>
-        <input id="venta-cliente" placeholder="Nombre del cliente">
-      </div>
-      <button class="btn btn-verde btn-chico" onclick="registrarVenta()">✅ Registrar Venta</button>
+        <h3>📂 Lista de Clientes</h3>
+        <div id="lista-clientes"><p class="cargando">Cargando...</p></div>
     </div>
 
-    <div class="tarjeta">
-      <h3>📋 Historial de Ventas</h3>
-      <div id="lista-ventas"><div class="sin-datos">Sin ventas registradas</div></div>
+    <div id="sec-orden" class="oculto">
+        <h2>📝 Orden de Servicio</h2>
+        <div class="form-seccion">
+            <h3>Cliente — Seleccioná de la lista 👇</h3>
+            <select id="orden-cli" onchange="cargarCliente()">
+                <option value="">-- Elegir cliente --</option>
+            </select>
+            <h3>Vehículo</h3>
+            <div class="fila">
+                <div><label>Marca *</label><input type="text" id="marca"></div>
+                <div><label>Modelo</label><input type="text" id="modelo"></div>
+                <div><label>Patente</label><input type="text" id="placa"></div>
+            </div>
+            <div class="fila">
+                <div><label>Km</label><input type="text" id="km"></div>
+                <div><label>Fecha</label><input type="date" id="fecha-ingreso"></div>
+            </div>
+            <h3>Datos del Cliente</h3>
+            <div class="fila">
+                <div><label>Nombre *</label><input type="text" id="orden-nombre"></div>
+                <div><label>Teléfono *</label><input type="tel" id="orden-tel"></div>
+            </div>
+            <h3>Trabajos / Repuestos</h3>
+            <table class="tabla-trabajos">
+                <thead>
+                    <tr>
+                        <th style="width:15%;text-align:center;">Cant.</th>
+                        <th style="width:60%;">Descripción</th>
+                        <th style="width:25%;text-align:right;">Precio $</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla"></tbody>
+                <tfoot>
+                    <tr class="fila-total">
+                        <td colspan="3">TOTAL $ <span id="total">0</span></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <button class="btn-guardar" onclick="agregarFila()" style="width:100%;margin:10px 0;">➕ Agregar fila</button>
+            <h3>Códigos OBD2 detectados</h3>
+            <input type="text" id="codigos-obd" placeholder="Ej: P0300, P0171, P0420">
+            <h3>Observaciones</h3>
+            <textarea id="obs" rows="3"></textarea>
+            <button class="btn-principal" onclick="generarOrden()">✅ ARMAR ORDEN</button>
+        </div>
+        <div id="caja-orden" class="oculto">
+            <div class="vista-previa" id="texto-orden"></div>
+            <button id="btn-copiar-orden" class="btn-copiar" onclick="copiarOrden()">📋 COPIAR ORDEN</button>
+            <p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp y mandalo al cliente</p>
+        </div>
     </div>
-  </div>
 
-  <div id="emprendimiento" class="pantalla oculto">
-    <div class="tarjeta">
-      <h3>💵 Ingreso Manual</h3>
-      <div class="grupo">
-        <label>Concepto</label>
-        <input id="empr-ing-concepto" placeholder="ej: Venta">
-      </div>
-      <div class="grupo">
-        <label>Monto</label>
-        <input type="number" id="empr-ing-monto" placeholder="0">
-      </div>
-      <button class="btn btn-verde btn-chico" onclick="agregarMov('empr','ingreso')">Agregar Ingreso</button>
-    </div>
-    <div class="tarjeta">
-      <h3>📤 Gasto / Inversión</h3>
-      <div class="grupo">
-        <label>Concepto</label>
-        <input id="empr-egr-concepto" placeholder="ej: Materiales">
-      </div>
-      <div class="grupo">
-        <label>Monto</label>
-        <input type="number" id="empr-egr-monto" placeholder="0">
-      </div>
-      <button class="btn btn-rojo btn-chico" onclick="agregarMov('empr','egreso')">Agregar Egreso</button>
-    </div>
-    <div class="tarjeta">
-      <h3>Movimientos</h3>
-      <div id="lista-empr"><div class="sin-datos">Sin movimientos</div></div>
-    </div>
-  </div>
+    <div id="sec-obd2" class="oculto">
+        <h2>🔍 Diagnóstico OBD2 — Códigos de Fallas</h2>
+        <div class="form-seccion">
+            <h3>Buscar Código</h3>
+            <div class="obd2-busqueda">
+                <input type="text" id="codigo-obd" placeholder="Ej: P0300" oninput="formatearCodigo(this.value)">
+                <button class="btn-principal" style="width:auto;margin-top:0;padding:12px 20px;" onclick="buscarCodigo()">🔍 Buscar</button>
+            </div>
+            <p style="color:#64748B;font-size:13px;">Escribí el código completo (ej: P0123, B1234, C0456, U0100)</p>
+            
+            <div id="obd2-resultado" class="oculto"></div>
 
-  <div id="casa" class="pantalla oculto">
-    <div class="tarjeta">
-      <h3>💵 Ingreso</h3>
-      <div class="grupo">
-        <label>Concepto</label>
-        <input id="casa-ing-concepto" placeholder="ej: Sueldo">
-      </div>
-      <div class="grupo">
-        <label>Monto</label>
-        <input type="number" id="casa-ing-monto" placeholder="0">
-      </div>
-      <button class="btn btn-verde btn-chico" onclick="agregarMov('casa','ingreso')">Agregar Ingreso</button>
-    </div>
-    <div class="tarjeta">
-      <h3>📤 Gasto</h3>
-      <div class="grupo">
-        <label>Concepto</label>
-        <input id="casa-egr-concepto" placeholder="ej: Luz, Compras">
-      </div>
-      <div class="grupo">
-        <label>Monto</label>
-        <input type="number" id="casa-egr-monto" placeholder="0">
-      </div>
-      <button class="btn btn-rojo btn-chico" onclick="agregarMov('casa','egreso')">Agregar Gasto</button>
-    </div>
-    <div class="tarjeta">
-      <h3>Movimientos</h3>
-      <div id="lista-casa"><div class="sin-datos">Sin movimientos</div></div>
-    </div>
-  </div>
+            <h3>Códigos Comunes — Tocá para consultar</h3>
+            <div class="obd2-lista-codigos">
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0300')">P0300</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0301')">P0301</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0171')">P0171</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0172')">P0172</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0420')">P0420</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0442')">P0442</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0110')">P0110</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0120')">P0120</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0220')">P0220</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0335')">P0335</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0340')">P0340</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0455')">P0455</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0505')">P0505</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0130')">P0130</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0135')">P0135</div>
+            </div>
 
-  <div id="calculadora" class="pantalla oculto">
-    <div class="tarjeta">
-      <div class="calc-pantalla" id="calc-pant">0</div>
-      <div class="calc-botones">
-        <button class="cb limpiar" onclick="calcLimpiar()">C</button>
-        <button class="cb oper" onclick="calcPoner('(')">(</button>
-        <button class="cb oper" onclick="calcPoner(')')">)</button>
-        <button class="cb oper" onclick="calcPoner('/')">÷</button>
-        <button class="cb" onclick="calcPoner('7')">7</button>
-        <button class="cb" onclick="calcPoner('8')">8</button>
-        <button class="cb" onclick="calcPoner('9')">9</button>
-        <button class="cb oper" onclick="calcPoner('*')">×</button>
-        <button class="cb" onclick="calcPoner('4')">4</button>
-        <button class="cb" onclick="calcPoner('5')">5</button>
-        <button class="cb" onclick="calcPoner('6')">6</button>
-        <button class="cb oper" onclick="calcPoner('-')">−</button>
-        <button class="cb" onclick="calcPoner('1')">1</button>
-        <button class="cb" onclick="calcPoner('2')">2</button>
-        <button class="cb" onclick="calcPoner('3')">3</button>
-        <button class="cb oper" onclick="calcPoner('+')">+</button>
-        <button class="cb" onclick="calcPoner('0')">0</button>
-        <button class="cb" onclick="calcPoner('.')">.</button>
-        <button class="cb igual" onclick="calcIgual()">=</button>
-      </div>
-      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <button class="btn btn-verde" onclick="registrarCalc('empr','ingreso')">💰 Emprendimiento → Ingreso</button>
-        <button class="btn btn-rojo" onclick="registrarCalc('empr','egreso')">📤 Emprendimiento → Gasto</button>
-        <button class="btn btn-verde" onclick="registrarCalc('casa','ingreso')">🏠 Casa → Ingreso</button>
-        <button class="btn btn-rojo" onclick="registrarCalc('casa','egreso')">🏠 Casa → Gasto</button>
-      </div>
+            <h3 style="margin-top:24px;">📋 Clasificación de Códigos</h3>
+            <div style="background:#F8FAFC;padding:14px;border-radius:10px;line-height:1.8;">
+                <p><strong>P</strong> — Powertrain ➜ Motor, transmisión y emisiones</p>
+                <p><strong>B</strong> — Body ➜ Carrocería, aire acondicionado, bolsas de aire</p>
+                <p><strong>C</strong> — Chasis ➜ Frenos, dirección, suspensión</p>
+                <p><strong>U</strong> — Red ➜ Comunicación entre módulos</p>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="pie">
-    <span class="usuario" id="nombre-usuario"></span>
-    <button class="salir" onclick="salir()">Salir</button>
-  </div>
+    <div id="sec-mecanico" class="oculto">
+        <h2>🔧 Datos del Mecánico</h2>
+        <div class="form-seccion">
+            <h3>Editar Datos del Mecánico</h3>
+            <label>Nombre Completo</label>
+            <input type="text" id="mec-nombre" placeholder="Nombre y Apellido">
+            <label>Teléfono / WhatsApp</label>
+            <input type="tel" id="mec-tel" placeholder="2984 548329">
+            <label>DNI / CUIL</label>
+            <input type="text" id="mec-dni" placeholder="Número de documento">
+            <label>Especialidad</label>
+            <select id="mec-especialidad">
+                <option value="">Seleccioná</option>
+                <option>Mecánica General</option>
+                <option>Electricidad Automotriz</option>
+                <option>Inyección Electrónica</option>
+                <option>Diagnóstico Avanzado / OBD2</option>
+                <option>Jefe de Taller</option>
+            </select>
+            <div class="fila">
+                <button class="btn-guardar" onclick="guardarMecanico()">✅ GUARDAR DATOS</button>
+            </div>
+        </div>
+        <h3>👤 Mecánico que atiende</h3>
+        <div class="mecanico-tarjeta">
+            <div class="mecanico-dato"><strong>Nombre:</strong> <span id="vm-nombre">No cargado</span></div>
+            <div class="mecanico-dato"><strong>Teléfono:</strong> <span id="vm-tel">—</span></div>
+            <div class="mecanico-dato"><strong>DNI:</strong> <span id="vm-dni">—</span></div>
+            <div class="mecanico-dato"><strong>Especialidad:</strong> <span id="vm-esp">—</span></div>
+        </div>
+        <p style="color:#64748B;font-size:13px;margin-top:8px;">💡 Estos datos aparecen en las órdenes y turnos</p>
+    </div>
+
+    <div id="sec-asistente" class="oculto">
+        <h2>🤖 Asistente Técnico — IA</h2>
+        <div class="ia-rapidas">
+            <span class="ia-pregunta" onclick="pregRapida('Dame un resumen completo de mis turnos, clientes y facturación')">📊 Resumen del taller</span>
+            <span class="ia-pregunta" onclick="pregRapida('¿Qué revisar paso a paso si el motor no arranca en frío?')">🔧 No arranca</span>
+            <span class="ia-pregunta" onclick="pregRapida('Explicame cómo diagnosticar fallas en el sistema de inyección electrónica')">🖥️ Inyección</span>
+            <span class="ia-pregunta" onclick="pregRapida('Explicame detalladamente el código OBD2 que acabo de buscar y cómo solucionarlo')">🔍 Más sobre este código</span>
+            <span class="ia-pregunta" onclick="pregRapida('Guía para probar si la bobina de encendido funciona bien')">⚡ Bobina</span>
+            <span class="ia-pregunta" onclick="pregRapida('Cómo cambiar el aceite y filtros paso a paso')">🛢️ Cambio de aceite</span>
+        </div>
+        <div class="ia-mensajes" id="ia-chat">
+            <div class="ia-mensaje ia-asistente">🔧 ¡Hola! Conectado a tu proyecto <strong>AUTO REGINA</strong>. Preguntame sobre mecánica, diagnósticos OBD2 o gestión de tu taller.</div>
+        </div>
+        <div class="ia-fila">
+            <input type="text" id="ia-texto" placeholder="Escribí tu consulta..." onkeydown="if(event.key==='Enter')enviarIA()">
+            <button class="ia-enviar" onclick="enviarIA()">Enviar</button>
+        </div>
+    </div>
 </div>
 
 <script>
-let usuarioActivo = localStorage.getItem('finanzas_usuario') || '';
-let calcValor = '0';
+const CLAVE_CORRECTA = '1234';
+const NUMERO_WSP = '+54 9 2984 54-8329';
+const API_KEY = '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';
+let filaIndice = 0;
+let historialConversacion = [];
+let ultimoCodigoBuscado = '';
 
-function datos(){
-  const clave = 'finanzas_' + usuarioActivo;
-  let d = JSON.parse(localStorage.getItem(clave) || '{}');
-  if(!d.ofertas) d={
-    ofertas:[],
-    productosUnidad:[],
-    productosKilo:[],
-    ventas:[],
-    empr:{ingresos:[],egresos:[]},
-    casa:{ingresos:[],egresos:[]}
-  };
-  return d;
-}
-function guardar(d){
-  localStorage.setItem('finanzas_' + usuarioActivo, JSON.stringify(d));
+// BASE DE DATOS DE CÓDIGOS OBD2
+const baseOBD = {
+    'P0300': {
+        titulo: 'Detección de falla aleatoria en la combustión',
+        descripcion: 'El módulo de control detecta que varios cilindros están fallando al azar. No se especifica cuál falla.',
+        gravedad: 'media',
+        causas: [
+            'Bujías desgastadas o mal calibradas',
+            'Cables de bujía en mal estado',
+            'Bobina de encendido defectuosa',
+            'Fuga de vacío en la admisión',
+            'Filtro de combustible tapado',
+            'Bomba de combustible con baja presión'
+        ],
+        solucion: [
+            'Revisar y calibrar/reemplazar bujías',
+            'Verificar bobinas y cables de encendido',
+            'Buscar fugas de vacío con motor encendido',
+            'Medir presión de combustible',
+            'Escaneo más detallado para identificar cilindros específicos'
+        ]
+    },
+    'P0301': {
+        titulo: 'Falla en la combustión — Cilindro 1',
+        descripcion: 'El cilindro N°1 no está quemando correctamente la mezcla aire-combustible.',
+        gravedad: 'alta',
+        causas: [
+            'Bujía del cilindro 1 dañada o sucia',
+            'Bobina de encendido del cilindro 1 defectuosa',
+            'Inyector obstruido o dañado',
+            'Pérdida de compresión (válvulas, anillos)',
+            'Fuga en la junta de tapa de cilindro'
+        ],
+        solucion: [
+            'Intercambiar bujía y bobina con otro cilindro para confirmar',
+            'Limpiar o reemplazar inyector',
+            'Medir compresión del cilindro',
+            'Verificar si hay agua en el radiador sin burbujas'
+        ]
+    },
+    'P0302': { titulo: 'Falla en la combustión — Cilindro 2', descripcion: 'Igual que P0301 pero en el cilindro N°2.', gravedad: 'alta', causas: ['Bujía N°2', 'Bobina N°2', 'Inyector N°2', 'Compresión'], solucion: ['Intercambiar piezas con cilindro vecino', 'Medir compresión', 'Revisar inyector'] },
+    'P0303': { titulo: 'Falla en la combustión — Cilindro 3', descripcion: 'Igual que P0301 pero en el cilindro N°3.', gravedad: 'alta', causas: ['Bujía N°3', 'Bobina N°3', 'Inyector N°3', 'Compresión'], solucion: ['Intercambiar piezas', 'Medir compresión', 'Revisar inyector'] },
+    'P0304': { titulo: 'Falla en la combustión — Cilindro 4', descripcion: 'Igual que P0301 pero en el cilindro N°4.', gravedad: 'alta', causas: ['Bujía N°4', 'Bobina N°4', 'Inyector N°4', 'Compresión'], solucion: ['Intercambiar piezas', 'Medir compresión', 'Revisar inyector'] },
+    'P0171': {
+        titulo: 'Mezcla demasiado pobre — Banco 1',
+        descripcion: 'Hay exceso de aire o falta de combustible en el banco 1. El motor recibe más aire del necesario por cada litro de combustible.',
+        gravedad: 'media',
+        causas: [
+            'Fuga de vacío en la admisión',
+            'Sensor MAF sucio o defectuoso',
+            'Bomba de combustible con baja presión',
+            'Filtro de combustible tapado',
+            'Regulador de presión defectuoso',
+            'Inyectores sucios'
+        ],
+        solucion: [
+            'Buscar fugas de vacío con spray o agua jabonosa',
+            'Limpiar sensor MAF con producto específico',
+            'Medir presión de combustible en riel',
+            'Reemplazar filtro de combustible',
+            'Revisar sellos de admisión'
+        ]
+    },
+    'P0172': {
+        titulo: 'Mezcla demasiado rica — Banco 1',
+        descripcion: 'Hay exceso de combustible o falta de aire. El motor gasta más combustible de lo normal y puede oler a nafta.',
+        gravedad: 'media',
+        causas: [
+            'Sensor de temperatura del refrigerante defectuoso',
+            'Inyectores goteando o abiertos',
+            'Regulador de presión trabado',
+            'Sensor de oxígeno (sonda lambda) contaminado',
+            'Filtro de aire muy sucio'
+        ],
+        solucion: [
+            'Revisar lectura de temperatura en escáner',
+            'Verificar si inyectores gotean con motor apagado',
+            'Desconectar manguita del regulador y mirar si pasa nafta',
+            'Reemplazar filtro de aire',
+            'Revisar sonda lambda'
+        ]
+    },
+    'P0420': {
+        titulo: 'Eficiencia del catalizador por debajo del umbral — Banco 1',
+        descripcion: 'El convertidor catalítico no está limpiando bien los gases. Puede estar dañado, tapado o roto por dentro.',
+        gravedad: 'media',
+        causas: [
+            'Catalizador obstruido o fundido',
+            'Sonda lambda antes o después del catalizador defectuosa',
+            'Fugas en el escape antes del catalizador',
+            'Uso prolongado de combustible de mala calidad'
+        ],
+        solucion: [
+            'Revisar si el escape suena hueco o hace ruido de piedras',
+            'Comprobar lecturas de ambas sondas lambda',
+            'Verificar que no haya fugas en tubería de escape',
+            'Reemplazar catalizador si está dañado'
+        ]
+    },
+    'P0442': {
+        titulo: 'Fuga pequeña en el sistema de evaporación de combustible',
+        descripcion: 'Se detectó una fuga pequeña en el circuito de vapores de nafta. No afecta el manejo pero contamina y puede oler a combustible.',
+        gravedad: 'baja',
+        causas: [
+            'Tapa de combustible mal cerrada o rota',
+            'Mangueras de vapores agrietadas',
+            'Válvula de purga trabada',
+            'Sellos del tanque envejecidos'
+        ],
+        solucion: [
+            'Apretar y cerrar bien la tapa de nafta',
+            'Revisar si la junta de la tapa está rota',
+            'Inspeccionar mangueras cerca del tanque',
+            'Borrar código y observar si vuelve a aparecer'
+        ]
+    },
+    'P0455': { titulo: 'Fuga grande en sistema de evaporación', descripcion: 'Fuga importante de vapores de combustible.', gravedad: 'alta', causas: ['Tapa de combustible faltante', 'Manguera desconectada o rota', 'Tanque con fisura'], solucion: ['Revisar tapa inmediatamente', 'Buscar mangueras desconectadas', 'Inspeccionar tanque'] },
+    'P0110': { titulo: 'Circuito del sensor de temperatura del aire de admisión', descripcion: 'El sensor que mide la temperatura del aire que entra al motor no envía señal correcta.', gravedad: 'media', causas: ['Conector suelto', 'Cable cortado', 'Sensor quemado'], solucion: ['Revisar conexión y cables', 'Medir resistencia del sensor', 'Reemplazar sensor si no cambia valor'] },
+    'P0120': { titulo: 'Circuito del sensor de posición de la mariposa TPS', descripcion: 'El sensor que indica cuánto pisás el acelerador falla. El motor puede acelerar solo o no responder.', gravedad: 'alta', causas: ['Conector sucio o flojo', 'Cable dañado', 'Sensor descalibrado o roto'], solucion: ['Limpiar conector con contacto', 'Revisar recorrido del cable', 'Reemplazar sensor y calibrar'] },
+    'P0335': { titulo: 'Sin señal del sensor de posición del cigüeñal', descripcion: 'La computadora no sabe en qué posición está el motor. Puede no arrancar o apagarse de golpe.', gravedad: 'alta', causas: ['Sensor dañado', 'Cable cortado o interferido', 'Distancia incorrecta al volante motor'], solucion: ['Revisar conexión cerca de la caja', 'Medir resistencia del sensor', 'Verificar que no haya metales cerca'] },
+    'P0340': { titulo: 'Sin señal del sensor de posición del árbol de levas', descripcion: 'No se detecta la posición de las válvulas. El motor puede arrancar difícil o fallar la inyección.', gravedad: 'media', causas: ['Sensor sucio o dañado', 'Cable roto', 'Correa de distribución mal puesta'], solucion: ['Limpiar sensor y conexión', 'Verificar sincronización de distribución', 'Reemplazar sensor'] },
+    'P0505': { titulo: 'Falla en el sistema de control de ralentí', descripcion: 'El motor no mantiene bien las revoluciones en vacío, sube y baja solo o se apaga.', gravedad: 'media', causas: ['Válvula de paso de aire sucia o trabada', 'Cuerpo de mariposa sucio', 'Fuga de vacío'], solucion: ['Limpiar válvula IAC y cuerpo de mariposa', 'Reaprender ralentí con escáner', 'Buscar fugas de vacío'] },
+    'P0130': { titulo: 'Circuito de la sonda lambda — Banco 1 Sensor 1', descripcion: 'La sonda que mide la mezcla antes del catalizador no responde bien.', gravedad: 'media', causas: ['Cable cortado o quemado', 'Sensor envejecido', 'Fuga de escape cerca del sensor'], solucion: ['Revisar cables cerca del colector', 'Medir resistencia', 'Reemplazar sonda'] },
+    'P0135': { titulo: 'Falla en el circuito de calentamiento de la sonda lambda', descripcion: 'La resistencia que calienta la sonda para que funcione rápido al arrancar está quemada.', gravedad: 'baja', causas: ['Sensor viejo', 'Corte en cable de alimentación'], solucion: ['Reemplazar sonda completa', 'Revisar fusible de calentamiento'] }
+};
+
+function formatearCodigo(valor) {
+    document.getElementById('codigo-obd').value = valor.toUpperCase().replace(/[^PBUC0-9]/g, '');
 }
 
-function entrar(){
-  const nom=document.getElementById('usuario-nombre').value.trim();
-  if(!nom) return alert('Escribe tu nombre');
-  usuarioActivo=nom;
-  localStorage.setItem('finanzas_usuario',nom);
-  document.getElementById('pantalla-login').classList.add('oculto');
-  document.getElementById('app').classList.remove('oculto');
-  document.getElementById('nombre-usuario').textContent=nom;
-  actualizarTodo();
-}
-function cambiarUsuario(){ localStorage.removeItem('finanzas_usuario'); document.getElementById('usuario-nombre').value=''; }
-function salir(){
-  usuarioActivo=''; localStorage.removeItem('finanzas_usuario');
-  document.getElementById('app').classList.add('oculto');
-  document.getElementById('pantalla-login').classList.remove('oculto');
-}
-if(usuarioActivo){ document.getElementById('usuario-nombre').value=usuarioActivo; entrar(); }
-
-function irA(id){
-  document.querySelectorAll('.pantalla').forEach(p=>p.classList.add('oculto'));
-  document.getElementById(id).classList.remove('oculto');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('activo'));
-  document.querySelector(`[data-pantalla="${id}"]`).classList.add('activo');
+function buscarCodigoDirecto(cod) {
+    document.getElementById('codigo-obd').value = cod;
+    buscarCodigo();
 }
 
-function cambiarTipoVenta(){
-  const t=document.getElementById('venta-tipo').value;
-  document.getElementById('bloque-oferta').classList.toggle('oculto', t!=='oferta');
-  document.getElementById('bloque-unidad').classList.toggle('oculto', t!=='unidad');
-  document.getElementById('bloque-kilo').classList.toggle('oculto', t!=='kilo');
+function buscarCodigo() {
+    const cod = document.getElementById('codigo-obd').value.trim().toUpperCase();
+    if (!cod) { alert('Escribí un código'); return; }
+    ultimoCodigoBuscado = cod;
+    const resDiv = document.getElementById('obd2-resultado');
+    
+    if (baseOBD[cod]) {
+        const d = baseOBD[cod];
+        resDiv.innerHTML = `
+            <div class="obd2-resultado">
+                <div class="obd2-codigo">${cod}</div>
+                <span class="obd2-gravedad gravedad-${d.gravedad}">${d.gravedad === 'baja' ? '🟢 Leve' : d.gravedad === 'media' ? '🟡 Media' : '🔴 Grave'}</span>
+                <h4 class="obd2-titulo">${d.titulo}</h4>
+                <p class="obd2-explicacion">${d.descripcion}</p>
+                <div class="obd2-causas">
+                    <h4>🔍 Posibles Causas</h4>
+                    <ul style="margin:8px 0 8px 20px;line-height:1.7;">
+                        ${d.causas.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                </div>
+                <div style="margin-top:12px;">
+                    <h4>✅ Pasos para Solucionar</h4>
+                    <ol style="margin:8px 0 8px 20px;line-height:1.8;">
+                        ${d.solucion.map(s => `<li>${s}</li>`).join('')}
+                    </ol>
+                </div>
+                <button class="btn-copiar" style="margin-top:16px;" onclick="copiarInfoCodigo('${cod}')">📋 Copiar información para la orden</button>
+            </div>
+        `;
+        resDiv.classList.remove('oculto');
+    } else {
+        resDiv.innerHTML = `
+            <div class="obd2-resultado" style="border-color:#EF4444;background:#FEF2F2;">
+                <div class="obd2-codigo">${cod}</div>
+                <p>ℹ️ Código no encontrado en la base local.</p>
+                <p style="margin-top:8px;">Tocá <strong>"Más sobre este código"</strong> en el Asistente IA para obtener explicación detallada.</p>
+                <button class="btn-principal" style="margin-top:12px;" onclick="preguntarIA('${cod}')">🤖 Consultar a la IA</button>
+            </div>
+        `;
+        resDiv.classList.remove('oculto');
+    }
 }
 
-function guardarOferta(){
-  const d=datos();
-  const nom=document.getElementById('oferta-nombre').value.trim();
-  const cant=Number(document.getElementById('oferta-cantidad').value);
-  const precio=Number(document.getElementById('oferta-precio').value);
-  if(!nom || !cant || !precio) return alert('Completa todos los datos');
-  d.ofertas.push({id:Date.now(), nombre:nom, cantidad:cant, precio:precio});
-  guardar(d);
-  document.getElementById('oferta-nombre').value='';
-  document.getElementById('oferta-cantidad').value='';
-  document.getElementById('oferta-precio').value='';
-  cargarOfertas();
-  alert('✅ Oferta guardada');
+function copiarInfoCodigo(cod) {
+    const d = baseOBD[cod];
+    const texto = `CÓDIGO OBD2: ${cod}
+━━━━━━━━━━━━━━━━━━━━
+${d.titulo}
+Gravedad: ${d.gravedad.toUpperCase()}
+
+${d.descripcion}
+
+POSIBLES CAUSAS:
+• ${d.causas.join('\n• ')}
+
+SOLUCIÓN:
+• ${d.solucion.join('\n• ')}
+`;
+    const campoCodigos = document.getElementById('codigos-obd');
+    campoCodigos.value = campoCodigos.value ? `${campoCodigos.value}, ${cod}` : cod;
+    alert(`✅ Código ${cod} agregado a la orden`);
 }
-function cargarOfertas(){
-  const d=datos();
-  const lista=document.getElementById('lista-ofertas');
-  const sel=document.getElementById('venta-oferta');
+
+function preguntarIA(cod) {
+    mostrar('asistente');
+    document.getElementById('ia-texto').value = `Explicame detalladamente el código OBD2 ${cod}: qué significa, qué partes del vehículo afecta, qué revisar paso a paso y cómo solucionarlo. Dame información técnica completa y práctica para el mecánico.`;
+}
+
+// --- FIN PARTE 1 ---
+async function asegurarCliente(nombre, telefono, vehiculo) {
+    const { collection, query, where, getDocs, addDoc, updateDoc, doc, serverTimestamp } = Firestore;
+    const q = query(collection(db, 'clientes'), where('telefono', '==', telefono));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+        await addDoc(collection(db, 'clientes'), {nombre, telefono, vehiculo: vehiculo || '', creado: serverTimestamp()});
+    } else {
+        const docRef = snap.docs[0].ref;
+        const datos = snap.docs[0].data();
+        if (datos.nombre !== nombre || datos.vehiculo !== vehiculo) {
+            await updateDoc(docRef, {nombre, vehiculo: vehiculo || '', actualizado: serverTimestamp()});
+        }
+    }
+}
+
+async function guardarMecanico() {
+    const { doc, setDoc } = Firestore;
+    const nombre = document.getElementById('mec-nombre').value.trim();
+    const tel = document
   
-  if(!d.ofertas.length){
-    lista.innerHTML='<div class="sin-datos" style="padding:10px 0;font-size:13px">Sin ofertas cargadas</div>';
-  }else{
-    lista.innerHTML=d.ofertas.map(o=>`
-      <div class="oferta-item">
-        <div class="oferta-titulo">${o.nombre}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span>${o.cantidad} unidades → $${o.precio.toLocaleString()}</span>
-          <button class="btn-chico btn-rojo" style="padding:4px 8px;font-size:12px" onclick="eliminarOferta(${o.id})">✕</button>
-        </div>
-      </div>`).join('');
-  }
-  
-  sel.innerHTML='<option value="">Seleccionar oferta</option>';
-  d.ofertas.forEach(o=>{
-    const op=document.createElement('option');
-    op.value=o.id; op.textContent=`${o.nombre} — ${o.cantidad}x = $${o.precio.toLocaleString()}`;
-    sel.appendChild(op);
-  });
-}
-function eliminarOferta(id){
-  if(!confirm('¿Eliminar esta oferta?'))return;
-  const d=datos();
-  d.ofertas=d.ofertas.filter(x=>x.id!==id);
-  guardar(d); cargarOfertas();
-}
-function calcularTotalOferta(){
-  const oid=Number(document.getElementById('venta-oferta').value);
-  const o=datos().ofertas.find(x=>x.id===oid);
-  document.getElementById('venta-o-total').value=o ? '$'+o.precio.toLocaleString() : '$0';
-}
-
-function guardarProductoUnidad(){
-  const d=datos();
-  const nom=document.getElementById('prod-u-nombre').value.trim();
-  const precio=Number(document.getElementById('prod-u-precio').value)||0;
-  if(!nom || !precio) return alert('Nombre y precio son obligatorios');
-  d.productosUnidad.push({
-    id:Date.now(), nombre:nom, precio:precio, stock:Number(document.getElementById('prod-u-stock').value)||0
-  });
-  guardar(d);
-  document.getElementById('prod-u-nombre').value='';
-  document.getElementById('prod-u-precio').value='';
-  document.getElementById('prod-u-stock').value='';
-  cargarSelectUnidad();
-  alert('✅ Producto por unidad guardado');
-}
-function cargarSelectUnidad(){
-  const sel=document.getElementById('venta-u-producto');
-  sel.innerHTML='<option value="">Seleccionar</option>';
-  datos().productosUnidad.forEach(p=>{
-    const o=document.createElement('option');
-    o.value=p.id; o.textContent=`${p.nombre} - $${p.precio.toLocaleString()}`;
-    sel.appendChild(o);
-  });
-}
-function calcularTotalUnidad(){
-  const pid=Number(document.getElementById('venta-u-producto').value);
-  const cant=Number(document.getElementById('venta-u-cantidad').value)||1;
-  const p=datos().productosUnidad.find(x=>x.id===pid);
-  document.getElementById('venta-u-total').value=p ? '$'+(p.precio*cant).toLocaleString() : '$0';
-}
-
-function guardarProductoKilo(){
-  const d=datos();
-  const nom=document.getElementById('prod-k-nombre').value.trim();
-  if(!nom) return alert('Escribe el nombre');
-  d.productosKilo.push({
-    id:Date.now(), nombre:nom,
-    medio:Number(document.getElementById('prod-k-mediokg').value)||0,
-    uno:Number(document.getElementById('prod-k-1kg').value)||0,
-    dos:Number(document.getElementById('prod-k-2kg').value)||0,
-    stock:Number(document.getElementById('prod-k-stock').value)||0
-  });
-  guardar(d);
-  document.getElementById('prod-k-nombre').value='';
-  document.getElementById('prod-k-mediokg').value='';
-  document.getElementById('prod-k-1kg').value='';
-  document.getElementById('prod-k-2kg').value='';
-  document.getElementById('prod-k-stock').value='';
-  cargarSelectKilo();
-  alert('✅ Producto por kilo guardado');
-}
-function cargarSelectKilo(){
-  const sel=document.getElementById('venta-k-producto');
-  sel.innerHTML='<option value="">Seleccionar</option>';
-  datos().productosKilo.forEach(p=>{
-    const o=document.createElement('option');
-    o.value=p.id; o.textContent=p.nombre; sel.appendChild(o);
-  });
-}
-function calcularTotalKilo(){
-  const pid=Number(document.getElementById('venta-k-producto').value);
-  const fmt=document.getElementById('venta-k-formato').value;
-  const p=datos().productosKilo.find(x=>x.id===pid);
-  let monto=0;
-  if(p && fmt==='medio') monto=p.medio;
-  if(p && fmt==='uno') monto=p.uno;
-  if(p && fmt==='dos') monto=p.dos;
-  document.getElementById('venta-k-total').value='$'+monto.toLocaleString();
-}
-
-function registrarVenta(){
-  const tipo=document.getElementById('venta-tipo').value;
-  const cliente=document.getElementById('venta-cliente').value.trim()||'Sin nombre';
-  const d=datos();
-  let montoVenta=0;
-  let nombreVenta='';
-  
-  if(tipo==='oferta'){
-    const oid=Number(document.getElementById('venta-oferta').value);
-    const o=d.ofertas.find(x=>x.id===oid);
-    if(!o) return alert('Selecciona una oferta');
-    montoVenta=o.precio;
-    nombreVenta=`${o.nombre} — ${o.cantidad} unidades`;
-    d.ventas.unshift({
-      id:Date.now(), tipo:'oferta', nombre:o.nombre, cantidad:o.cantidad, monto:o.precio, cliente,
-      fecha:new Date().toLocaleString('es-AR'), pagado:false, metodo:''
-    });
-  }else if(tipo==='unidad'){
-    const pid=Number(document.getElementById('venta-u-producto').value);
-    const cant=Number(document.getElementById('venta-u-cantidad').value)||1;
-    const p=d.productosUnidad.find(x=>x.id===pid);
-    if(!p) return alert('Selecciona un producto');
-    montoVenta=p.precio*cant;
-    nombreVenta=`${p.nombre} × ${cant} unid.`;
-    d.ventas.unshift({
-      id:Date.now(), tipo:'unidad', nombre:p.nombre, cantidad:cant, monto:montoVenta, cliente,
-      fecha:new Date().toLocaleString('es-AR'), pagado:false, metodo:''
-    });
-  }else if(tipo==='kilo'){
-    const pid=Number(document.getElementById('venta-k-producto').value);
-    const fmt=document.getElementById('venta-k-formato').value;
-    const p=d.productosKilo.find(x=>x.id===pid);
-    if(!p || !fmt) return alert('Completa todos los datos');
-    let fmtTexto='';
-    if(fmt==='medio'){ montoVenta=p.medio; fmtTexto='½ kg'; }
-    if(fmt==='uno'){ montoVenta=p.uno; fmtTexto='1 kg'; }
-    if(fmt==='dos'){ montoVenta=p.dos; fmtTexto='2 kg'; }
-    nombreVenta=`${p.nombre} — ${fmtTexto}`;
-    d.ventas.unshift({
-      id:Date.now(), tipo:'kilo', nombre:p.nombre, formato:fmt, monto:montoVenta, cliente,
-      fecha:new Date().toLocaleString('es-AR'), pagado:false, metodo:''
-    });
-  }else{
-    return alert('Elige tipo de producto');
-  }
-  
-  // ✅ Agrega automáticamente a los ingresos del emprendimiento
-  d.empr.ingresos.unshift({
-    id:Date.now(),
-    concepto:`Venta: ${nombreVenta} — Cliente: ${cliente}`,
-    monto:montoVenta,
-    fecha:new Date().toLocaleString('es-AR'),
-    fuente:'venta'
-  });
-  
-  guardar(d);
-  document.getElementById('venta-tipo').value='';
-  document.getElementById('venta-cliente').value='';
-  cambiarTipoVenta();
-  actualizarTodo();
-  alert('✅ Venta registrada y cargada en Emprendimiento');
-}
-function togglePagado(id){
-  const d=datos();
-  const v=d.ventas.find(x=>x.id===id);
-  v.pagado=!v.pagado;
-  if(v.pagado){
-    let m=(prompt('¿Efectivo o transferencia?')||'').trim().toLowerCase();
-    v.metodo=m.includes('efec')?'efectivo':'transferencia';
-  }else{v.metodo='';}
-  guardar(d); actualizarTodo();
-}
-function eliminarVenta(id){
-  if(!confirm('¿Eliminar esta venta?'))return;
-  const d=datos();
-  d.ventas=d.ventas.filter(x=>x.id!==id);
-  // Opcional: también eliminar el ingreso correspondiente
-  guardar(d); actualizarTodo();
-}
-
-function agregarMov(area,tipo){
-  const c=document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-concepto`).value.trim();
-  const m=Number(document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-monto`).value);
-  if(!c || !m) return alert('Completa datos');
-  const d=datos();
-  d[area][tipo+'s'].unshift({id:Date.now(), concepto:c, monto:m, fecha:new Date().toLocaleString('es-AR')});
-  guardar(d);
-  document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-concepto`).value='';
-  document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-monto`).value='';
-  actualizarTodo();
-}
-function eliminarMov(area,tipo,id){
-  if(!confirm('¿Eliminar?'))return;
-  const d=datos(); d[area][tipo+'s']=d[area][tipo+'s'].filter(x=>x.id!==id); guardar(d); actualizarTodo();
-}
-
-function calcPoner(v){ if(calcValor==='0' && !isNaN(Number(v)) && v!=='.') calcValor=''; calcValor+=v; document.getElementById('calc-pant').textContent=calcValor; }
-function calcLimpiar(){ calcValor='0'; document.getElementById('calc-pant').textContent='0'; }
-function calcIgual(){try{calcValor=String(eval(calcValor));document.getElementById('calc-pant').textContent=calcValor;}catch{alert('Error');calcLimpiar();}}
-function registrarCalc(area,tipo){
-  const m=Number(calcValor); if(!m)return alert('Calcula primero');
-  const d=datos();
-  d[area][tipo+'s'].unshift({id:Date.now(), concepto:'Calculadora — '+new Date().toLocaleDateString('es-AR'), monto:m, fecha:new Date().toLocaleString('es-AR')});
-  guardar(d); actualizarTodo(); alert('✅ Registrado');
-}
-
-function actualizarTodo(){
-  cargarOfertas(); cargarSelectUnidad(); cargarSelectKilo();
-  const d=datos();
-  
-  const sEmpr=d.empr.ingresos.reduce((a,b)=>a+b.monto,0)-d.empr.egresos.reduce((a,b)=>a+b.monto,0);
-  const sCasa=d.casa.ingresos.reduce((a,b)=>a+b.monto,0)-d.casa.egresos.reduce((a,b)=>a+b.monto,0);
-  document.getElementById('res-empr').textContent='$'+sEmpr.toLocaleString();
-  document.getElementById('res-casa').textContent='$'+sCasa.toLocaleString();
-  
-  const lv=document.getElementById('lista-ventas');
-  if(!d.ventas.length){lv.innerHTML='<div class="sin-datos">Sin ventas</div>';}
-  else{
-    lv.innerHTML=d.ventas.map(v=>{
-      let detalle='', etiquetaTipo='';
-      if(v.tipo==='oferta'){
-        detalle=`🔥 ${v.nombre} — ${v.cantidad} unidades`;
-        etiquetaTipo='<span class="etiqueta et-oferta">OFERTA</span>';
-      }else if(v.tipo==='unidad'){
-        detalle=`${v.nombre} × ${v.cantidad} unid.`;
-        etiquetaTipo='<span class="etiqueta et-unidad">Unidad</span>';
-      }else{
-        const fmtTexto={medio:'½ kg',uno:'1 kg',dos:'2 kg'}[v.formato];
-        detalle=`${v.nombre} — ${fmtTexto}`;
-        etiquetaTipo='<span class="etiqueta et-kilo">Kilo</span>';
-      }
-      return `
-      <div class="lista-item">
-        <div>
-          <div><strong>${detalle}</strong> ${etiquetaTipo}</div>
-          <div style="font-size:13px;color:var(--textoSuave)">Cliente: ${v.cliente} | ${v.fecha}</div>
-          <div style="font-weight:700">$${v.monto.toLocaleString()}</div>
-          <span class="etiqueta ${v.pagado?'et-pagado':'et-no'}">${v.pagado?'Pagado':'No pagado'}</span>
-          ${v.pagado?`<span class="etiqueta ${v.metodo==='efectivo'?'et-efectivo':'et-transf'}">${v.metodo}</span>`:''}
-        </div>
-        <div class="item-acciones">
-          <button class="btn-chico ${v.pagado?'btn-amarillo':'btn-verde'}" onclick="togglePagado(${v.id})">${v.pagado?'Cambiar':'Pagar'}</button>
-          <button class="btn-chico btn-rojo" onclick="eliminarVenta(${v.id})">✕</button>
-        </div>
-      </div>`;
-    }).join('');
-  }
-  
-  ['empr','casa'].forEach(area=>{
-    const lista=document.getElementById(`lista-${area}`);
-    const ing=d[area].ingresos, eg=d[area].egresos;
-    if(!ing.length && !eg.length){lista.innerHTML='<div class="sin-datos">Sin movimientos</div>';return;}
-    let html='';
-    ing.forEach(m=>{
-      const etiquetaFuente = m.fuente==='venta' ? '<span class="etiqueta et-oferta" style="font-size:10px">VENTA</span>' : '';
-      html+=`<div class="lista-item"><div><div style="color:var(--exito)">⬆ INGRESO ${etiquetaFuente}</div><strong>${m.concepto}</strong><div style="font-size:12px;color:var(--textoSuave)">${m.fecha}</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--exito)">+$${m.monto.toLocaleString()}</div><button class="btn-chico btn-rojo" onclick="eliminarMov('${area}','ingreso',${m.id})">✕</button></div></div>`;
-    });
-    eg.forEach(m=>html+=`<div class="lista-item"><div><div style="color:var(--alerta)">⬇ EGRESO</div><strong>${m.concepto}</strong><div style="font-size:12px;color:var(--textoSuave)">${m.fecha}</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--alerta)">-$${m.monto.toLocaleString()}</div><button class="btn-chico btn-rojo" onclick="eliminarMov('${area}','egreso',${m.id})">✕</button></div></div>`);
-    lista.innerHTML=html;
-  });
-}
-</script>
-</body>
-</html>
