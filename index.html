@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUTO REGINA — Turnos y Servicios</title>
+    <title>AUTO REGINA — Turnos, OBD2 y Servicios</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
         import { 
@@ -51,6 +51,7 @@
         .btn-principal{width:100%;background:#0F2B48;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:800;margin-top:20px;cursor:pointer;}
         .btn-copiar{width:100%;background:#10B981;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:700;margin-top:16px;cursor:pointer;transition:all .2s;}
         .btn-copiar:active{transform:scale(.98);}
+        .btn-copiado{background:#059669 !important;}
         .btn-chico{padding:8px 12px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin:4px;}
         .btn-guardar{background:#10B981;color:white;}
         .btn-eliminar{background:#FEE2E2;color:#B91C1C;}
@@ -113,6 +114,7 @@
 
 <textarea id="area-copiado" class="area-copiado"></textarea>
 
+<!-- PANTALLA DEL CLIENTE -->
 <div id="pantalla-cliente">
     <div class="cabecera">
         <h1>AUTO REGINA</h1>
@@ -170,6 +172,7 @@
     <button class="acceso-taller" onclick="abrirAcceso()">🔧 Acceso del Taller</button>
 </div>
 
+<!-- MODAL CONTRASEÑA -->
 <div class="modal" id="modal-acceso">
     <div class="modal-caja">
         <h3 style="text-align:center;color:#0F2B48;">🔧 ACCESO TALLER</h3>
@@ -181,6 +184,7 @@
     </div>
 </div>
 
+<!-- PANTALLA DEL TALLER -->
 <div id="pantalla-taller" class="oculto">
     <div class="cabecera">
         <h1>AUTO REGINA — TALLER</h1>
@@ -201,11 +205,13 @@
         <button class="pestaña salir" onclick="salir()">🚪 Salir</button>
     </div>
 
+    <!-- TURNOS -->
     <div id="sec-turnos">
         <h2>📋 Turnos Recibidos</h2>
         <div id="lista-turnos"><p class="cargando">Cargando...</p></div>
     </div>
 
+    <!-- CLIENTES -->
     <div id="sec-clientes" class="oculto">
         <h2>👥 Clientes</h2>
         <div class="form-seccion">
@@ -224,6 +230,7 @@
         <div id="lista-clientes"><p class="cargando">Cargando...</p></div>
     </div>
 
+    <!-- ORDEN DE SERVICIO -->
     <div id="sec-orden" class="oculto">
         <h2>📝 Orden de Servicio</h2>
         <div class="form-seccion">
@@ -278,6 +285,7 @@
         </div>
     </div>
 
+    <!-- OBD2 -->
     <div id="sec-obd2" class="oculto">
         <h2>🔍 Diagnóstico OBD2 — Códigos de Fallas</h2>
         <div class="form-seccion">
@@ -287,28 +295,28 @@
                 <button class="btn-principal" style="width:auto;margin-top:0;padding:12px 20px;" onclick="buscarCodigo()">🔍 Buscar</button>
             </div>
             <p style="color:#64748B;font-size:13px;">Escribí el código completo (ej: P0123, B1234, C0456, U0100)</p>
-            
             <div id="obd2-resultado" class="oculto"></div>
-
             <h3>Códigos Comunes — Tocá para consultar</h3>
             <div class="obd2-lista-codigos">
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0300')">P0300</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0301')">P0301</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0302')">P0302</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0303')">P0303</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0304')">P0304</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0171')">P0171</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0172')">P0172</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0420')">P0420</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0442')">P0442</div>
+                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0455')">P0455</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0110')">P0110</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0120')">P0120</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0220')">P0220</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0335')">P0335</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0340')">P0340</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0455')">P0455</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0505')">P0505</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0130')">P0130</div>
                 <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0135')">P0135</div>
             </div>
-
             <h3 style="margin-top:24px;">📋 Clasificación de Códigos</h3>
             <div style="background:#F8FAFC;padding:14px;border-radius:10px;line-height:1.8;">
                 <p><strong>P</strong> — Powertrain ➜ Motor, transmisión y emisiones</p>
@@ -318,7 +326,7 @@
             </div>
         </div>
     </div>
-
+    <!-- MECÁNICO -->
     <div id="sec-mecanico" class="oculto">
         <h2>🔧 Datos del Mecánico</h2>
         <div class="form-seccion">
@@ -352,6 +360,7 @@
         <p style="color:#64748B;font-size:13px;margin-top:8px;">💡 Estos datos aparecen en las órdenes y turnos</p>
     </div>
 
+    <!-- ASISTENTE IA -->
     <div id="sec-asistente" class="oculto">
         <h2>🤖 Asistente Técnico — IA</h2>
         <div class="ia-rapidas">
@@ -374,35 +383,67 @@
 
 <script>
 const CLAVE_CORRECTA = '1234';
-const NUMERO_WSP = '+54 9 2984 54-8329';
 const API_KEY = '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';
 let filaIndice = 0;
 let historialConversacion = [];
 let ultimoCodigoBuscado = '';
 
+// BASE DE CÓDIGOS OBD2
 const baseOBD = {
-    'P0300': {titulo:'Detección de falla aleatoria en la combustión',descripcion:'El módulo de control detecta que varios cilindros están fallando al azar.',gravedad:'media',causas:['Bujías desgastadas','Cables de bujía en mal estado','Bobina de encendido defectuosa','Fuga de vacío','Filtro de combustible tapado','Bomba con baja presión'],solucion:['Revisar/reemplazar bujías','Verificar bobinas y cables','Buscar fugas de vacío','Medir presión de combustible']},
-    'P0301': {titulo:'Falla en combustión — Cilindro 1',descripcion:'El cilindro N°1 no quema bien la mezcla.',gravedad:'alta',causas:['Bujía N°1 dañada','Bobina N°1 defectuosa','Inyector obstruido','Pérdida de compresión'],solucion:['Intercambiar bujía y bobina','Limpiar/reemplazar inyector','Medir compresión']},
-    'P0171': {titulo:'Mezcla demasiado pobre — Banco 1',descripcion:'Falta de combustible o exceso de aire.',gravedad:'media',causas:['Fuga de vacío','Sensor MAF sucio','Bomba con baja presión','Filtro de combustible tapado'],solucion:['Buscar fugas de vacío','Limpiar sensor MAF','Medir presión de combustible']},
-    'P0172': {titulo:'Mezcla demasiado rica — Banco 1',descripcion:'Exceso de combustible.',gravedad:'media',causas:['Inyectores goteando','Sensor de temperatura defectuoso','Filtro de aire sucio'],solucion:['Revisar inyectores','Verificar lectura de temperatura','Cambiar filtro de aire']},
-    'P0420': {titulo:'Eficiencia del catalizador por debajo del umbral',descripcion:'El catalizador no limpia bien los gases.',gravedad:'media',causas:['Catalizador dañado','Sonda lambda defectuosa','Fuga en el escape'],solucion:['Revisar estado del catalizador','Comprobar sondas lambda','Buscar fugas en escape']},
-    'P0442': {titulo:'Fuga pequeña en sistema de evaporación',descripcion:'Pérdida pequeña de vapores de combustible.',gravedad:'baja',causas:['Tapa de nafta mal cerrada','Manguera agrietada'],solucion:['Cerrar bien la tapa','Revisar mangueras']},
-    'P0335': {titulo:'Sin señal del sensor de cigüeñal',descripcion:'No se detecta posición del motor, puede no arrancar.',gravedad:'alta',causas:['Sensor dañado','Cable cortado'],solucion:['Revisar conexión','Medir resistencia del sensor']},
-    'P0340': {titulo:'Sin señal del sensor de árbol de levas',descripcion:'No se detecta posición de válvulas.',gravedad:'media',causas:['Sensor sucio/dañado','Correa de distribución mal puesta'],solucion:['Limpiar sensor','Verificar sincronización']},
-    'P0505': {titulo:'Falla en control de ralentí',descripcion:'El motor sube y baja de vueltas o se apaga.',gravedad:'media',causas:['Válvula IAC sucia/trabada','Cuerpo de mariposa sucio'],solucion:['Limpiar válvula y mariposa']},
-    'P0130': {titulo:'Falla en sonda lambda — Banco 1',descripcion:'No lee bien la mezcla antes del catalizador.',gravedad:'media',causas:['Cable cortado','Sensor envejecido'],solucion:['Revisar cables','Reemplazar sonda']},
-    'P0135': {titulo:'Falla en calentamiento de sonda lambda',descripcion:'La resistencia de calentamiento está quemada.',gravedad:'baja',causas:['Sensor viejo','Fusible quemado'],solucion:['Reemplazar sonda completa']}
+    'P0300': {titulo:'Falla aleatoria en combustión',descripcion:'Varios cilindros fallan al azar.',gravedad:'media',
+        causas:['Bujías desgastadas','Bobina defectuosa','Fuga de vacío','Filtro de combustible tapado'],
+        solucion:['Revisar bujías','Verificar bobinas','Buscar fugas de vacío','Medir presión de combustible']},
+    'P0301': {titulo:'Falla Cilindro 1',descripcion:'No quema bien la mezcla.',gravedad:'alta',
+        causas:['Bujía 1 dañada','Bobina 1 defectuosa','Inyector obstruido','Pérdida de compresión'],
+        solucion:['Intercambiar piezas con otro cilindro','Limpiar inyector','Medir compresión']},
+    'P0302': {titulo:'Falla Cilindro 2',descripcion:'Igual que P0301 en cilindro 2.',gravedad:'alta',
+        causas:['Bujía 2','Bobina 2','Inyector 2','Compresión'],solucion:['Intercambiar piezas','Medir compresión']},
+    'P0303': {titulo:'Falla Cilindro 3',descripcion:'Igual que P0301 en cilindro 3.',gravedad:'alta',
+        causas:['Bujía 3','Bobina 3','Inyector 3','Compresión'],solucion:['Intercambiar piezas','Medir compresión']},
+    'P0304': {titulo:'Falla Cilindro 4',descripcion:'Igual que P0301 en cilindro 4.',gravedad:'alta',
+        causas:['Bujía 4','Bobina 4','Inyector 4','Compresión'],solucion:['Intercambiar piezas','Medir compresión']},
+    'P0171': {titulo:'Mezcla Pobre — Banco 1',descripcion:'Falta combustible o exceso de aire.',gravedad:'media',
+        causas:['Fuga de vacío','Sensor MAF sucio','Bomba con baja presión','Filtro tapado'],
+        solucion:['Buscar fugas de vacío','Limpiar MAF','Medir presión de combustible']},
+    'P0172': {titulo:'Mezcla Rica — Banco 1',descripcion:'Exceso de combustible.',gravedad:'media',
+        causas:['Inyectores goteando','Sensor temperatura defectuoso','Filtro aire sucio'],
+        solucion:['Revisar inyectores','Verificar sensor temperatura','Cambiar filtro de aire']},
+    'P0420': {titulo:'Catalizador ineficiente',descripcion:'No limpia bien los gases.',gravedad:'media',
+        causas:['Catalizador dañado','Sonda lambda defectuosa','Fuga en escape'],
+        solucion:['Revisar catalizador','Comprobar sondas lambda','Buscar fugas']},
+    'P0442': {titulo:'Fuga pequeña — Sistema de evaporación',descripcion:'Pérdida de vapores de combustible.',gravedad:'baja',
+        causas:['Tapa mal cerrada','Manguera agrietada'],solucion:['Cerrar bien la tapa','Revisar mangueras']},
+    'P0455': {titulo:'Fuga grande — Sistema de evaporación',descripcion:'Fuga importante.',gravedad:'alta',
+        causas:['Tapa faltante','Manguera rota'],solucion:['Revisar tapa inmediatamente','Buscar mangueras desconectadas']},
+    'P0110': {titulo:'Sensor temperatura aire admisión',descripcion:'No lee bien la temperatura del aire.',gravedad:'media',
+        causas:['Conector suelto','Cable cortado','Sensor quemado'],solucion:['Revisar conexión','Medir resistencia']},
+    'P0120': {titulo:'Sensor posición mariposa TPS',descripcion:'No detecta bien la apertura del acelerador.',gravedad:'alta',
+        causas:['Conector sucio','Cable dañado','Sensor descalibrado'],solucion:['Limpiar conector','Reemplazar sensor']},
+    'P0220': {titulo:'Sensor posición acelerador — Canal B',descripcion:'Segunda señal fallando.',gravedad:'alta',
+        causas:['Conector dañado','Cortocircuito'],solucion:['Revisar cables','Medir voltaje de referencia']},
+    'P0335': {titulo:'Sin señal sensor cigüeñal',descripcion:'No sabe en qué posición está el motor. Puede no arrancar.',gravedad:'alta',
+        causas:['Sensor dañado','Cable cortado'],solucion:['Revisar conexión','Medir resistencia']},
+    'P0340': {titulo:'Sin señal sensor árbol de levas',descripcion:'No detecta posición de válvulas.',gravedad:'media',
+        causas:['Sensor sucio/dañado','Correa distribución mal puesta'],solucion:['Limpiar sensor','Verificar sincronización']},
+    'P0505': {titulo:'Falla control de ralentí',descripcion:'Sube y baja de vueltas o se apaga.',gravedad:'media',
+        causas:['Válvula IAC sucia/trabada','Cuerpo de mariposa sucio'],solucion:['Limpiar válvula y mariposa']},
+    'P0130': {titulo:'Sonda lambda — Banco 1 Sensor 1',descripcion:'No lee bien la mezcla antes del catalizador.',gravedad:'media',
+        causas:['Cable cortado','Sensor envejecido'],solucion:['Revisar cables','Reemplazar sonda']},
+    'P0135': {titulo:'Falla calentamiento sonda lambda',descripcion:'Resistencia de calentamiento quemada.',gravedad:'baja',
+        causas:['Sensor viejo','Fusible quemado'],solucion:['Reemplazar sonda completa']}
 };
 
+// FUNCIONES OBD2
 function formatearCodigo(v){document.getElementById('codigo-obd').value=v.toUpperCase().replace(/[^A-Z0-9]/g,'');}
 function buscarCodigoDirecto(c){document.getElementById('codigo-obd').value=c;buscarCodigo();}
 function buscarCodigo(){
     const cod=document.getElementById('codigo-obd').value.trim().toUpperCase();
     if(!cod){alert('Escribí un código');return;}
     ultimoCodigoBuscado=cod;
-    const d=baseOBD[cod],div=document.getElementById('obd2-resultado');
-    if(d){
-        div.innerHTML=`<div class="obd2-resultado"><div class="obd2-codigo">${cod}</div><span class="obd2-gravedad gravedad-${d.gravedad}">${d.gravedad==='baja'?'🟢 Leve':d.gravedad==='media'?'🟡 Media':'🔴 Grave'}</span><h4 class="obd2-titulo">${d.titulo}</h4><p>${d.descripcion}</p><div class="obd2-causas"><h4>🔍 Causas</h4><ul>${d.causas.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><h4>✅ Solución</h4><ol>${d.solucion.map(x=>`<li>${x}</li>`).join('')}</ol></div><button class="btn-copiar" onclick="copiarInfoCodigo('${cod}')">📋 Copiar a orden</button></div>`;
+    const div=document.getElementById('obd2-resultado');
+    if(baseOBD[cod]){
+        const d=baseOBD[cod];
+        div.innerHTML=`<div class="obd2-resultado"><div class="obd2-codigo">${cod}</div><span class="obd2-gravedad gravedad-${d.gravedad}">${d.gravedad==='baja'?'🟢 Leve':d.gravedad==='media'?'🟡 Media':'🔴 Grave'}</span><h4 class="obd2-titulo">${d.titulo}</h4><p>${d.descripcion}</p><div class="obd2-causas"><h4>🔍 Causas</h4><ul style="margin:8px 0 8px 20px;">${d.causas.map(x=>`<li>${x}</li>`).join('')}</ul></div><div style="margin-top:12px;"><h4>✅ Solución</h4><ol style="margin:8px 0 8px 20px;">${d.solucion.map(x=>`<li>${x}</li>`).join('')}</ol></div><button class="btn-copiar" onclick="copiarInfoCodigo('${cod}')" style="margin-top:16px;">📋 Copiar a orden</button></div>`;
     }else{
         div.innerHTML=`<div class="obd2-resultado" style="border-color:#EF4444;background:#FEF2F2;"><div class="obd2-codigo">${cod}</div><p>ℹ️ Código no encontrado localmente.</p><button class="btn-principal" onclick="preguntarIA('${cod}')">🤖 Consultar a la IA</button></div>`;
     }
@@ -415,8 +456,9 @@ function copiarInfoCodigo(cod){
     c.value=c.value?`${c.value}, ${cod}`:cod;
     alert(`✅ ${cod} agregado a la orden`);
 }
-function preguntarIA(cod){mostrar('asistente');document.getElementById('ia-texto').value=`Explicame detalladamente el código OBD2 ${cod}: qué significa, qué revisar y cómo solucionarlo.`;}
+function preguntarIA(cod){mostrar('asistente');document.getElementById('ia-texto').value=`Explicame detalladamente el código OBD2 ${cod}: qué significa, qué revisar y cómo solucionarlo paso a paso.`;}
 
+// FIREBASE — Asegurar cliente
 async function asegurarCliente(nombre,telefono,vehiculo){
     const {collection,query,where,getDocs,addDoc,updateDoc,serverTimestamp}=Firestore;
     const q=query(collection(db,'clientes'),where('telefono','==',telefono));
@@ -429,18 +471,18 @@ async function asegurarCliente(nombre,telefono,vehiculo){
     }
 }
 
+// MECÁNICO
 async function guardarMecanico(){
     const {doc,setDoc}=Firestore;
     const n=document.getElementById('mec-nombre').value.trim();
-    const t=document.getElementById('mec-tel').value.trim();
-    const d=document.getElementById('mec-dni').value.trim();
-    const e=document.getElementById('mec-especialidad').value;
     if(!n){alert('Escribí el nombre');return;}
-    await setDoc(doc(db,'configuracion','mecanico'),{nombre:n,telefono:t,dni:d,especialidad:e});
-    cargarMecanico();
-    alert('✅ Datos guardados');
+    await setDoc(doc(db,'configuracion','mecanico'),{
+        nombre:n,telefono:document.getElementById('mec-tel').value.trim(),
+        dni:document.getElementById('mec-dni').value.trim(),
+        especialidad:document.getElementById('mec-especialidad').value
+    });
+    cargarMecanico();alert('✅ Datos guardados');
 }
-
 async function cargarMecanico(){
     const {doc,getDoc}=Firestore;
     try{
@@ -459,21 +501,18 @@ async function cargarMecanico(){
     }catch(e){}
 }
 
+// CLIENTES
 async function guardarCliente(){
-    const {collection,addDoc,serverTimestamp}=Firestore;
     const n=document.getElementById('cli-nombre').value.trim();
     const t=document.getElementById('cli-tel').value.trim();
-    const a=document.getElementById('cli-auto').value.trim();
-    if(!n||!t){alert('Nombre y teléfono son obligatorios');return;}
-    await addDoc(collection(db,'clientes'),{nombre:n,telefono:t,vehiculo:a,creado:serverTimestamp()});
-    document.getElementById('cli-nombre').value='';
-    document.getElementById('cli-tel').value='';
-    document.getElementById('cli-auto').value='';
-    cargarClientes();
-    cargarSelectClientes();
-    alert('✅ Cliente guardado');
+    if(!n||!t){alert('Nombre y teléfono obligatorios');return;}
+    const {collection,addDoc,serverTimestamp}=Firestore;
+    await addDoc(collection(db,'clientes'),{
+        nombre:n,telefono:t,vehiculo:document.getElementById('cli-auto').value.trim(),creado:serverTimestamp()
+    });
+    document.getElementById('cli-nombre').value='';document.getElementById('cli-tel').value='';document.getElementById('cli-auto').value='';
+    cargarClientes();cargarSelectClientes();alert('✅ Cliente guardado');
 }
-
 async function cargarClientes(){
     const {collection,getDocs,query,orderBy,deleteDoc,doc}=Firestore;
     const c=document.getElementById('lista-clientes');
@@ -486,26 +525,22 @@ async function cargarClientes(){
         c.innerHTML+=`<div class="lista-item"><strong>${dt.nombre}</strong><br>📞 ${dt.telefono}${dt.vehiculo?`<br>🚗 ${dt.vehiculo}`:''}<div class="acciones"><button class="btn-chico btn-eliminar" onclick="borrarCliente('${d.id}')">🗑️ Eliminar</button></div></div>`;
     });
 }
-
 async function borrarCliente(id){
+    if(!confirm('¿Eliminar?'))return;
     const {deleteDoc,doc}=Firestore;
-    if(!confirm('¿Eliminar este cliente?'))return;
     await deleteDoc(doc(db,'clientes',id));
-    cargarClientes();
-    cargarSelectClientes();
+    cargarClientes();cargarSelectClientes();
 }
-
 async function cargarSelectClientes(){
-    const {collection,getDocs,query,orderBy}=Firestore;
     const sel=document.getElementById('orden-cli');
     sel.innerHTML='<option value="">-- Elegir cliente --</option>';
+    const {collection,getDocs,query,orderBy}=Firestore;
     const s=await getDocs(query(collection(db,'clientes'),orderBy('nombre')));
     s.forEach(d=>{
         const dt=d.data();
         sel.innerHTML+=`<option value="${dt.nombre}|${dt.telefono}|${dt.vehiculo||''}">${dt.nombre} — ${dt.telefono}</option>`;
     });
 }
-
 function cargarCliente(){
     const v=document.getElementById('orden-cli').value;
     if(!v)return;
@@ -515,232 +550,15 @@ function cargarCliente(){
     if(a)document.getElementById('marca').value=a;
 }
 
+// TABLA DE TRABAJOS
 function agregarFila(){
-    const t=document.getElementById('cuerpo-tabla');
     filaIndice++;
-    t.innerHTML+=`<tr id="fila-${filaIndice}"><td style="text-align:center;"><input type="number" class="cant" value="1" oninput="actualizarTotal()"></td><td><input type="text" class="desc" placeholder="Descripción"></td><td style="text-align:right;"><input type="number" class="precio" value="0" oninput="actualizarTotal()"></td><td><button class="btn-chico btn-eliminar" onclick="quitarFila(${filaIndice})">✕</button></td></tr>`;
+    document.getElementById('cuerpo-tabla').innerHTML+=`<tr id="fila-${filaIndice}"><td style="text-align:center;"><input type="number" class="cant" value="1" oninput="actualizarTotal()"></td><td><input type="text" class="desc" placeholder="Descripción"></td><td style="text-align:right;"><input type="number" class="precio" value="0" oninput="actualizarTotal()"></td><td><button class="btn-chico btn-eliminar" onclick="quitarFila(${filaIndice})">✕</button></td></tr>`;
     actualizarTotal();
 }
-
 function quitarFila(id){document.getElementById(`fila-${id}`).remove();actualizarTotal();}
 function actualizarTotal(){
     let total=0;
     document.querySelectorAll('#cuerpo-tabla tr').forEach(f=>{
-        const c=parseFloat(f.querySelector('.cant').value)||0;
-        const p=parseFloat(f.querySelector('.precio').value)||0;
-        total+=c*p;
-    });
-    document.getElementById('total').textContent=total.toLocaleString('es-AR');
-}
-
-async function generarTurno(){
-    const f=document.getElementById('fecha').value;
-    const h=document.getElementById('horario').value;
-    const n=document.getElementById('nombre').value.trim();
-    const t=document.getElementById('telefono').value.trim();
-    const v=document.getElementById('vehiculo').value.trim();
-    const s=document.getElementById('servicio').value;
-    if(!f||!h||!n||!t||!v||!s){alert('Completá todos los datos');return;}
-    const {collection,addDoc,serverTimestamp}=Firestore;
-    await asegurarCliente(n,t,v);
-    await addDoc(collection(db,'turnos'),{fecha:f,horario:h,nombre:n,telefono:t,vehiculo:v,servicio:s,estado:'pendiente',creado:serverTimestamp()});
-    const txt=`SOLICITUD DE TURNO — AUTO REGINA
-━━━━━━━━━━━━━━━━━━━━━━━━
-👤 Cliente: ${n}
-📞 Teléfono: ${t}
-🚗 Vehículo: ${v}
-📅 Fecha: ${f}
-⏰ Horario: ${h}
-🔧 Servicio: ${s}
-━━━━━━━━━━━━━━━━━━━━━━━━
-Enviado desde la web`;
-    document.getElementById('texto-turno').textContent=txt;
-    document.getElementById('caja-turno').classList.remove('oculto');
-    cargarTurnos();
-}
-
-function copiarTurno(){
-    navigator.clipboard.writeText(document.getElementById('texto-turno').textContent).then(()=>{
-        const b=document.getElementById('btn-copiar-turno');
-        b.textContent='✅ COPIADO';b.classList.add('btn-copiado');
-        setTimeout(()=>{b.textContent='📋 TOCÁ ACÁ PARA COPIAR';b.classList.remove('btn-copiado');},2500);
-    });
-}
-
-async function cargarTurnos(){
-    const {collection,getDocs,query,orderBy,doc,updateDoc}=Firestore;
-    const c=document.getElementById('lista-turnos');
-    c.innerHTML='<p class="cargando">Cargando...</p>';
-    const s=await getDocs(query(collection(db,'turnos'),orderBy('creado','desc')));
-    if(s.empty){c.innerHTML='<p class="sin-datos">No hay turnos recibidos</p>';return;}
-    c.innerHTML='';
-    s.forEach(d=>{
-        const dt=d.data();
-        const est=dt.estado||'pendiente';
-        c.innerHTML+=`<div class="lista-item"><span class="estado estado-${est}">${est.toUpperCase()}</span><br><strong>${dt
-}</span><br>📅 ${dt.fecha} — ${dt.horario}<br>🚗 ${dt.vehiculo}<br>🔧 ${dt.servicio}<div class="acciones">${est==='pendiente'?`<button class="btn-chico btn-guardar" onclick="cambiarEstado('${d.id}','confirmado')">✅ Confirmar</button>`:''}${est!=='atendido'?`<button class="btn-chico btn-editar" onclick="cambiarEstado('${d.id}','atendido')">✔️ Atendido</button>`:''}<button class="btn-chico btn-eliminar" onclick="eliminarTurno('${d.id}')">🗑️ Eliminar</button></div></div>`;
-    });
-}
-
-async function cambiarEstado(id,estado){
-    const {doc,updateDoc}=Firestore;
-    await updateDoc(doc(db,'turnos',id),{estado});
-    cargarTurnos();
-}
-
-async function eliminarTurno(id){
-    const {doc,deleteDoc}=Firestore;
-    if(!confirm('¿Eliminar este turno?'))return;
-    await deleteDoc(doc(db,'turnos',id));
-    cargarTurnos();
-}
-
-async function generarOrden(){
-    const marca=document.getElementById('marca').value.trim();
-    const modelo=document.getElementById('modelo').value.trim();
-    const placa=document.getElementById('placa').value.trim();
-    const km=document.getElementById('km').value.trim();
-    const fecha=document.getElementById('fecha-ingreso').value;
-    const nombre=document.getElementById('orden-nombre').value.trim();
-    const tel=document.getElementById('orden-tel').value.trim();
-    const codigos=document.getElementById('codigos-obd').value.trim();
-    const obs=document.getElementById('obs').value.trim();
-
-    if(!marca||!nombre||!tel){alert('Completá marca, nombre y teléfono');return;}
-
-    const filas=[];
-    let totalGeneral=0;
-    document.querySelectorAll('#cuerpo-tabla tr').forEach(f=>{
-        const c=parseFloat(f.querySelector('.cant').value)||0;
-        const d=f.querySelector('.desc').value.trim()||'—';
-        const p=parseFloat(f.querySelector('.precio').value)||0;
-        filas.push(`${c} x ${d} — $${(c*p).toLocaleString('es-AR')}`);
-        totalGeneral+=c*p;
-    });
-
-    const {doc,getDoc}=Firestore;
-    let mecNombre='No especificado',mecTel='',mecDni='',mecEsp='';
-    try{
-        const mSnap=await getDoc(doc(db,'configuracion','mecanico'));
-        if(mSnap.exists()){const md=mSnap.data();mecNombre=md.nombre||mecNombre;mecTel=md.telefono||mecTel;mecDni=md.dni||mecDni;mecEsp=md.especialidad||mecEsp;}
-    }catch(e){}
-
-    const ordenNro=Date.now().toString().slice(-8);
-    const texto=`═══════════════════════════
-   ORDEN DE SERVICIO N° ${ordenNro}
-       AUTO REGINA
-═══════════════════════════
-📅 Fecha: ${fecha||'—'}
-👤 Cliente: ${nombre}
-📞 Teléfono: ${tel}
-🚗 Vehículo: ${marca} ${modelo||''}
-   Patente: ${placa||'—'}
-   Km: ${km||'—'}
-═══════════════════════════
-🔧 Códigos OBD2:
-${codigos||'Ninguno detectado'}
-═══════════════════════════
-📋 TRABAJOS REALIZADOS:
-${filas.length?filas.join('\n'):'— Sin detalle —'}
-═══════════════════════════
-💰 TOTAL: $${totalGeneral.toLocaleString('es-AR')}
-═══════════════════════════
-📝 Observaciones:
-${obs||'—'}
-═══════════════════════════
-👨‍🔧 Mecánico: ${mecNombre}
-   Tel: ${mecTel||'—'}
-   DNI: ${mecDni||'—'}
-   Especialidad: ${mecEsp||'—'}
-═══════════════════════════
-Gracias por confiar en AUTO REGINA 🚗
-`;
-    document.getElementById('texto-orden').textContent=texto;
-    document.getElementById('caja-orden').classList.remove('oculto');
-}
-
-function copiarOrden(){
-    navigator.clipboard.writeText(document.getElementById('texto-orden').textContent).then(()=>{
-        const b=document.getElementById('btn-copiar-orden');
-        b.textContent='✅ COPIADO';b.classList.add('btn-copiado');
-        setTimeout(()=>{b.textContent='📋 COPIAR ORDEN';b.classList.remove('btn-copiado');},2500);
-    });
-}
-
-async function enviarIA(){
-    const t=document.getElementById('ia-texto').value.trim();
-    if(!t)return;
-    const chat=document.getElementById('ia-chat');
-    chat.innerHTML+=`<div class="ia-mensaje ia-usuario">${t}</div>`;
-    document.getElementById('ia-texto').value='';
-    const pensando=document.createElement('div');
-    pensando.className='ia-mensaje ia-asistente ia-pensando';
-    pensando.textContent='🔧 Analizando...';
-    chat.appendChild(pensando);
-    chat.scrollTop=chat.scrollHeight;
-
-    historialConversacion.push({role:'user',content:t});
-    try{
-        const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
-            method:'POST',
-            headers:{
-                'Authorization':`Bearer ${API_KEY}`,
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify({
-                model:'openai/gpt-4o-mini',
-                messages:[
-                    {role:'system',content:'Sos un asistente técnico automotriz experto para el taller AUTO REGINA. Respondé en español, claro, práctico, paso a paso. Explicá códigos OBD2, diagnósticos, reparaciones, procedimientos de mantenimiento, especificaciones de apriete, pinouts, extracción de componentes. Sé preciso y fácil de entender. Si no sabés algo, decilo honestamente. Usá formato claro con viñetas.'},
-                    ...historialConversacion
-                ]
-            })
-        });
-        const d=await res.json();
-        pensando.remove();
-        const r=d.choices?.[0]?.message?.content||'No obtuve respuesta. Intentá de nuevo.';
-        historialConversacion.push({role:'assistant',content:r});
-        chat.innerHTML+=`<div class="ia-mensaje ia-asistente">${r}</div>`;
-    }catch(e){
-        pensando.remove();
-        chat.innerHTML+=`<div class="ia-mensaje ia-asistente" style="color:#B91C1C;">❌ Error de conexión: ${e.message}</div>`;
-    }
-    chat.scrollTop=chat.scrollHeight;
-}
-
-function pregRapida(t){document.getElementById('ia-texto').value=t;enviarIA();}
-
-function abrirAcceso(){document.getElementById('modal-acceso').style.display='flex';document.getElementById('clave').value='';document.getElementById('error-clave').style.display='none';}
-function cerrarAcceso(){document.getElementById('modal-acceso').style.display='none';}
-function ingresar(){
-    if(document.getElementById('clave').value===CLAVE_CORRECTA){
-        cerrarAcceso();
-        document.getElementById('pantalla-cliente').classList.add('oculto');
-        document.getElementById('pantalla-taller').classList.remove('oculto');
-        mostrar('turnos');
-        cargarTurnos();
-        cargarClientes();
-        cargarSelectClientes();
-        cargarMecanico();
-        if(!document.getElementById('cuerpo-tabla').children.length)agregarFila();
-    }else{
-        document.getElementById('error-clave').style.display='block';
-    }
-}
-function mostrar(sec){
-    ['turnos','clientes','orden','obd2','mecanico','asistente'].forEach(s=>{
-        document.getElementById(`sec-${s}`).classList.toggle('oculto',s!==sec);
-    });
-    document.querySelectorAll('.pestaña').forEach(b=>{
-        b.classList.remove('activa','inactiva');
-        if(b.textContent.includes(sec==='turnos'?'Turnos':sec==='clientes'?'Clientes':sec==='orden'?'Orden':sec==='obd2'?'OBD2':sec==='mecanico'?'Mecánico':'IA'))b.classList.add('activa');
-        else if(!b.textContent.includes('Salir'))b.classList.add('inactiva');
-    });
-}
-function salir(){
-    if(!confirm('¿Salir del taller?'))return;
-    document.getElementById('pantalla-taller').classList.add('oculto');
-    document.getElementById('pantalla-cliente').classList.remove('oculto');
-}
-</script>
-</body>
-</html>
+        const c=parseFloat(f.querySelector
+    
