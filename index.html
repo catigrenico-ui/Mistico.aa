@@ -1,564 +1,412 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AUTO REGINA — Turnos, OBD2 y Servicios</title>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-        import { 
-            getFirestore, collection, addDoc, getDocs, doc, setDoc,
-            updateDoc, deleteDoc, query, orderBy, serverTimestamp, where, getDoc
-        } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUTO REGINA — Completo</title>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAPKOuYBpHuqyEVNJOENPUH1113OBvykyk",
-            authDomain: "autoregina.firebaseapp.com",
-            projectId: "autoregina",
-            storageBucket: "autoregina.firebasestorage.app",
-            messagingSenderId: "525939629424",
-            appId: "1:525939629424:web:2a609a232758782859c3b5"
-        };
+const firebaseConfig = {
+  apiKey: "AIzaSyAPKOuYBpHuqyEVNJOENPUH1113OBvykyk",
+  authDomain: "autoregina.firebaseapp.com",
+  projectId: "autoregina",
+  storageBucket: "autoregina.firebasestorage.app",
+  messagingSenderId: "525939629424",
+  appId: "1:525939629424:web:2a609a232758782859c3b5"
+};
 
-        const app = initializeApp(firebaseConfig);
-        window.db = getFirestore(app);
-        window.Firestore = { 
-            collection, addDoc, getDocs, updateDoc, deleteDoc, setDoc,
-            doc, query, orderBy, serverTimestamp, where, getDoc
-        };
-    </script>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif;}
-        body{background:#F0F4FC;min-height:100vh;padding:16px;max-width:620px;margin:0 auto;padding-bottom:40px;}
-        .cabecera{background:linear-gradient(180deg,#0F2B5C 0%,#0F2B48 100%);color:white;padding:24px 20px;border-radius:20px;text-align:center;margin-bottom:16px;}
-        .cabecera h1{font-size:22px;margin-bottom:6px;}
-        .servicios{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#F5D76E;font-weight:600;}
-        .aviso{background:#FFF7E0;border:2px solid #F59E0B;border-radius:14px;padding:16px;margin-bottom:20px;text-align:center;}
-        .numero-grande{font-size:20px;font-weight:900;color:#B45309;margin:6px 0;letter-spacing:1px;}
-        .pestañas{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;}
-        .pestaña{padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;white-space:nowrap;cursor:pointer;border:none;}
-        .pestaña.activa{background:#0F2B48;color:white;}
-        .pestaña.inactiva{background:white;color:#64748B;}
-        .pestaña.salir{background:#FEE2E2;color:#B91C1C;margin-left:auto;}
-        .form-seccion{background:white;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(15,43,72,.08);}
-        h2{font-size:20px;font-weight:800;color:#0F2B48;margin-bottom:16px;}
-        h3{font-size:16px;font-weight:700;color:#0F2B48;margin:20px 0 12px;padding-bottom:6px;border-bottom:2px solid #0F2B48;}
-        label{display:block;margin:14px 0 6px;font-weight:600;color:#334155;font-size:14px;}
-        input,select,textarea{width:100%;padding:12px 14px;border:2px solid #E2E8F0;border-radius:10px;font-size:15px;background:#FAFCFF;}
-        input:focus,select:focus,textarea:focus{outline:none;border-color:#0F2B48;}
-        .fila{display:flex;gap:10px;flex-wrap:wrap;}
-        .fila>div{flex:1;min-width:100px;}
-        .btn-principal{width:100%;background:#0F2B48;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:800;margin-top:20px;cursor:pointer;}
-        .btn-copiar{width:100%;background:#10B981;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:700;margin-top:16px;cursor:pointer;transition:all .2s;}
-        .btn-copiar:active{transform:scale(.98);}
-        .btn-copiado{background:#059669 !important;}
-        .btn-chico{padding:8px 12px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin:4px;}
-        .btn-guardar{background:#10B981;color:white;}
-        .btn-eliminar{background:#FEE2E2;color:#B91C1C;}
-        .btn-editar{background:#DBEAFE;color:#1E40AF;}
-        .acceso-taller{width:100%;background:transparent;color:#0F2B48;border:2px solid #0F2B48;padding:14px;border-radius:12px;font-size:15px;font-weight:700;margin-top:20px;cursor:pointer;}
-        .modal{position:fixed;inset:0;background:rgba(15,43,72,.85);display:none;align-items:center;justify-content:center;padding:20px;z-index:100;}
-        .modal-caja{background:white;padding:24px;border-radius:16px;width:100%;max-width:340px;}
-        .modal-caja button{width:100%;padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:700;margin-top:10px;cursor:pointer;}
-        .btn-ingresar{background:#0F2B48;color:white;}
-        .btn-volver{background:#E5E7EB;color:#374151;}
-        .error{color:#EF4444;text-align:center;margin-top:12px;display:none;}
-        .vista-previa{background:white;border:2px solid #0F2B48;border-radius:16px;padding:20px;margin-top:20px;white-space:pre-wrap;font-size:13px;line-height:1.6;}
-        .oculto{display:none !important;}
-        .lista-item{background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-        .sin-datos{text-align:center;padding:30px;color:#64748B;}
-        .acciones{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
-        .area-copiado{position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none;}
-        .tabla-trabajos{width:100%;border-collapse:collapse;margin:12px 0;}
-        .tabla-trabajos th,.tabla-trabajos td{border:1px solid #E2E8F0;padding:10px 8px;text-align:left;font-size:14px;}
-        .tabla-trabajos th{background:#F1F5F9;font-weight:700;color:#0F2B48;}
-        .tabla-trabajos td input{border:none;background:transparent;padding:4px;width:100%;font-size:14px;}
-        .fila-total{background:#E0F2FE;font-weight:800;font-size:18px !important;color:#0F2B48;}
-        .fila-total td{border:none;padding-top:16px;text-align:right;}
-        .cargando{text-align:center;padding:20px;color:#165DFF;font-weight:600;}
-        .estado{display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;}
-        .estado-pendiente{background:#FEF3C7;color:#92400E;}
-        .estado-confirmado{background:#DBEAFE;color:#1E40AF;}
-        .estado-atendido{background:#D1FAE5;color:#065F46;}
-        .aviso-exito{background:#D1FAE5;border:2px solid #10B981;border-radius:12px;padding:12px;text-align:center;margin-top:12px;color:#065F46;font-weight:600;}
-        .ia-mensajes{max-height:350px;overflow-y:auto;padding:16px;background:#F8FAFC;border-radius:16px;margin-bottom:12px;}
-        .ia-mensaje{margin-bottom:14px;padding:12px 16px;border-radius:16px;max-width:90%;line-height:1.6;white-space:pre-wrap;}
-        .ia-usuario{background:#DBEAFE;color:#1E3A8A;margin-left:auto;border-bottom-right-radius:6px;}
-        .ia-asistente{background:#E0F2FE;color:#0C4A6E;margin-right:auto;border-bottom-left-radius:6px;}
-        .ia-pensando{font-style:italic;color:#64748B;}
-        .ia-rapidas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
-        .ia-pregunta{background:#F1F5F9;border:1px solid #CBD5E1;border-radius:20px;padding:10px 16px;font-size:13px;cursor:pointer;transition:.2s;}
-        .ia-pregunta:hover{background:#E0F2FE;border-color:#0F2B48;}
-        .ia-fila{display:flex;gap:10px;}
-        .ia-fila input{flex:1;margin:0;}
-        .ia-enviar{background:linear-gradient(135deg,#0F2B48,#165DFF);color:white;border:none;border-radius:12px;padding:14px 20px;font-weight:700;cursor:pointer;white-space:nowrap;}
-        .mecanico-tarjeta{background:linear-gradient(135deg,#0F2B48,#165DFF);color:white;border-radius:16px;padding:20px;margin-bottom:16px;}
-        .mecanico-dato{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.2);}
-        .mecanico-dato:last-child{border-bottom:none;}
-        .obd2-busqueda{display:flex;gap:8px;margin-bottom:16px;}
-        .obd2-busqueda input{flex:1;margin:0;text-transform:uppercase;letter-spacing:1px;font-weight:600;}
-        .obd2-resultado{background:#EFF6FF;border-left:4px solid #165DFF;padding:16px;border-radius:0 12px 12px 0;margin-bottom:16px;}
-        .obd2-codigo{font-size:22px;font-weight:900;color:#0F2B48;margin-bottom:8px;font-family:monospace;}
-        .obd2-titulo{font-weight:700;color:#1E40AF;margin-bottom:6px;}
-        .obd2-causas{background:#F8FAFC;padding:12px;border-radius:8px;margin:8px 0;}
-        .obd2-gravedad{display:inline-block;padding:4px 12px;border-radius:20px;font-weight:700;font-size:13px;margin-bottom:10px;}
-        .gravedad-baja{background:#D1FAE5;color:#065F46;}
-        .gravedad-media{background:#FEF3C7;color:#92400E;}
-        .gravedad-alta{background:#FEE2E2;color:#B91C1C;}
-        .obd2-lista-codigos{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:12px;}
-        .obd2-codigo-item{background:#F1F5F9;padding:10px;border-radius:8px;text-align:center;cursor:pointer;font-weight:600;font-family:monospace;transition:.2s;}
-        .obd2-codigo-item:hover{background:#DBEAFE;}
-    </style>
+const app = initializeApp(firebaseConfig);
+window.db = getFirestore(app);
+window.Firestore = { collection, addDoc, getDocs, updateDoc, deleteDoc, setDoc, doc, query, orderBy, serverTimestamp, where, getDoc };
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif;}
+body{background:#F0F4FC;min-height:100vh;padding:16px;max-width:620px;margin:0 auto;padding-bottom:40px;}
+.cabecera{background:linear-gradient(180deg,#0F2B5C 0%,#0F2B48 100%);color:white;padding:24px 20px;border-radius:20px;text-align:center;margin-bottom:16px;}
+.cabecera h1{font-size:22px;margin-bottom:6px;}
+.servicios{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#F5D76E;font-weight:600;}
+.aviso{background:#FFF7E0;border:2px solid #F59E0B;border-radius:14px;padding:16px;margin-bottom:20px;text-align:center;}
+.numero-grande{font-size:20px;font-weight:900;color:#B45309;margin:6px 0;letter-spacing:1px;}
+.pestañas{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;}
+.pestaña{padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;white-space:nowrap;cursor:pointer;border:none;}
+.pestaña.activa{background:#0F2B48;color:white;}
+.pestaña.inactiva{background:white;color:#64748B;}
+.pestaña.salir{background:#FEE2E2;color:#B91C1C;margin-left:auto;}
+.form-seccion{background:white;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(15,43,72,.08);}
+h2{font-size:20px;font-weight:800;color:#0F2B48;margin-bottom:16px;}
+h3{font-size:16px;font-weight:700;color:#0F2B48;margin:20px 0 12px;padding-bottom:6px;border-bottom:2px solid #0F2B48;}
+label{display:block;margin:14px 0 6px;font-weight:600;color:#334155;font-size:14px;}
+input,select,textarea{width:100%;padding:12px 14px;border:2px solid #E2E8F0;border-radius:10px;font-size:15px;background:#FAFCFF;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#0F2B48;}
+.fila{display:flex;gap:10px;flex-wrap:wrap;}
+.fila>div{flex:1;min-width:100px;}
+.btn-principal{width:100%;background:#0F2B48;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:800;margin-top:20px;cursor:pointer;}
+.btn-copiar{width:100%;background:#10B981;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:700;margin-top:16px;cursor:pointer;transition:all .2s;}
+.btn-copiar:active{transform:scale(.98);}
+.btn-chico{padding:8px 12px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin:4px;}
+.btn-guardar{background:#10B981;color:white;}
+.btn-eliminar{background:#FEE2E2;color:#B91C1C;}
+.acceso-taller{width:100%;background:transparent;color:#0F2B48;border:2px solid #0F2B48;padding:14px;border-radius:12px;font-size:15px;font-weight:700;margin-top:20px;cursor:pointer;}
+.modal{position:fixed;inset:0;background:rgba(15,43,72,.85);display:none;align-items:center;justify-content:center;padding:20px;z-index:100;}
+.modal-caja{background:white;padding:24px;border-radius:16px;width:100%;max-width:340px;}
+.modal-caja button{width:100%;padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:700;margin-top:10px;cursor:pointer;}
+.btn-ingresar{background:#0F2B48;color:white;}
+.btn-volver{background:#E5E7EB;color:#374151;}
+.error{color:#EF4444;text-align:center;margin-top:12px;display:none;}
+.vista-previa{background:white;border:2px solid #0F2B48;border-radius:16px;padding:20px;margin-top:20px;white-space:pre-wrap;font-size:13px;line-height:1.6;}
+.oculto{display:none !important;}
+.lista-item{background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.sin-datos{text-align:center;padding:30px;color:#64748B;}
+.acciones{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+.area-copiado{position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none;}
+.tabla-trabajos{width:100%;border-collapse:collapse;margin:12px 0;}
+.tabla-trabajos th,.tabla-trabajos td{border:1px solid #E2E8F0;padding:10px 8px;text-align:left;font-size:14px;}
+.tabla-trabajos th{background:#F1F5F9;font-weight:700;color:#0F2B48;}
+.tabla-trabajos td input{border:none;background:transparent;padding:4px;width:100%;font-size:14px;}
+.fila-total{background:#E0F2FE;font-weight:800;font-size:18px !important;color:#0F2B48;}
+.fila-total td{border:none;padding-top:16px;text-align:right;}
+.cargando{text-align:center;padding:20px;color:#165DFF;font-weight:600;}
+.aviso-exito{background:#D1FAE5;border:2px solid #10B981;border-radius:12px;padding:12px;text-align:center;margin-top:12px;color:#065F46;font-weight:600;}
+.ia-mensajes{max-height:350px;overflow-y:auto;padding:16px;background:#F8FAFC;border-radius:16px;margin-bottom:12px;}
+.ia-mensaje{margin-bottom:14px;padding:12px 16px;border-radius:16px;max-width:90%;line-height:1.6;white-space:pre-wrap;}
+.ia-usuario{background:#DBEAFE;color:#1E3A8A;margin-left:auto;border-bottom-right-radius:6px;}
+.ia-asistente{background:#E0F2FE;color:#0C4A6E;margin-right:auto;border-bottom-left-radius:6px;}
+.ia-pensando{font-style:italic;color:#64748B;}
+.ia-fila{display:flex;gap:10px;}
+.ia-fila input{flex:1;margin:0;}
+.ia-enviar{background:linear-gradient(135deg,#0F2B48,#165DFF);color:white;border:none;border-radius:12px;padding:14px 20px;font-weight:700;cursor:pointer;white-space:nowrap;}
+.mecanico-tarjeta{background:linear-gradient(135deg,#0F2B48,#165DFF);color:white;border-radius:16px;padding:20px;margin-bottom:16px;}
+.mecanico-dato{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.2);}
+.mecanico-dato:last-child{border-bottom:none;}
+.estado{display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;}
+.estado-pendiente{background:#FEF3C7;color:#92400E;}
+.estado-confirmado{background:#DBEAFE;color:#1E40AF;}
+.estado-atendido{background:#D1FAE5;color:#065F46;}
+.tarjeta{background:white;border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.btn{width:100%;padding:14px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px;}
+.btn-conectar{background:#165DFF;color:white;}
+.btn-conectar.conectado{background:#10B981;}
+.btn-escaneo{background:#0F2B48;color:white;}
+.btn-limpiar{background:#FEE2E2;color:#B91C1C;}
+.dato{display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid #E2E8F0;}
+.dato:last-child{border-bottom:none;}
+.etiqueta{font-weight:500;color:#475569;}
+.valor{font-weight:700;color:#0F2B48;}
+.codigo-falla{padding:12px;background:#FEF2F2;border-left:4px solid #EF4444;border-radius:8px;margin-bottom:8px;}
+.codigo-texto{font-family:monospace;font-weight:bold;font-size:16px;color:#EF4444;}
+.ok{color:#10B981;}
+.estado-obd{padding:10px;border-radius:8px;margin-bottom:12px;font-size:14px;}
+.estado-obd.desc{background:#EFF6FF;color:#1E40AF;}
+.estado-obd.con{background:#ECFDF5;color:#065F46;}
+.cargando-obd{animation:parpadeo 1s infinite;}
+@keyframes parpadeo{50%{opacity:0.5;}}
+.aviso-obd{background:#FFFBEB;border-left:4px solid #F59E0B;padding:12px;border-radius:8px;margin-bottom:14px;font-size:13px;}
+.ia-rapidas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.ia-pregunta{background:#F1F5F9;border:1px solid #CBD5E1;border-radius:20px;padding:10px 16px;font-size:13px;cursor:pointer;}
+</style>
 </head>
 <body>
-
 <textarea id="area-copiado" class="area-copiado"></textarea>
 
-<!-- PANTALLA DEL CLIENTE -->
 <div id="pantalla-cliente">
-    <div class="cabecera">
-        <h1>AUTO REGINA</h1>
-        <div class="servicios">
-            <span>⚙️ Mecánica</span>
-            <span>⚡ Electricidad</span>
-            <span>🖥️ Inyección</span>
-        </div>
+  <div class="cabecera">
+    <h1>AUTO REGINA</h1>
+    <div class="servicios">
+      <span>⚙️ Mecánica</span>
+      <span>⚡ Electricidad</span>
+      <span>🖥️ Inyección</span>
     </div>
+  </div>
 
-    <div class="aviso">
-        <p>📞 <strong>ANTES DE PEDIR TU TURNO:</strong></p>
-        <p>1️⃣ Guardá: <span class="numero-grande">+54 9 2984 54-8329</span></p>
-        <p>2️⃣ Completá tus datos abajo 👇</p>
-        <p>3️⃣ Tocá el botón para copiar y mandalo por WhatsApp</p>
+  <div class="aviso">
+    <p>📞 <strong>ANTES DE PEDIR TU TURNO:</strong></p>
+    <p>1️⃣ Guardá: <span class="numero-grande">+54 9 2984 54-8329</span></p>
+    <p>2️⃣ Completá tus datos abajo 👇</p>
+    <p>3️⃣ Tocá el botón para copiar y mandalo por WhatsApp</p>
+  </div>
+
+  <div class="form-seccion">
+    <h2 style="text-align:center;">📅 Pedí tu Turno</h2>
+    <label>Fecha</label>
+    <input type="date" id="fecha">
+    <label>Horario</label>
+    <select id="horario">
+      <option value="">Seleccioná</option>
+      <option>Mañana — 09:00 a 12:00</option>
+      <option>Tarde — 15:00 a 18:00</option>
+    </select>
+    <label>Tu Nombre</label>
+    <input type="text" id="nombre" placeholder="Nombre y Apellido">
+    <label>Teléfono / WhatsApp</label>
+    <input type="tel" id="telefono" placeholder="2984 548329">
+    <label>Vehículo</label>
+    <input type="text" id="vehiculo" placeholder="Marca, modelo, año">
+    <label>Servicio</label>
+    <select id="servicio">
+      <option value="">Seleccioná</option>
+      <option>Mecánica General</option>
+      <option>Electricidad</option>
+      <option>Inyección Electrónica</option>
+      <option>Revisión / Mantenimiento</option>
+      <option>Cambio de aceite</option>
+      <option>Frenos / Embrague</option>
+      <option>Diagnóstico</option>
+      <option>Otros</option>
+    </select>
+    <button class="btn-principal" onclick="generarTurno()">✅ GENERAR TURNO</button>
+    <div id="caja-turno" class="oculto">
+      <div class="aviso-exito">✅ ¡Listo! Mensaje generado</div>
+      <div class="vista-previa" id="texto-turno"></div>
+      <button id="btn-copiar-turno" class="btn-copiar" onclick="copiarTurno()">📋 TOCÁ ACÁ PARA COPIAR</button>
+      <p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp y mandalo</p>
     </div>
+  </div>
 
-    <div class="form-seccion">
-        <h2 style="text-align:center;">📅 Pedí tu Turno</h2>
-        <label>Fecha</label>
-        <input type="date" id="fecha">
-        <label>Horario</label>
-        <select id="horario">
-            <option value="">Seleccioná</option>
-            <option>Mañana — 09:00 a 12:00</option>
-            <option>Tarde — 15:00 a 18:00</option>
-        </select>
-        <label>Tu Nombre</label>
-        <input type="text" id="nombre" placeholder="Nombre y Apellido">
-        <label>Teléfono / WhatsApp</label>
-        <input type="tel" id="telefono" placeholder="2984 548329">
-        <label>Vehículo</label>
-        <input type="text" id="vehiculo" placeholder="Marca, modelo, año">
-        <label>Servicio</label>
-        <select id="servicio">
-            <option value="">Seleccioná</option>
-            <option>Mecánica General</option>
-            <option>Electricidad</option>
-            <option>Inyección Electrónica</option>
-            <option>Revisión / Mantenimiento</option>
-            <option>Cambio de aceite</option>
-            <option>Frenos / Embrague</option>
-            <option>Diagnóstico / Escaneo OBD2</option>
-            <option>Otros</option>
-        </select>
-        <button class="btn-principal" onclick="generarTurno()">✅ GENERAR TURNO</button>
-        <div id="caja-turno" class="oculto">
-            <div class="aviso-exito">✅ ¡Listo! Mensaje generado</div>
-            <div class="vista-previa" id="texto-turno"></div>
-            <button id="btn-copiar-turno" class="btn-copiar" onclick="copiarTurno()">📋 TOCÁ ACÁ PARA COPIAR</button>
-            <p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp y mandalo</p>
-        </div>
-    </div>
-
-    <button class="acceso-taller" onclick="abrirAcceso()">🔧 Acceso del Taller</button>
+  <button class="acceso-taller" onclick="abrirAcceso()">🔧 Acceso del Taller</button>
 </div>
 
-<!-- MODAL CONTRASEÑA -->
 <div class="modal" id="modal-acceso">
-    <div class="modal-caja">
-        <h3 style="text-align:center;color:#0F2B48;">🔧 ACCESO TALLER</h3>
-        <label>Contraseña</label>
-        <input type="password" id="clave" placeholder="Escribí la contraseña">
-        <button class="btn-ingresar" onclick="ingresar()">INGRESAR</button>
-        <button class="btn-volver" onclick="cerrarAcceso()">Volver</button>
-        <p class="error" id="error-clave">Contraseña incorrecta</p>
-    </div>
+  <div class="modal-caja">
+    <h3 style="text-align:center;color:#0F2B48;">🔧 ACCESO TALLER</h3>
+    <label>Contraseña</label>
+    <input type="password" id="clave" placeholder="Escribí la contraseña">
+    <button class="btn-ingresar" onclick="ingresar()">INGRESAR</button>
+    <button class="btn-volver" onclick="cerrarAcceso()">Volver</button>
+    <p class="error" id="error-clave">Contraseña incorrecta</p>
+  </div>
 </div>
 
-<!-- PANTALLA DEL TALLER -->
 <div id="pantalla-taller" class="oculto">
-    <div class="cabecera">
-        <h1>AUTO REGINA — TALLER</h1>
-        <div class="servicios">
-            <span>⚙️ Mecánica</span>
-            <span>⚡ Electricidad</span>
-            <span>🖥️ Inyección</span>
-        </div>
+  <div class="cabecera">
+    <h1>AUTO REGINA — TALLER</h1>
+    <div class="servicios">
+      <span>⚙️ Mecánica</span>
+      <span>⚡ Electricidad</span>
+      <span>🖥️ Inyección</span>
     </div>
+  </div>
 
-    <div class="pestañas">
-        <button class="pestaña activa" onclick="mostrar('turnos')">📋 Turnos</button>
-        <button class="pestaña inactiva" onclick="mostrar('clientes')">👥 Clientes</button>
-        <button class="pestaña inactiva" onclick="mostrar('orden')">📝 Orden</button>
-        <button class="pestaña inactiva" onclick="mostrar('obd2')">🔍 OBD2</button>
-        <button class="pestaña inactiva" onclick="mostrar('mecanico')">🔧 Mecánico</button>
-        <button class="pestaña inactiva" onclick="mostrar('asistente')">🤖 IA</button>
-        <button class="pestaña salir" onclick="salir()">🚪 Salir</button>
-    </div>
+  <div class="pestañas">
+    <button class="pestaña activa" onclick="mostrar('turnos')">📋 Turnos</button>
+    <button class="pestaña inactiva" onclick="mostrar('clientes')">👥 Clientes</button>
+    <button class="pestaña inactiva" onclick="mostrar('orden')">📝 Orden</button>
+    <button class="pestaña inactiva" onclick="mostrar('obd2')">🔍 OBD2</button>
+    <button class="pestaña inactiva" onclick="mostrar('mecanico')">🔧 Mecánico</button>
+    <button class="pestaña inactiva" onclick="mostrar('asistente')">🤖 IA</button>
+    <button class="pestaña salir" onclick="salir()">🚪 Salir</button>
+  </div>
 
-    <!-- TURNOS -->
-    <div id="sec-turnos">
-        <h2>📋 Turnos Recibidos</h2>
-        <div id="lista-turnos"><p class="cargando">Cargando...</p></div>
-    </div>
+  <div id="sec-turnos">
+    <h2>📋 Turnos Recibidos</h2>
+    <div id="lista-turnos"><p class="cargando">Cargando...</p></div>
+  </div>
 
-    <!-- CLIENTES -->
-    <div id="sec-clientes" class="oculto">
-        <h2>👥 Clientes</h2>
-        <div class="form-seccion">
-            <h3>Agregar Cliente</h3>
-            <label>Nombre *</label>
-            <input type="text" id="cli-nombre" placeholder="Nombre y Apellido">
-            <label>Teléfono *</label>
-            <input type="tel" id="cli-tel" placeholder="2984 548329">
-            <label>Vehículo</label>
-            <input type="text" id="cli-auto" placeholder="Marca, modelo, año">
-            <div class="fila">
-                <button class="btn-guardar" onclick="guardarCliente()">✅ GUARDAR</button>
-            </div>
-        </div>
-        <h3>📂 Lista de Clientes</h3>
-        <div id="lista-clientes"><p class="cargando">Cargando...</p></div>
+  <div id="sec-clientes" class="oculto">
+    <h2>👥 Clientes</h2>
+    <div class="form-seccion">
+      <h3>Agregar Cliente</h3>
+      <label>Nombre *</label>
+      <input type="text" id="cli-nombre" placeholder="Nombre y Apellido">
+      <label>Teléfono *</label>
+      <input type="tel" id="cli-tel" placeholder="2984 548329">
+      <label>Vehículo</label>
+      <input type="text" id="cli-auto" placeholder="Marca, modelo, año">
+      <div class="fila">
+        <button class="btn-guardar" onclick="guardarCliente()">✅ GUARDAR</button>
+      </div>
     </div>
+    <h3>📂 Lista de Clientes</h3>
+    <div id="lista-clientes"><p class="cargando">Cargando...</p></div>
+  </div>
 
-    <!-- ORDEN DE SERVICIO -->
-    <div id="sec-orden" class="oculto">
-        <h2>📝 Orden de Servicio</h2>
-        <div class="form-seccion">
-            <h3>Cliente — Seleccioná de la lista 👇</h3>
-            <select id="orden-cli" onchange="cargarCliente()">
-                <option value="">-- Elegir cliente --</option>
-            </select>
-            <h3>Vehículo</h3>
-            <div class="fila">
-                <div><label>Marca *</label><input type="text" id="marca"></div>
-                <div><label>Modelo</label><input type="text" id="modelo"></div>
-                <div><label>Patente</label><input type="text" id="placa"></div>
-            </div>
-            <div class="fila">
-                <div><label>Km</label><input type="text" id="km"></div>
-                <div><label>Fecha</label><input type="date" id="fecha-ingreso"></div>
-            </div>
-            <h3>Datos del Cliente</h3>
-            <div class="fila">
-                <div><label>Nombre *</label><input type="text" id="orden-nombre"></div>
-                <div><label>Teléfono *</label><input type="tel" id="orden-tel"></div>
-            </div>
-            <h3>Trabajos / Repuestos</h3>
-            <table class="tabla-trabajos">
-                <thead>
-                    <tr>
-                        <th style="width:15%;text-align:center;">Cant.</th>
-                        <th style="width:60%;">Descripción</th>
-                        <th style="width:25%;text-align:right;">Precio $</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="cuerpo-tabla"></tbody>
-                <tfoot>
-                    <tr class="fila-total">
-                        <td colspan="3">TOTAL $ <span id="total">0</span></td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
-            <button class="btn-guardar" onclick="agregarFila()" style="width:100%;margin:10px 0;">➕ Agregar fila</button>
-            <h3>Códigos OBD2 detectados</h3>
-            <input type="text" id="codigos-obd" placeholder="Ej: P0300, P0171, P0420">
-            <h3>Observaciones</h3>
-            <textarea id="obs" rows="3"></textarea>
-            <button class="btn-principal" onclick="generarOrden()">✅ ARMAR ORDEN</button>
-        </div>
-        <div id="caja-orden" class="oculto">
-            <div class="vista-previa" id="texto-orden"></div>
-            <button id="btn-copiar-orden" class="btn-copiar" onclick="copiarOrden()">📋 COPIAR ORDEN</button>
-            <p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp y mandalo al cliente</p>
-        </div>
+  <div id="sec-orden" class="oculto">
+    <h2>📝 Orden de Servicio</h2>
+    <div class="form-seccion">
+      <h3>Cliente — Seleccioná de la lista 👇</h3>
+      <select id="orden-cli" onchange="cargarCliente()">
+        <option value="">-- Elegir cliente --</option>
+      </select>
+      <h3>Vehículo</h3>
+      <div class="fila">
+        <div><label>Marca *</label><input type="text" id="marca"></div>
+        <div><label>Modelo</label><input type="text" id="modelo"></div>
+        <div><label>Patente</label><input type="text" id="placa"></div>
+      </div>
+      <div class="fila">
+        <div><label>Km</label><input type="text" id="km"></div>
+        <div><label>Fecha</label><input type="date" id="fecha-ingreso"></div>
+      </div>
+      <h3>Datos del Cliente</h3>
+      <div class="fila">
+        <div><label>Nombre *</label><input type="text" id="orden-nombre"></div>
+        <div><label>Teléfono *</label><input type="tel" id="orden-tel"></div>
+      </div>
+      <h3>Trabajos / Repuestos</h3>
+      <table class="tabla-trabajos">
+        <thead>
+          <tr>
+            <th style="width:15%;text-align:center;">Cant.</th>
+            <th style="width:60%;">Descripción</th>
+            <th style="width:25%;text-align:right;">Precio $</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="cuerpo-tabla"></tbody>
+        <tfoot>
+          <tr class="fila-total">
+            <td colspan="3">TOTAL $ <span id="total">0</span></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+      <button class="btn-guardar" onclick="agregarFila()" style="width:100%;margin:10px 0;">➕ Agregar fila</button>
+      <h3>Códigos OBD2</h3>
+      <input type="text" id="codigos-obd-orden" placeholder="Pegá acá los códigos escaneados">
+      <h3>Observaciones</h3>
+      <textarea id="obs" rows="3"></textarea>
+      <button class="btn-principal" onclick="generarOrden()">✅ ARMAR ORDEN</button>
     </div>
+    <div id="caja-orden" class="oculto">
+      <div class="vista-previa" id="texto-orden"></div>
+      <button id="btn-copiar-orden" class="btn-copiar" onclick="copiarOrden()">📋 COPIAR ORDEN</button>
+      <p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp y mandalo al cliente</p>
+    </div>
+  </div>
 
-    <!-- OBD2 -->
-    <div id="sec-obd2" class="oculto">
-        <h2>🔍 Diagnóstico OBD2 — Códigos de Fallas</h2>
-        <div class="form-seccion">
-            <h3>Buscar Código</h3>
-            <div class="obd2-busqueda">
-                <input type="text" id="codigo-obd" placeholder="Ej: P0300" oninput="formatearCodigo(this.value)">
-                <button class="btn-principal" style="width:auto;margin-top:0;padding:12px 20px;" onclick="buscarCodigo()">🔍 Buscar</button>
-            </div>
-            <p style="color:#64748B;font-size:13px;">Escribí el código completo (ej: P0123, B1234, C0456, U0100)</p>
-            <div id="obd2-resultado" class="oculto"></div>
-            <h3>Códigos Comunes — Tocá para consultar</h3>
-            <div class="obd2-lista-codigos">
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0300')">P0300</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0301')">P0301</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0302')">P0302</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0303')">P0303</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0304')">P0304</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0171')">P0171</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0172')">P0172</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0420')">P0420</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0442')">P0442</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0455')">P0455</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0110')">P0110</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0120')">P0120</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0220')">P0220</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0335')">P0335</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0340')">P0340</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0505')">P0505</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0130')">P0130</div>
-                <div class="obd2-codigo-item" onclick="buscarCodigoDirecto('P0135')">P0135</div>
-            </div>
-            <h3 style="margin-top:24px;">📋 Clasificación de Códigos</h3>
-            <div style="background:#F8FAFC;padding:14px;border-radius:10px;line-height:1.8;">
-                <p><strong>P</strong> — Powertrain ➜ Motor, transmisión y emisiones</p>
-                <p><strong>B</strong> — Body ➜ Carrocería, aire acondicionado, bolsas de aire</p>
-                <p><strong>C</strong> — Chasis ➜ Frenos, dirección, suspensión</p>
-                <p><strong>U</strong> — Red ➜ Comunicación entre módulos</p>
-            </div>
-        </div>
+  <div id="sec-obd2" class="oculto">
+    <h2 style="text-align:center;margin-bottom:16px;">🔍 Escáner OBD2 — ELM327 Bluetooth</h2>
+    <div class="aviso-obd">⚠️ Funciona en Android con Chrome. Requiere adaptador ELM327 Bluetooth emparejado antes.</div>
+    <div class="tarjeta">
+      <h3>📡 Conexión con ELM327</h3>
+      <div id="estado-conn" class="estado-obd desc">Desconectado — Emparejá el ELM327 por Bluetooth primero</div>
+      <button id="btn-conectar" class="btn btn-conectar" onclick="conectarBluetooth()">🔗 Conectar ELM327</button>
+      <button id="btn-desconectar" class="btn btn-limpiar oculto" onclick="desconectar()">❌ Desconectar</button>
     </div>
-    <!-- MECÁNICO -->
-    <div id="sec-mecanico" class="oculto">
-        <h2>🔧 Datos del Mecánico</h2>
-        <div class="form-seccion">
-            <h3>Editar Datos del Mecánico</h3>
-            <label>Nombre Completo</label>
-            <input type="text" id="mec-nombre" placeholder="Nombre y Apellido">
-            <label>Teléfono / WhatsApp</label>
-            <input type="tel" id="mec-tel" placeholder="2984 548329">
-            <label>DNI / CUIL</label>
-            <input type="text" id="mec-dni" placeholder="Número de documento">
-            <label>Especialidad</label>
-            <select id="mec-especialidad">
-                <option value="">Seleccioná</option>
-                <option>Mecánica General</option>
-                <option>Electricidad Automotriz</option>
-                <option>Inyección Electrónica</option>
-                <option>Diagnóstico Avanzado / OBD2</option>
-                <option>Jefe de Taller</option>
-            </select>
-            <div class="fila">
-                <button class="btn-guardar" onclick="guardarMecanico()">✅ GUARDAR DATOS</button>
-            </div>
+    <div id="panel-conectado" class="oculto">
+      <div class="tarjeta">
+        <h3>📊 Datos en tiempo real</h3>
+        <div id="datos-vivos">
+          <div class="dato"><span class="etiqueta">RPM</span><span class="valor" id="val-rpm">—</span></div>
+          <div class="dato"><span class="etiqueta">Temperatura</span><span class="valor" id="val-temp">—</span></div>
+          <div class="dato"><span class="etiqueta">Velocidad</span><span class="valor" id="val-kmh">—</span></div>
+          <div class="dato"><span class="etiqueta">Voltaje</span><span class="valor" id="val-volt">—</span></div>
         </div>
-        <h3>👤 Mecánico que atiende</h3>
-        <div class="mecanico-tarjeta">
-            <div class="mecanico-dato"><strong>Nombre:</strong> <span id="vm-nombre">No cargado</span></div>
-            <div class="mecanico-dato"><strong>Teléfono:</strong> <span id="vm-tel">—</span></div>
-            <div class="mecanico-dato"><strong>DNI:</strong> <span id="vm-dni">—</span></div>
-            <div class="mecanico-dato"><strong>Especialidad:</strong> <span id="vm-esp">—</span></div>
-        </div>
-        <p style="color:#64748B;font-size:13px;margin-top:8px;">💡 Estos datos aparecen en las órdenes y turnos</p>
+      </div>
+      <div class="tarjeta">
+        <h3>⚠️ Códigos de Falla DTC</h3>
+        <button class="btn btn-escaneo" onclick="leerCodigos()">🔍 Leer códigos</button>
+        <div id="lista-codigos"></div>
+        <button id="btn-borrar" class="btn btn-limpiar oculto" onclick="borrarCodigos()">🗑️ Borrar códigos del tablero</button>
+      </div>
+      <div class="tarjeta">
+        <h3>📋 Enviar a Orden de Trabajo</h3>
+        <button class="btn btn-conectar" onclick="copiarTodo()">📋 Copiar datos para la Orden</button>
+        <p style="margin-top:10px;font-size:13px;color:#64748B;">Se pegarán automáticamente en el campo "Códigos OBD2" de la orden</p>
+      </div>
     </div>
+  </div>
 
-    <!-- ASISTENTE IA -->
-    <div id="sec-asistente" class="oculto">
-        <h2>🤖 Asistente Técnico — IA</h2>
-        <div class="ia-rapidas">
-            <span class="ia-pregunta" onclick="pregRapida('Dame un resumen completo de mis turnos, clientes y facturación')">📊 Resumen del taller</span>
-            <span class="ia-pregunta" onclick="pregRapida('¿Qué revisar paso a paso si el motor no arranca en frío?')">🔧 No arranca</span>
-            <span class="ia-pregunta" onclick="pregRapida('Explicame cómo diagnosticar fallas en el sistema de inyección electrónica')">🖥️ Inyección</span>
-            <span class="ia-pregunta" onclick="pregRapida('Explicame detalladamente el código OBD2 que acabo de buscar y cómo solucionarlo')">🔍 Más sobre este código</span>
-            <span class="ia-pregunta" onclick="pregRapida('Guía para probar si la bobina de encendido funciona bien')">⚡ Bobina</span>
-            <span class="ia-pregunta" onclick="pregRapida('Cómo cambiar el aceite y filtros paso a paso')">🛢️ Cambio de aceite</span>
-        </div>
-        <div class="ia-mensajes" id="ia-chat">
-            <div class="ia-mensaje ia-asistente">🔧 ¡Hola! Conectado a tu proyecto <strong>AUTO REGINA</strong>. Preguntame sobre mecánica, diagnósticos OBD2 o gestión de tu taller.</div>
-        </div>
-        <div class="ia-fila">
-            <input type="text" id="ia-texto" placeholder="Escribí tu consulta..." onkeydown="if(event.key==='Enter')enviarIA()">
-            <button class="ia-enviar" onclick="enviarIA()">Enviar</button>
-        </div>
+  <div id="sec-mecanico" class="oculto">
+    <h2>🔧 Datos del Mecánico</h2>
+    <div class="form-seccion">
+      <label>Nombre Completo</label>
+      <input type="text" id="mec-nombre">
+      <label>Teléfono / WhatsApp</label>
+      <input type="tel" id="mec-tel">
+      <label>DNI / CUIL</label>
+      <input type="text" id="mec-dni">
+      <button class="btn-guardar" onclick="guardarMecanico()">✅ GUARDAR DATOS</button>
     </div>
-</div>
+    <div class="mecanico-tarjeta">
+      <div class="mecanico-dato"><strong>Nombre:</strong> <span id="vm-nombre">No cargado</span></div>
+      <div class="mecanico-dato"><strong>Teléfono:</strong> <span id="vm-tel">—</span></div>
+      <div class="mecanico-dato"><strong>DNI:</strong> <span id="vm-dni">—</span></div>
+    </div>
+  </div>
+
+  <div id="sec-asistente" class="oculto">
+    <h2>🤖 Asistente Técnico</h2>
+    <div class="ia-rapidas">
+      <span class="ia-pregunta" onclick="preguntaRapida('¿Cómo diagnosticar si no arranca el motor?')">🔧 No arranca</span>
+      <span class="ia-pregunta" onclick="preguntaRapida('Explicame paso a paso cómo cambiar el aceite y filtros')">🛢️ Cambio de aceite</span>
+      <span class="ia-pregunta" onclick="preguntaRapida('¿Qué revisar si hay falla en inyección electrónica?')">🖥️ Inyección</span>
+      <span class="ia-pregunta" onclick="preguntaRapida('¿Cómo probar si una bobina funciona bien?')">⚡ Bobina</span>
+    </div>
+    <div class="ia-mensajes" id="ia-chat">
+      <div class="ia-mensaje ia-asistente">🔧 ¡Hola! Soy tu asistente técnico automotriz. Preguntame lo que necesites sobre mecánica, diagnósticos o reparaciones.</div>
+    </div>
+    <div class="ia-fila">
+      <input type="text" id="ia-texto" placeholder="Escribí tu consulta..." onkeydown="if(event.key==='Enter')enviarIA()">
+      <button class="ia-enviar" onclick="enviarIA()">Enviar</button>
+    </div>
+  </div>
+</div>  .querySelectorAll('[id^="sec-"]').forEach(s=>s.classList.add('oculto'));
+  document.querySelectorAll('.pestaña').forEach(p=>{p.classList.remove('activa');p.classList.add('inactiva');});
+  document.getElementById(`sec-${sec}`).classList.remove('oculto');
+  event.target.classList.add('activa');
+  event.target.classList.remove('inactiva');
+  if(sec==='turnos') cargarTurnos();
+  if(sec==='clientes') { cargarClientes(); cargarSelectClientes(); }
+  if(sec==='mecanico') cargarMecanico();
+}
+
+function abrirAcceso() {
+  document.getElementById('modal-acceso').style.display = 'flex';
+  document.getElementById('clave').value = '';
+  document.getElementById('error-clave').style.display = 'none';
+}
+
+function cerrarAcceso() {
+  document.getElementById('modal-acceso').style.display = 'none';
+}
+
+function ingresar() {
+  const c = document.getElementById('clave').value;
+  if (c === CLAVE_CORRECTA) {
+    cerrarAcceso();
+    document.getElementById('pantalla-cliente').classList.add('oculto');
+    document.getElementById('pantalla-taller').classList.remove('oculto');
+    cargarTurnos();
+    cargarSelectClientes();
+    cargarMecanico();
+  } else {
+    document.getElementById('error-clave').style.display = 'block';
+  }
+}
+
+function salir() {
+  document.getElementById('pantalla-taller').classList.add('oculto');
+  document.getElementById('pantalla-cliente').classList.remove('oculto');
+  document.getElementById('caja-turno').classList.add('oculto');
+  document.getElementById('caja-orden').classList.add('oculto');
+  filaIndice = 0;
+  document.getElementById('cuerpo-tabla').innerHTML = '';
+  document.getElementById('total').textContent = '0';
+}
+
+// Inicializar fecha de hoy
+document.addEventListener('DOMContentLoaded', () => {
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('fecha').value = hoy;
+  document.getElementById('fecha-ingreso').value = hoy;
+  agregarFila(); // primera fila vacía
+});
+</script>
+</body>
+</html>
+
 
 <script>
 const CLAVE_CORRECTA = '1234';
 const API_KEY = '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';
 let filaIndice = 0;
-let historialConversacion = [];
-let ultimoCodigoBuscado = '';
+let dispositivo = null, servicioCaracteristica = null, bufferRespuesta = '', conectado = false, codigosLeidos = [];
+const COMANDOS = { RPM:'010C\r', TEMP:'0105\r', VELOCIDAD:'010D\r', VOLTAJE:'0142\r', CODIGOS:'03\r', BORRAR:'04\r' };
 
-// BASE DE CÓDIGOS OBD2
-const baseOBD = {
-    'P0300': {titulo:'Falla aleatoria en combustión',descripcion:'Varios cilindros fallan al azar.',gravedad:'media',
-        causas:['Bujías desgastadas','Bobina defectuosa','Fuga de vacío','Filtro de combustible tapado'],
-        solucion:['Revisar bujías','Verificar bobinas','Buscar fugas de vacío','Medir presión de combustible']},
-    'P0301': {titulo:'Falla Cilindro 1',descripcion:'No quema bien la mezcla.',gravedad:'alta',
-        causas:['Bujía 1 dañada','Bobina 1 defectuosa','Inyector obstruido','Pérdida de compresión'],
-        solucion:['Intercambiar piezas con otro cilindro','Limpiar inyector','Medir compresión']},
-    'P0302': {titulo:'Falla Cilindro 2',descripcion:'Igual que P0301 en cilindro 2.',gravedad:'alta',
-        causas:['Bujía 2','Bobina 2','Inyector 2','Compresión'],solucion:['Intercambiar piezas','Medir compresión']},
-    'P0303': {titulo:'Falla Cilindro 3',descripcion:'Igual que P0301 en cilindro 3.',gravedad:'alta',
-        causas:['Bujía 3','Bobina 3','Inyector 3','Compresión'],solucion:['Intercambiar piezas','Medir compresión']},
-    'P0304': {titulo:'Falla Cilindro 4',descripcion:'Igual que P0301 en cilindro 4.',gravedad:'alta',
-        causas:['Bujía 4','Bobina 4','Inyector 4','Compresión'],solucion:['Intercambiar piezas','Medir compresión']},
-    'P0171': {titulo:'Mezcla Pobre — Banco 1',descripcion:'Falta combustible o exceso de aire.',gravedad:'media',
-        causas:['Fuga de vacío','Sensor MAF sucio','Bomba con baja presión','Filtro tapado'],
-        solucion:['Buscar fugas de vacío','Limpiar MAF','Medir presión de combustible']},
-    'P0172': {titulo:'Mezcla Rica — Banco 1',descripcion:'Exceso de combustible.',gravedad:'media',
-        causas:['Inyectores goteando','Sensor temperatura defectuoso','Filtro aire sucio'],
-        solucion:['Revisar inyectores','Verificar sensor temperatura','Cambiar filtro de aire']},
-    'P0420': {titulo:'Catalizador ineficiente',descripcion:'No limpia bien los gases.',gravedad:'media',
-        causas:['Catalizador dañado','Sonda lambda defectuosa','Fuga en escape'],
-        solucion:['Revisar catalizador','Comprobar sondas lambda','Buscar fugas']},
-    'P0442': {titulo:'Fuga pequeña — Sistema de evaporación',descripcion:'Pérdida de vapores de combustible.',gravedad:'baja',
-        causas:['Tapa mal cerrada','Manguera agrietada'],solucion:['Cerrar bien la tapa','Revisar mangueras']},
-    'P0455': {titulo:'Fuga grande — Sistema de evaporación',descripcion:'Fuga importante.',gravedad:'alta',
-        causas:['Tapa faltante','Manguera rota'],solucion:['Revisar tapa inmediatamente','Buscar mangueras desconectadas']},
-    'P0110': {titulo:'Sensor temperatura aire admisión',descripcion:'No lee bien la temperatura del aire.',gravedad:'media',
-        causas:['Conector suelto','Cable cortado','Sensor quemado'],solucion:['Revisar conexión','Medir resistencia']},
-    'P0120': {titulo:'Sensor posición mariposa TPS',descripcion:'No detecta bien la apertura del acelerador.',gravedad:'alta',
-        causas:['Conector sucio','Cable dañado','Sensor descalibrado'],solucion:['Limpiar conector','Reemplazar sensor']},
-    'P0220': {titulo:'Sensor posición acelerador — Canal B',descripcion:'Segunda señal fallando.',gravedad:'alta',
-        causas:['Conector dañado','Cortocircuito'],solucion:['Revisar cables','Medir voltaje de referencia']},
-    'P0335': {titulo:'Sin señal sensor cigüeñal',descripcion:'No sabe en qué posición está el motor. Puede no arrancar.',gravedad:'alta',
-        causas:['Sensor dañado','Cable cortado'],solucion:['Revisar conexión','Medir resistencia']},
-    'P0340': {titulo:'Sin señal sensor árbol de levas',descripcion:'No detecta posición de válvulas.',gravedad:'media',
-        causas:['Sensor sucio/dañado','Correa distribución mal puesta'],solucion:['Limpiar sensor','Verificar sincronización']},
-    'P0505': {titulo:'Falla control de ralentí',descripcion:'Sube y baja de vueltas o se apaga.',gravedad:'media',
-        causas:['Válvula IAC sucia/trabada','Cuerpo de mariposa sucio'],solucion:['Limpiar válvula y mariposa']},
-    'P0130': {titulo:'Sonda lambda — Banco 1 Sensor 1',descripcion:'No lee bien la mezcla antes del catalizador.',gravedad:'media',
-        causas:['Cable cortado','Sensor envejecido'],solucion:['Revisar cables','Reemplazar sonda']},
-    'P0135': {titulo:'Falla calentamiento sonda lambda',descripcion:'Resistencia de calentamiento quemada.',gravedad:'baja',
-        causas:['Sensor viejo','Fusible quemado'],solucion:['Reemplazar sonda completa']}
-};
-
-// FUNCIONES OBD2
-function formatearCodigo(v){document.getElementById('codigo-obd').value=v.toUpperCase().replace(/[^A-Z0-9]/g,'');}
-function buscarCodigoDirecto(c){document.getElementById('codigo-obd').value=c;buscarCodigo();}
-function buscarCodigo(){
-    const cod=document.getElementById('codigo-obd').value.trim().toUpperCase();
-    if(!cod){alert('Escribí un código');return;}
-    ultimoCodigoBuscado=cod;
-    const div=document.getElementById('obd2-resultado');
-    if(baseOBD[cod]){
-        const d=baseOBD[cod];
-        div.innerHTML=`<div class="obd2-resultado"><div class="obd2-codigo">${cod}</div><span class="obd2-gravedad gravedad-${d.gravedad}">${d.gravedad==='baja'?'🟢 Leve':d.gravedad==='media'?'🟡 Media':'🔴 Grave'}</span><h4 class="obd2-titulo">${d.titulo}</h4><p>${d.descripcion}</p><div class="obd2-causas"><h4>🔍 Causas</h4><ul style="margin:8px 0 8px 20px;">${d.causas.map(x=>`<li>${x}</li>`).join('')}</ul></div><div style="margin-top:12px;"><h4>✅ Solución</h4><ol style="margin:8px 0 8px 20px;">${d.solucion.map(x=>`<li>${x}</li>`).join('')}</ol></div><button class="btn-copiar" onclick="copiarInfoCodigo('${cod}')" style="margin-top:16px;">📋 Copiar a orden</button></div>`;
-    }else{
-        div.innerHTML=`<div class="obd2-resultado" style="border-color:#EF4444;background:#FEF2F2;"><div class="obd2-codigo">${cod}</div><p>ℹ️ Código no encontrado localmente.</p><button class="btn-principal" onclick="preguntarIA('${cod}')">🤖 Consultar a la IA</button></div>`;
-    }
-    div.classList.remove('oculto');
-}
-function copiarInfoCodigo(cod){
-    const d=baseOBD[cod];
-    const t=`CÓDIGO OBD2: ${cod}\n━━━━━━━━━━━━━━\n${d.titulo}\nGravedad: ${d.gravedad.toUpperCase()}\n\n${d.descripcion}\n\nCAUSAS:\n• ${d.causas.join('\n• ')}\n\nSOLUCIÓN:\n• ${d.solucion.join('\n• ')}`;
-    const c=document.getElementById('codigos-obd');
-    c.value=c.value?`${c.value}, ${cod}`:cod;
-    alert(`✅ ${cod} agregado a la orden`);
-}
-function preguntarIA(cod){mostrar('asistente');document.getElementById('ia-texto').value=`Explicame detalladamente el código OBD2 ${cod}: qué significa, qué revisar y cómo solucionarlo paso a paso.`;}
-
-// FIREBASE — Asegurar cliente
-async function asegurarCliente(nombre,telefono,vehiculo){
-    const {collection,query,where,getDocs,addDoc,updateDoc,serverTimestamp}=Firestore;
-    const q=query(collection(db,'clientes'),where('telefono','==',telefono));
-    const s=await getDocs(q);
-    if(s.empty)await addDoc(collection(db,'clientes'),{nombre,telefono,vehiculo:vehiculo||'',creado:serverTimestamp()});
-    else{
-        const r=s.docs[0].ref;
-        const dt=s.docs[0].data();
-        if(dt.nombre!==nombre||dt.vehiculo!==vehiculo)await updateDoc(r,{nombre,vehiculo:vehiculo||'',actualizado:serverTimestamp()});
-    }
-}
-
-// MECÁNICO
-async function guardarMecanico(){
-    const {doc,setDoc}=Firestore;
-    const n=document.getElementById('mec-nombre').value.trim();
-    if(!n){alert('Escribí el nombre');return;}
-    await setDoc(doc(db,'configuracion','mecanico'),{
-        nombre:n,telefono:document.getElementById('mec-tel').value.trim(),
-        dni:document.getElementById('mec-dni').value.trim(),
-        especialidad:document.getElementById('mec-especialidad').value
-    });
-    cargarMecanico();alert('✅ Datos guardados');
-}
-async function cargarMecanico(){
-    const {doc,getDoc}=Firestore;
-    try{
-        const s=await getDoc(doc(db,'configuracion','mecanico'));
-        if(s.exists()){
-            const d=s.data();
-            document.getElementById('mec-nombre').value=d.nombre||'';
-            document.getElementById('mec-tel').value=d.telefono||'';
-            document.getElementById('mec-dni').value=d.dni||'';
-            document.getElementById('mec-especialidad').value=d.especialidad||'';
-            document.getElementById('vm-nombre').textContent=d.nombre||'No cargado';
-            document.getElementById('vm-tel').textContent=d.telefono||'—';
-            document.getElementById('vm-dni').textContent=d.dni||'—';
-            document.getElementById('vm-esp').textContent=d.especialidad||'—';
-        }
-    }catch(e){}
-}
-
-// CLIENTES
-async function guardarCliente(){
-    const n=document.getElementById('cli-nombre').value.trim();
-    const t=document.getElementById('cli-tel').value.trim();
-    if(!n||!t){alert('Nombre y teléfono obligatorios');return;}
-    const {collection,addDoc,serverTimestamp}=Firestore;
-    await addDoc(collection(db,'clientes'),{
-        nombre:n,telefono:t,vehiculo:document.getElementById('cli-auto').value.trim(),creado:serverTimestamp()
-    });
-    document.getElementById('cli-nombre').value='';document.getElementById('cli-tel').value='';document.getElementById('cli-auto').value='';
-    cargarClientes();cargarSelectClientes();alert('✅ Cliente guardado');
-}
-async function cargarClientes(){
-    const {collection,getDocs,query,orderBy,deleteDoc,doc}=Firestore;
-    const c=document.getElementById('lista-clientes');
-    c.innerHTML='<p class="cargando">Cargando...</p>';
-    const s=await getDocs(query(collection(db,'clientes'),orderBy('creado','desc')));
-    if(s.empty){c.innerHTML='<p class="sin-datos">No hay clientes aún</p>';return;}
-    c.innerHTML='';
-    s.forEach(d=>{
-        const dt=d.data();
-        c.innerHTML+=`<div class="lista-item"><strong>${dt.nombre}</strong><br>📞 ${dt.telefono}${dt.vehiculo?`<br>🚗 ${dt.vehiculo}`:''}<div class="acciones"><button class="btn-chico btn-eliminar" onclick="borrarCliente('${d.id}')">🗑️ Eliminar</button></div></div>`;
-    });
-}
-async function borrarCliente(id){
-    if(!confirm('¿Eliminar?'))return;
-    const {deleteDoc,doc}=Firestore;
-    await deleteDoc(doc(db,'clientes',id));
-    cargarClientes();cargarSelectClientes();
-}
-async function cargarSelectClientes(){
-    const sel=document.getElementById('orden-cli');
-    sel.innerHTML='<option value="">-- Elegir cliente --</option>';
-    const {collection,getDocs,query,orderBy}=Firestore;
-    const s=await getDocs(query(collection(db,'clientes'),orderBy('nombre')));
-    s.forEach(d=>{
-        const dt=d.data();
-        sel.innerHTML+=`<option value="${dt.nombre}|${dt.telefono}|${dt.vehiculo||''}">${dt.nombre} — ${dt.telefono}</option>`;
-    });
-}
-function cargarCliente(){
-    const v=document.getElementById('orden-cli').value;
-    if(!v)return;
-    const [n,t,a]=v.split('|');
-    document.getElementById('orden-nombre').value=n||'';
-    document.getElementById('orden-tel').value=t||'';
-    if(a)document.getElementById('marca').value=a;
-}
-
-// TABLA DE TRABAJOS
-function agregarFila(){
-    filaIndice++;
-    document.getElementById('cuerpo-tabla').innerHTML+=`<tr id="fila-${filaIndice}"><td style="text-align:center;"><input type="number" class="cant" value="1" oninput="actualizarTotal()"></td><td><input type="text" class="desc" placeholder="Descripción"></td><td style="text-align:right;"><input type="number" class="precio" value="0" oninput="actualizarTotal()"></td><td><button class="btn-chico btn-eliminar" onclick="quitarFila(${filaIndice})">✕</button></td></tr>`;
-    actualizarTotal();
-}
-function quitarFila(id){document.getElementById(`fila-${id}`).remove();actualizarTotal();}
-function actualizarTotal(){
-    let total=0;
-    document.querySelectorAll('#cuerpo-tabla tr').forEach(f=>{
-        const c=parseFloat(f.querySelector
-    
+function decodificarRPM(d){const m=d.match(/41 0C ([0-9A-F]{2}) ([0-9A-F]{2})/i);return m?Math.floor((parseInt(m[1],16)*256+parseInt(m[2],16))/4)+' RPM':'—';}
+function decodificarTemp(d){const m=d.match(/41 05 ([0-9A-F]{2})/i);return m?(parseInt(m[1],16)-40)+' °C':'—';}
+function decodificarVelocidad(d){const m=d.match(/41 0D ([0-9A-F]{2})/i);return m?parseInt(m[1],16)+' km/h':'—';}
+function decodificarVoltaje(d){const m=d.match(/41 42 ([0-9A-F]{2}) ([0-9A-F]{2})/i);return m?((parseInt(m[1],16)*256+parseInt(m[2],16))/1000).toFixed(2)+' V':'—';}
+function decodificarCodigos(d){const l=d.split('\n').map(x=>x.trim()).filter(x=>x.length>=6&&!x.includes('SEARCHING')),c=[],letras=['P','B','C','U'];l.forEach(x=>{const limp=x.replace(/[\s\r]/g,'').toUpperCase();if(limp.length>=5&&/^[0-9A-F]+$/.test(limp)){for(let i=0;i<limp.length;i+=4){const b=limp.substring(i,i+4);if(b.length===4){const idx=parseInt(b[0],16),letra=letras[idx>>2],d1=idx&3,r=b.slice(1);c.push(`${letra}${d1}${r}`)}}}});return c.filter(x=>/^[PBCU]\d{4}$/.t
