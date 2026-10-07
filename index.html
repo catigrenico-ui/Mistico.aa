@@ -3,40 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AUTO REGINA</title>
+<title>AUTO REGINA — Turnos y Servicios</title>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyAPKOuYBpHuqyEVNJOENPUH1113OBvykyk",authDomain:"autoregina.firebaseapp.com",projectId:"autoregina",storageBucket:"autoregina.firebasestorage.app",messagingSenderId:"525939629424",appId:"1:525939629424:web:2a609a232758782859c3b5"};
-const app=initializeApp(firebaseConfig);
-window.db=getFirestore(app);
-window.FS={collection,addDoc,getDocs,doc,updateDoc,deleteDoc,query,orderBy,serverTimestamp,where,limit,onSnapshot};
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
+const firebaseConfig = {
+apiKey: "AIzaSyAPKOuYBpHuqyEVNJOENPUH1113OBvykyk",
+authDomain: "autoregina.firebaseapp.com",
+projectId: "autoregina",
+storageBucket: "autoregina.firebasestorage.app",
+messagingSenderId: "525939629424",
+appId: "1:525939629424:web:2a609a232758782859c3b5"
+};
+const app = initializeApp(firebaseConfig);
+window.db = getFirestore(app);
+window.Firestore = { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, where, getDoc };
 </script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,sans-serif;}
-body{background:#F0F4FC;padding:16px;max-width:650px;margin:0 auto;}
-.cabecera{background:linear-gradient(180deg,#0F2B5C,#0F2B48);color:white;padding:24px;border-radius:20px;text-align:center;margin-bottom:16px;}
-.resumen{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;}
-.tarjeta{background:white;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.06);}
-.tarjeta.pendiente{border-top:3px solid #F59E0B;}
-.tarjeta.confirmado{border-top:3px solid #3B82F6;}
-.tarjeta.atendido{border-top:3px solid #10B981;}
-.tarjeta.total{border-top:3px solid #6366F1;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif;}
+body{background:#F0F4FC;min-height:100vh;padding:16px;max-width:720px;margin:0 auto;padding-bottom:40px;}
+.cabecera{background:linear-gradient(180deg,#0F2B5C 0%,#0F2B48 100%);color:white;padding:24px 20px;border-radius:20px;text-align:center;margin-bottom:16px;}
+.cabecera h1{font-size:22px;margin-bottom:6px;}
+.servicios{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#F5D76E;font-weight:600;}
+.aviso{background:#FFF7E0;border:2px solid #F59E0B;border-radius:14px;padding:16px;margin-bottom:20px;text-align:center;}
+.numero-grande{font-size:20px;font-weight:900;color:#B45309;margin:6px 0;letter-spacing:1px;}
 .pestañas{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;}
-.pestaña{padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;white-space:nowrap;border:none;cursor:pointer;}
+.pestaña{padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;white-space:nowrap;cursor:pointer;border:none;}
 .pestaña.activa{background:#0F2B48;color:white;}
 .pestaña.inactiva{background:white;color:#64748B;}
 .pestaña.salir{background:#FEE2E2;color:#B91C1C;margin-left:auto;}
 .form-seccion{background:white;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(15,43,72,.08);}
-h2{font-size:20px;color:#0F2B48;margin-bottom:16px;}
-label{display:block;margin:10px 0 4px;font-weight:600;color:#334155;font-size:14px;}
-input,select,textarea{width:100%;padding:10px 12px;border:2px solid #E2E8F0;border-radius:8px;font-size:15px;}
-input:focus,select:focus{outline:none;border-color:#0F2B48;}
+h2{font-size:20px;font-weight:800;color:#0F2B48;margin-bottom:16px;}
+h3{font-size:16px;font-weight:700;color:#0F2B48;margin:20px 0 12px;padding-bottom:6px;border-bottom:2px solid #0F2B48;}
+label{display:block;margin:10px 0 4px;font-weight:600;color:#334155;font-size:13px;}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid #CBD5E1;border-radius:6px;font-size:14px;background:#FAFCFF;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#0F2B48;}
+.fila{display:flex;gap:10px;flex-wrap:wrap;}
+.fila>div{flex:1;min-width:100px;}
+.fila-3{display:flex;gap:8px;flex-wrap:wrap;}
+.fila-3>div{flex:1;min-width:110px;}
 .btn-principal{width:100%;background:#0F2B48;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:800;margin-top:20px;cursor:pointer;}
-.btn-copiar{width:100%;background:#10B981;color:white;padding:13px;border:none;border-radius:12px;font-size:15px;font-weight:700;margin-top:10px;cursor:pointer;}
+.btn-copiar{width:100%;background:#10B981;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:700;margin-top:16px;cursor:pointer;transition:all .2s;}
+.btn-copiar:active{transform:scale(.98);}
+.btn-copiado{background:#059669 !important;}
 .btn-chico{padding:8px 12px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin:4px;}
 .btn-guardar{background:#10B981;color:white;}
 .btn-eliminar{background:#FEE2E2;color:#B91C1C;}
+.btn-editar{background:#DBEAFE;color:#1E40AF;}
 .acceso-taller{width:100%;background:transparent;color:#0F2B48;border:2px solid #0F2B48;padding:14px;border-radius:12px;font-size:15px;font-weight:700;margin-top:20px;cursor:pointer;}
 .modal{position:fixed;inset:0;background:rgba(15,43,72,.85);display:none;align-items:center;justify-content:center;padding:20px;z-index:100;}
 .modal-caja{background:white;padding:24px;border-radius:16px;width:100%;max-width:340px;}
@@ -44,292 +57,279 @@ input:focus,select:focus{outline:none;border-color:#0F2B48;}
 .btn-ingresar{background:#0F2B48;color:white;}
 .btn-volver{background:#E5E7EB;color:#374151;}
 .error{color:#EF4444;text-align:center;margin-top:12px;display:none;}
+.vista-previa{background:white;border:2px solid #0F52BA;border-radius:16px;padding:20px;margin-top:20px;white-space:pre-wrap;font-size:12px;line-height:1.5;}
 .oculto{display:none !important;}
 .lista-item{background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.sin-datos{text-align:center;padding:30px;color:#64748B;}
 .acciones{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
 .area-copiado{position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none;}
-.aviso-exito{background:#D1FAE5;border:2px solid #10B981;border-radius:12px;padding:12px;text-align:center;margin-top:12px;color:#065F46;font-weight:600;}
+.orden-cabecera{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0F52BA;padding-bottom:12px;margin-bottom:12px;}
+.orden-logo{text-align:center;flex:1;}
+.orden-logo h2{margin:0 0 4px 0;font-size:18px;color:#0F52BA;}
+.orden-dir{font-size:12px;color:#333;line-height:1.4;}
+.orden-folio{text-align:right;min-width:140px;}
+.orden-folio label{font-weight:700;color:#0F52BA;}
+.orden-folio input{text-align:right;font-weight:700;border:none;border-bottom:1px solid #999;background:transparent;}
+.seccion-datos{border:1px solid #CBD5E1;border-radius:8px;padding:14px;margin-bottom:14px;}
+.seccion-titulo{background:#0F52BA;color:white;padding:8px 14px;font-weight:700;border-radius:6px 6px 0 0;margin:-14px -14px 12px -14px;}
+.tabla-trabajos{width:100%;border-collapse:collapse;margin:12px 0;}
+.tabla-trabajos th,.tabla-trabajos td{border:1px solid #CBD5E1;padding:8px 6px;font-size:13px;}
+.tabla-trabajos th{background:#0F52BA;color:white;font-weight:700;}
+.tabla-trabajos .cant{width:15%;text-align:center;}
+.tabla-trabajos .desc{width:50%;}
+.tabla-trabajos .precio{width:20%;text-align:right;}
+.tabla-trabajos .importe{width:15%;text-align:right;font-weight:bold;color:#0F2B48;}
+.tabla-trabajos input{border:1px solid #E2E8F0;background:#FAFCFF;padding:6px;width:100%;font-size:14px;border-radius:4px;}
+.fila-total{background:#E6F0FA;font-weight:800;font-size:18px;color:#0F52BA;}
+.fila-total td{border:none;padding:12px 8px;text-align:right;}
+.fila-iva{font-size:13px;color:#333;}
+.fila-iva input{width:auto;margin-left:6px;}
+.inventario-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px;}
+.inv-item{display:flex;align-items:center;gap:6px;font-size:13px;}
+.inv-item input{width:auto;}
+.check-linea{display:flex;align-items:center;gap:6px;margin:6px 0;}
+.cargando{text-align:center;padding:20px;color:#165DFF;font-weight:600;}
 .estado{display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;}
 .estado-pendiente{background:#FEF3C7;color:#92400E;}
 .estado-confirmado{background:#DBEAFE;color:#1E40AF;}
 .estado-atendido{background:#D1FAE5;color:#065F46;}
-.filtros{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
-.btn-filtro{padding:8px 14px;border-radius:20px;border:none;font-size:13px;font-weight:600;cursor:pointer;}
-.btn-filtro.activo{background:#0F2B48;color:white;}
-.btn-filtro.inactivo{background:white;color:#64748B;}
+.aviso-exito{background:#D1FAE5;border:2px solid #10B981;border-radius:12px;padding:12px;text-align:center;margin-top:12px;color:#065F46;font-weight:600;}
 .ia-mensajes{max-height:350px;overflow-y:auto;padding:16px;background:#F8FAFC;border-radius:16px;margin-bottom:12px;}
 .ia-mensaje{margin-bottom:14px;padding:12px 16px;border-radius:16px;max-width:90%;line-height:1.6;white-space:pre-wrap;}
 .ia-usuario{background:#DBEAFE;color:#1E3A8A;margin-left:auto;border-bottom-right-radius:6px;}
 .ia-asistente{background:#E0F2FE;color:#0C4A6E;margin-right:auto;border-bottom-left-radius:6px;}
+.ia-pensando{font-style:italic;color:#64748B;}
+.ia-rapidas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.ia-pregunta{background:#F1F5F9;border:1px solid #CBD5E1;border-radius:20px;padding:10px 16px;font-size:13px;cursor:pointer;transition:.2s;}
+.ia-pregunta:hover{background:#E0F2FE;border-color:#0F2B48;}
 .ia-fila{display:flex;gap:10px;}
 .ia-fila input{flex:1;margin:0;}
 .ia-enviar{background:linear-gradient(135deg,#0F2B48,#165DFF);color:white;border:none;border-radius:12px;padding:14px 20px;font-weight:700;cursor:pointer;white-space:nowrap;}
-.tabla-trabajos{width:100%;border-collapse:collapse;margin:15px 0;}
-.tabla-trabajos th{background:#0F52B3;color:white;padding:10px 8px;font-size:13px;text-align:left;}
-.tabla-trabajos td{border:1px solid #CBD5E1;padding:8px;font-size:13px;}
-.tabla-trabajos input{border:none;width:100%;padding:4px;background:transparent;}
-.no-imprimir{display:block;}
-@media print{.no-imprimir{display:none !important;}body{background:white;}}
-.aviso-nube{background:#E0F2FE;border:2px solid #165DFF;border-radius:12px;padding:12px;margin-bottom:16px;text-align:center;}
+.btn-agregar-fila{background:#E0F2FE;color:#0C4A6E;border:none;border-radius:8px;padding:10px 16px;font-weight:600;cursor:pointer;margin:10px 0;}
+.lista-ordenes{margin-top:30px;}
 </style>
 </head>
 <body>
 <textarea id="area-copiado" class="area-copiado"></textarea>
 
 <div id="pantalla-cliente">
-  <div class="cabecera">
-    <h1>AUTO REGINA</h1>
-    <p style="color:#F5D76E;margin-top:8px;">⚙️ Mecánica • Electricidad • Inyección</p>
-  </div>
-  
-  <div class="aviso-nube no-imprimir" id="aviso-nube">
-    ⚠️ <strong>Para que todo funcione:</strong> subí el archivo a tu página de GitHub o abrilo desde un servidor web.
-  </div>
-  
-  <div style="background:#FFF7E0;border:2px solid #F59E0B;border-radius:14px;padding:16px;margin-bottom:20px;text-align:center;">
-    <p><strong>ANTES DE PEDIR TU TURNO:</strong></p>
-    <p>1️⃣ Guardá: +54 9 2984 54-8329</p>
-    <p>2️⃣ Completá tus datos</p>
-    <p>3️⃣ Copiá y mandá por WhatsApp ✅</p>
-  </div>
-  <div class="form-seccion">
-    <h2 style="text-align:center;">📅 Pedí tu Turno</h2>
-    <label>Fecha</label><input type="date" id="fecha">
-    <label>Horario</label>
-    <select id="horario">
-      <option value="">Seleccioná</option>
-      <option>Mañana — 09:00 a 12:00</option>
-      <option>Tarde — 15:00 a 18:00</option>
-    </select>
-    <label>Tu Nombre</label><input type="text" id="nombre" placeholder="Nombre y Apellido">
-    <label>Teléfono / WhatsApp</label><input type="tel" id="telefono" placeholder="2984 548329">
-    <label>Vehículo</label><input type="text" id="vehiculo" placeholder="Marca, modelo, año">
-    <label>Servicio</label>
-    <select id="servicio">
-      <option value="">Seleccioná</option>
-      <option>Mecánica General</option>
-      <option>Electricidad</option>
-      <option>Inyección Electrónica</option>
-      <option>Revisión / Mantenimiento</option>
-      <option>Cambio de aceite</option>
-      <option>Frenos / Embrague</option>
-      <option>Diagnóstico</option>
-      <option>Otro</option>
-    </select>
-    <button class="btn-principal" onclick="generarTurno()">✅ GENERAR TURNO</button>
-    <div id="caja-turno" class="oculto">
-      <div class="aviso-exito">✅ ¡Listo! Copiá y mandá por WhatsApp</div>
-      <div style="background:white;border:2px solid #0F2B48;border-radius:16px;padding:20px;margin-top:20px;white-space:pre-wrap;font-size:13px;line-height:1.6;" id="texto-turno"></div>
-      <button class="btn-copiar" onclick="copiarMensaje()">📋 COPIAR MENSAJE</button>
-      <p style="text-align:center;margin:8px 0;color:#64748B;font-size:13px;">Abrí WhatsApp → Pegá → Enviá</p>
-    </div>
-  </div>
-  <button class="acceso-taller" onclick="abrirAcceso()">🔧 Acceso del Taller</button>
+<div class="cabecera">
+<h1>AUTO REGINA</h1>
+<div class="servicios"><span>⚙️ Mecánica</span><span>⚡ Electricidad</span><span>🖥️ Inyección</span></div>
+</div>
+<div class="aviso">
+<p>📞 <strong>ANTES DE PEDIR TU TURNO:</strong></p>
+<p>1️⃣ Guardá: <span class="numero-grande">+54 9 2984 54-8329</span></p>
+<p>2️⃣ Completá tus datos abajo 👇</p>
+<p>3️⃣ Tocá el botón para copiar y mandalo por WhatsApp</p>
+</div>
+<div class="form-seccion">
+<h2 style="text-align:center;">📅 Pedí tu Turno</h2>
+<label>Fecha</label><input type="date" id="fecha">
+<label>Horario</label>
+<select id="horario"><option value="">Seleccioná</option><option>Mañana — 09:00 a 12:00</option><option>Tarde — 15:00 a 18:00</option></select>
+<label>Tu Nombre</label><input type="text" id="nombre" placeholder="Nombre y Apellido">
+<label>Teléfono / WhatsApp</label><input type="tel" id="telefono" placeholder="2984 548329">
+<label>Vehículo</label><input type="text" id="vehiculo" placeholder="Marca, modelo, año">
+<label>Servicio</label>
+<select id="servicio">
+<option value="">Seleccioná</option>
+<option>Mecánica General</option><option>Electricidad</option><option>Inyección Electrónica</option>
+<option>Revisión / Mantenimiento</option><option>Cambio de aceite</option><option>Frenos / Embrague</option>
+<option>Diagnóstico / Escaneo</option><option>Otros</option>
+</select>
+<button class="btn-principal" onclick="generarTurno()">✅ GENERAR TURNO</button>
+<div id="caja-turno" class="oculto">
+<div class="aviso-exito">✅ ¡Listo! Mensaje generado</div>
+<div class="vista-previa" id="texto-turno"></div>
+<button id="btn-copiar-turno" class="btn-copiar" onclick="copiarTurno()">📋 TOCÁ ACÁ PARA COPIAR</button>
+<p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp y mandalo</p>
+</div>
+</div>
+<button class="acceso-taller" onclick="abrirAcceso()">🔧 Acceso del Taller</button>
 </div>
 
 <div class="modal" id="modal-acceso">
-  <div class="modal-caja">
-    <h3 style="text-align:center;color:#0F2B48;">🔧 ACCESO DEL TALLER</h3>
-    <label>Contraseña</label><input type="password" id="clave" placeholder="••••" autocomplete="off">
-    <button class="btn-ingresar" onclick="ingresar()">INGRESAR</button>
-    <button class="btn-volver" onclick="cerrarAcceso()">Volver</button>
-    <p class="error" id="error-clave">Contraseña incorrecta</p>
-  </div>
+<div class="modal-caja">
+<h3 style="text-align:center;color:#0F2B48;">🔧 ACCESO TALLER</h3>
+<label>Contraseña</label><input type="password" id="clave" placeholder="Escribí la contraseña">
+<button class="btn-ingresar" onclick="ingresar()">INGRESAR</button>
+<button class="btn-volver" onclick="cerrarAcceso()">Volver</button>
+<p class="error" id="error-clave">Contraseña incorrecta</p>
+</div>
 </div>
 
 <div id="pantalla-taller" class="oculto">
-  <div class="cabecera no-imprimir">
-    <h1>AUTO REGINA — TALLER</h1>
-    <p style="color:#F5D76E;margin-top:8px;">Panel de Administración</p>
-    <span style="display:inline-block;background:#D1FAE5;color:#065F46;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;margin-top:8px;" id="estado-nube">🔄 Conectando...</span>
-  </div>
-  <div class="resumen no-imprimir">
-    <div class="tarjeta pendiente"><h3 id="cant-pendiente">0</h3><p>Pendientes</p></div>
-    <div class="tarjeta confirmado"><h3 id="cant-confirmado">0</h3><p>Confirmados</p></div>
-    <div class="tarjeta atendido"><h3 id="cant-atendido">0</h3><p>Atendidos</p></div>
-    <div class="tarjeta total"><h3 id="cant-total">0</h3><p>Total Hoy</p></div>
-  </div>
-  <div class="pestañas no-imprimir">
-    <button class="pestaña activa" onclick="mostrar('turnos')">📋 Turnos</button>
-    <button class="pestaña inactiva" onclick="mostrar('clientes')">👥 Clientes</button>
-    <button class="pestaña inactiva" onclick="mostrar('orden')">📝 Orden</button>
-    <button class="pestaña inactiva" onclick="mostrar('asistente')">🤖 IA</button>
-    <button class="pestaña salir" onclick="salir()">🚪 Salir</button>
-  </div>
-
-  <div id="sec-turnos">
-    <h2>📋 Agenda de Turnos</h2>
-    <div class="filtros no-imprimir">
-      <button class="btn-filtro activo" onclick="filtrarTurnos('todos')">Todos</button>
-      <button class="btn-filtro inactivo" onclick="filtrarTurnos('pendiente')">Pendientes</button>
-      <button class="btn-filtro inactivo" onclick="filtrarTurnos('confirmado')">Confirmados</button>
-      <button class="btn-filtro inactivo" onclick="filtrarTurnos('atendido')">Atendidos</button>
-      <button class="btn-filtro inactivo" onclick="filtrarTurnos('hoy')">Hoy</button>
-    </div>
-    <div id="lista-turnos"><p>Cargando...</p></div>
-  </div>
-
-  <div id="sec-clientes" class="oculto">
-    <h2>👥 Clientes (<span id="total-clientes">0</span>)</h2>
-    <div class="form-seccion">
-      <h3>Agregar Nuevo Cliente</h3>
-      <label>Nombre *</label><input type="text" id="cli-nombre">
-      <label>Teléfono *</label><input type="tel" id="cli-tel">
-      <label>Vehículo</label><input type="text" id="cli-auto">
-      <button class="btn-guardar" onclick="guardarCliente()">✅ GUARDAR CLIENTE</button>
-    </div>
-    <h3>Lista de Clientes</h3>
-    <div id="lista-clientes"><p>Cargando...</p></div>
-  </div>
-
-  <div id="sec-orden" class="oculto">
-    <h2>📝 Orden de Servicio</h2>
-    <div class="form-seccion">
-      <label>Nº Folio</label><input type="text" id="nro-folio" readonly>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <div style="flex:1;min-width:100px;"><label>Marca</label><input type="text" id="marca"></div>
-        <div style="flex:1;min-width:100px;"><label>Modelo</label><input type="text" id="modelo"></div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <div style="flex:1;min-width:100px;"><label>Fecha Ingreso</label><input type="date" id="fecha-ingreso"></div>
-        <div style="flex:1;min-width:100px;"><label>Km</label><input type="text" id="km"></div>
-      </div>
-      <label>Cliente</label>
-      <select id="orden-cli" onchange="cargarCliente()">
-        <option value="">-- Seleccionar cliente --</option>
-      </select>
-      <input type="text" id="orden-nombre" placeholder="Nombre del Cliente" style="margin-top:8px;">
-      <input type="tel" id="orden-tel" placeholder="Teléfono" style="margin-top:8px;">
-      
-      <table class="tabla-trabajos">
-        <thead><tr><th>CANT</th><th>TRABAJO</th><th>PRECIO</th><th>IMPORTE</th></tr></thead>
-        <tbody id="cuerpo-tabla"></tbody>
-      </table>
-      <button class="btn-chico btn-guardar" onclick="agregarFila()">➕ Agregar fila</button>
-      <h3 style="text-align:right;">TOTAL: $ <span id="total">0</span></h3>
-      <textarea id="obs" rows="3" placeholder="Observaciones..." style="margin-top:10px;"></textarea>
-      <button class="btn-copiar" onclick="copiarOrden()">📋 COPIAR ORDEN</button>
-      <button class="btn-principal" onclick="guardarOrdenBD()">✅ GUARDAR ORDEN</button>
-    </div>
-  </div>
-
-  <div id="sec-asistente" class="oculto">
-    <h2>🤖 Asistente Técnico</h2>
-    <div class="ia-mensajes" id="ia-chat">
-      <div class="ia-mensaje ia-asistente">🔧 Conectando con asistente... Escribí tu consulta abajo.</div>
-    </div>
-    <div class="ia-fila no-imprimir">
-      <input type="text" id="ia-texto" placeholder="Ej: ¿Qué es el código P0300?..." onkeydown="if(event.key==='Enter')enviarIA()">
-      <button class="ia-enviar" onclick="enviarIA()">Enviar</button>
-    </div>
-  </div>
+<div class="cabecera">
+<h1>AUTO REGINA — TALLER</h1>
+<div class="servicios"><span>⚙️ Mecánica</span><span>⚡ Electricidad</span><span>🖥️ Inyección</span></div>
+</div>
+<div class="pestañas">
+<button class="pestaña activa" onclick="mostrar('turnos')">📋 Turnos</button>
+<button class="pestaña inactiva" onclick="mostrar('clientes')">👥 Clientes</button>
+<button class="pestaña inactiva" onclick="mostrar('orden')">📝 Ordenes</button>
+<button class="pestaña inactiva" onclick="mostrar('asistente')">🤖 IA</button>
+<button class="pestaña salir" onclick="salir()">🚪 Salir</button>
 </div>
 
-<script>
-const CLAVE='1234';
-const API_KEY='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';
-let filaIndice=0, filtroActivo='todos', suscripcionTurnos=null;
-const hoy=new Date().toISOString().split('T')[0];
-const {collection,addDoc,getDocs,doc,updateDoc,deleteDoc,query,orderBy,serverTimestamp,where,limit,onSnapshot}=FS;
+<div id="sec-turnos">
+<h2>📋 Turnos Recibidos</h2>
+<div id="lista-turnos"><p class="cargando">Cargando...</p></div>
+</div>
 
-async function verificarConexion(){try{await getDocs(collection(db,'turnos'));document.getElementById('estado-nube').textContent='✅ CONECTADO';document.getElementById('estado-nube').style.background='#D1FAE5';document.getElementById('aviso-nube').style.display='none';}catch(e){document.getElementById('estado-nube').textContent='❌ SIN CONEXIÓN — Subí a GitHub';document.getElementById('estado-nube').style.background='#FEE2E2';document.getElementById('estado-nube').style.color='#B91C1C';}}
+<div id="sec-clientes" class="oculto">
+<h2>👥 Clientes</h2>
+<div class="form-seccion">
+<h3>Agregar Cliente</h3>
+<label>Nombre *</label><input type="text" id="cli-nombre" placeholder="Nombre y Apellido">
+<label>Teléfono *</label><input type="tel" id="cli-tel" placeholder="2984 548329">
+<label>Vehículo</label><input type="text" id="cli-auto" placeholder="Marca, modelo, año">
+<div class="fila"><button class="btn-guardar" onclick="guardarCliente()">✅ GUARDAR</button></div>
+</div>
+<h3>📂 Lista de Clientes</h3>
+<div id="lista-clientes"><p class="cargando">Cargando...</p></div>
+</div>
 
-async function obtenerSiguienteFolio(){const q=query(collection(db,'ordenes'),orderBy('folio','desc'),limit(1));const s=await getDocs(q);return s.empty?1:(s.docs[0].data().folio||0)+1;}
-async function asegurarCliente(n,t,v){const q=query(collection(db,'clientes'),where('telefono','==',t));const s=await getDocs(q);if(s.empty&&n&&t)await addDoc(collection(db,'clientes'),{nombre:n,telefono:t,vehiculo:v||'',creado:serverTimestamp()});}
-async function guardarCliente(){const n=document.getElementById('cli-nombre').value.trim(),t=document.getElementById('cli-tel').value.trim();if(!n||!t){alert('Completá nombre y teléfono');return;}await addDoc(collection(db,'clientes'),{nombre:n,telefono:t,vehiculo:document.getElementById('cli-auto').value.trim(),creado:serverTimestamp()});document.getElementById('cli-nombre').value='';document.getElementById('cli-tel').value='';document.getElementById('cli-auto').value='';cargarClientes();cargarSelectClientes();alert('✅ Cliente guardado');}
-async function cargarClientes(){const c=document.getElementById('lista-clientes');const s=await getDocs(query(collection(db,'clientes'),orderBy('nombre')));document.getElementById('total-clientes').textContent=s.size;if(s.empty){c.innerHTML='<p>No hay clientes</p>';return;}c.innerHTML='';s.forEach(d=>{const dt=d.data();c.innerHTML+=`<div class="lista-item"><strong>${dt.nombre}</strong><br>📞 ${dt.telefono}${dt.vehiculo?`<br>🚗 ${dt.vehiculo}`:''}<div class="acciones"><button class="btn-chico btn-eliminar" onclick="borrarCliente('${d.id}')">🗑️</button></div></div>`;});}
-async function borrarCliente(id){if(!confirm('¿Eliminar?'))return;await deleteDoc(doc(db,'clientes',id));cargarClientes();cargarSelectClientes();}
-async function cargarSelectClientes(){const s=document.getElementById('orden-cli');s.innerHTML='<option value="">-- Seleccionar --</option>';try{const ss=await getDocs(query(collection(db,'clientes'),orderBy('nombre')));ss.forEach(d=>{const dt=d.data();s.innerHTML+=`<option value="${dt.nombre}|${dt.telefono}|${dt.vehiculo||''}">${dt.nombre} — ${dt.telefono}</option>`;});}catch(e){s.innerHTML='<option value="">No se pudo cargar</option>';}}
-function cargarCliente(){const v=document.getElementById('orden-cli').value;if(!v)return;const [n,t,a]=v.split('|');document.getElementById('orden-nombre').value=n||'';document.getElementById('orden-tel').value=t||'';if(a){const p=a.split(' ');document.getElementById('marca').value=p[0]||'';document.getElementById('modelo').value=p.slice(1).join(' ')||'';}}
-function agregarFila(){filaIndice++;const c=document.getElementById('cuerpo-tabla');const f=document.createElement('tr');f.innerHTML=`<td><input type="number" class="f-cant" value="1" oninput="actualizarTotal()"></td><td><input type="text" class="f-desc" placeholder="Trabajo"></td><td><input type="number" class="f-precio" value="0" oninput="actualizarTotal()"></td><td><input type="text" class="f-imp" value="0" readonly></td>`;c.appendChild(f);actualizarTotal();}
-function actualizarTotal(){let t=0;document.querySelectorAll('#cuerpo-tabla tr').forEach(r=>{const c=parseFloat(r.querySelector('.f-cant').value)||0,p=parseFloat(r.querySelector('.f-precio').value)||0,i=c*p;r.querySelector('.f-imp').value=i.toLocaleString('es-AR');t+=i;});document.getElementById('total').textContent=t.toLocaleString('es-AR');}
-async function generarTurno(){const d={fecha:document.getElementById('fecha').value,horario:document.getElementById('horario').value,nombre:document.getElementById('nombre').value.trim(),telefono:document.getElementById('telefono').value.trim(),vehiculo:document.getElementById('vehiculo').value.trim(),servicio:document.getElementById('servicio').value,estado:'pendiente'};if(!d.nombre||!d.telefono||!d.fecha){alert('Completá todos los datos');return;}try{await asegurarCliente(d.nombre,d.telefono,d.vehiculo);await addDoc(collection(db,'turnos'),{...d,creado:serverTimestamp()});const m=`SOLICITUD DE TURNO — AUTO REGINA
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📅 Fecha: ${d.fecha}
-⏰ Horario: ${d.horario}
-👤 Cliente: ${d.nombre}
-📞 Teléfono: ${d.telefono}
-🚗 Vehículo: ${d.vehiculo}
-🔧 Servicio: ${d.servicio}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Te avisaremos para confirmar.
-AUTO REGINA • +54 9 2984 54-8329`;document.getElementById('texto-turno').textContent=m;document.getElementById('caja-turno').classList.remove('oculto');}catch(e){alert('⚠️ Guardado local — Subí a GitHub para guardar en la nube ✅');const m=`SOLICITUD DE TURNO — AUTO REGINA
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📅 Fecha: ${d.fecha}
-⏰ Horario: ${d.horario}
-👤 Cliente: ${d.nombre}
-📞 Teléfono: ${d.telefono}
-🚗 Vehículo: ${d.vehiculo}
-🔧 Servicio: ${d.servicio}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Te avisaremos para confirmar.
-AUTO REGINA • +54 9 2984 54-8329`;document.getElementById('texto-turno').textContent=m;document.getElementById('caja-turno').classList.remove('oculto');}}
-function copiarMensaje(){const t=document.getElementById('texto-turno').textContent;navigator.clipboard.writeText(t).then(()=>alert('✅ Copiado! Andá a WhatsApp')).catch(()=>{const a=document.getElementById('area-copiado');a.value=t;a.select();document.execCommand('copy');alert('✅ Copiado!');});}
-async function guardarOrdenBD(){const f=parseInt(document.getElementById('nro-folio').value)||await obtenerSiguienteFolio();document.getElementById('nro-folio').value=f;const filas=Array.from(document.querySelectorAll('#cuerpo-tabla tr')).map(r=>({cantidad:r.querySelector('.f-cant').value,descripcion:r.querySelector('.f-desc').value,precio:r.querySelector('.f-precio').value,importe:r.querySelector('.f-imp').value}));try{await addDoc(collection(db,'ordenes'),{folio:f,fechaIngreso:document.getElementById('fecha-ingreso').value,marca:document.getElementById('marca').value,modelo:document.getElementById('modelo').value,km:document.getElementById('km').value,clienteNombre:document.getElementById('orden-nombre').value,clienteTel:document.getElementById('orden-tel').value,trabajos:filas,total:document.getElementById('total').textContent,observaciones:document.getElementById('obs').value,creado:serverTimestamp()});alert(`✅ Orden Nº ${f} guardada en la nube`);}catch(e){alert(`⚠️ Orden Nº ${f} — Copiada para guardar manualmente`);}}
-function copiarOrden(){const t=`ORDEN DE SERVICIO — AUTO REGINA
-FOLIO: ${document.getElementById('nro-folio').value}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📅 Ingreso: ${document.getElementById('fecha-ingreso').value}
-🚗 Vehículo: ${document.getElementById('marca').value} ${document.getElementById('modelo').value} — Km: ${document.getElementById('km').value}
-👤 Cliente: ${document.getElementById('orden-nombre').value} — Tel: ${document.getElementById('orden-tel').value}
-🔧 TRABAJOS:
-${Array.from(document.querySelectorAll('#cuerpo-tabla tr')).map(r=>`${r.querySelector('.f-cant').value} x ${r.querySelector('.f-desc').value} — $${r.querySelector('.f-imp').value}`).join('\n')}
-💰 TOTAL: $${document.getElementById('total').textContent}
-📝 OBS: ${document.getElementById('obs').value||'-'}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AUTO REGINA • +54 9 2984 54-8329`;navigator.clipboard.writeText(t).then(()=>alert('✅ Copiado!')).catch(()=>{const a=document.getElementById('area-copiado');a.value=t;a.select();document.execCommand('copy');alert('✅ Copiado!');});}
-function filtrarTurnos(e){filtroActivo=e;document.querySelectorAll('.btn-filtro').forEach(b=>{b.classList.remove('activo');b.classList.add('inactivo');});event.target.classList.add('activo');event.target.classList.remove('inactivo');cargarTurnos();}
-function cargarTurnos(){if(suscripcionTurnos)suscripcionTurnos();try{suscripcionTurnos=onSnapshot(query(collection(db,'turnos'),orderBy('creado','desc')),s=>{let p=0,c=0,a=0,h=0;const l=document.getElementById('lista-turnos');l.innerHTML='';if(s.empty){l.innerHTML='<p>No hay turnos recibidos</p>';return;}s.forEach(d=>{const dt=d.data();if(dt.estado==='pendiente')p++;else if(dt.estado==='confirmado')c++;else if(dt.estado==='atendido')a++;if(dt.fecha===hoy)h++;let m=true;if(filtroActivo==='pendiente')m=dt.estado==='pendiente';if(filtroActivo==='confirmado')m=dt.estado==='confirmado';if(filtroActivo==='atendido')m=dt.estado==='atendido';if(filtroActivo==='hoy')m=dt.fecha===hoy;if(m){const cl=dt.estado==='atendido'?'estado-atendido':dt.estado==='confirmado'?'estado-confirmado':'estado-pendiente';l.innerHTML+=`<div class="lista-item"><strong>${dt.nombre}</strong><br>📅 ${dt.fecha} — ${dt.horario}<br>🚗 ${dt.vehiculo}<br>🔧 ${dt.servicio}<br><span class="estado ${cl}">${dt.estado}</span><div class="acciones"><button class="btn-chico btn-guardar" onclick="cambiarEstado('${d.id}','confirmado')">✅ Confirmar</button><button class="btn-chico" style="background:#E0F2FE;color:#0C4A6E;" onclick="cambiarEstado('${d.id}','atendido')">✓ Atendido</button><button class="btn-chico btn-eliminar" onclick="borrarTurno('${d.id}')">🗑️</button></div></div>`;}});document.getElementById('cant-pendiente').textContent=p;document.getElementById('cant-confirmado').textContent=c;document.getElementById('cant-atendido').textContent=a;document.getElementById('cant-total').textContent=h;});}catch(e){document.getElementById('lista-turnos').innerHTML='<p style="color:#EF4444;">⚠️ Sin conexión con la nube — Subí a GitHub Pages para ver los turnos</p>';}}
-async function cambiarEstado(id,e){try{await updateDoc(doc(db,'turnos',id),{estado:e});}catch(err){alert('Sin conexión — Cambiá el estado cuando tengas internet');}}
-async function borrarTurno(id){if(!confirm('¿Eliminar?'))return;try{await deleteDoc(doc(db,'turnos',id));}catch(err){alert('No se pudo eliminar — Revisá la conexión');}}
+<div id="sec-orden" class="oculto">
+<h2>📝 Ordenes de Servicio</h2>
+<div class="form-seccion">
+<h3>➕ Nueva Orden</h3>
+<div class="orden-cabecera">
+<div class="orden-logo">
+<h2>ORDEN DE SERVICIO</h2>
+<div class="orden-dir"><strong>AUTO REGINA</strong><br>Juan Rotter 316<br>Villa Regina<br>Tel. 2984548329</div>
+</div>
+<div class="orden-folio"><label>Nº FOLIO</label><input type="text" id="folio" placeholder="0001"></div>
+</div>
+<div class="seccion-datos">
+<div class="seccion-titulo">DATOS DEL VEHÍCULO</div>
+<div class="fila-3">
+<div><label>Marca</label><input type="text" id="marca"></div>
+<div><label>Modelo</label><input type="text" id="modelo"></div>
+<div><label>Color</label><input type="text" id="color"></div>
+</div>
+<div class="fila-3">
+<div><label>Kilometraje</label><input type="text" id="km"></div>
+<div><label>Patente</label><input type="text" id="placa"></div>
+<div><label>Nº Serie</label><input type="text" id="nserie"></div>
+</div>
+<div class="fila-3">
+<div><label>Ingreso</label><input type="date" id="fecha-ingreso"></div>
+<div><label>Salida</label><input type="date" id="fecha-salida"></div>
+<div></div>
+</div>
+<div class="fila">
+<div class="check-linea"><input type="checkbox" id="grua"><label for="grua">Grúa</label></div>
+<div class="check-linea"><input type="checkbox" id="siem"><label for="siem">S.I.E.M.</label></div>
+</div>
+</div>
+<div class="seccion-datos">
+<div class="seccion-titulo">DATOS DEL CLIENTE</div>
+<label>Seleccionar Cliente</label>
+<select id="orden-cli" onchange="cargarCliente()"><option value="">-- Elegir cliente --</option></select>
+<div class="fila-3" style="margin-top:10px;">
+<div><label>Nombre</label><input type="text" id="orden-nombre"></div>
+<div><label>Teléfono</label><input type="tel" id="orden-tel"></div>
+<div><label>Email</label><input type="email" id="orden-email"></div>
+</div>
+</div>
+<div class="seccion-datos">
+<div class="seccion-titulo">TRABAJOS REALIZADOS</div>
+<table class="tabla-trabajos" id="tabla-trabajos">
+<thead>
+<tr>
+<th class="cant">Cant.</th>
+<th class="desc">Descripción</th>
+<th class="precio">P. Unit.</th>
+<th class="importe">Total</th>
+</tr>
+</thead>
+<tbody id="cuerpo-tabla"></tbody>
+<tfoot>
+<tr class="fila-iva">
+<td colspan="3" style="text-align:right;padding-right:12px;">I.V.A. incluido</td>
+<td><input type="checkbox" id="chk-iva"></td>
+</tr>
+<tr class="fila-total">
+<td colspan="3">TOTAL $</td>
+<td id="total-general">0,00</td>
+</tr>
+</tfoot>
+</table>
+<button type="button" class="btn-agregar-fila" onclick="agregarFila()">➕ AGREGAR LÍNEA</button>
+</div>
+<div class="seccion-datos">
+<div class="seccion-titulo">OBSERVACIONES</div>
+<textarea id="obs" rows="3" placeholder="Estado del vehículo..."></textarea>
+</div>
+<div class="seccion-datos">
+<div class="seccion-titulo">INVENTARIO</div>
+<div class="inventario-grid">
+<label class="inv-item"><input type="checkbox" class="inv-chk"> Gato</label>
+<label class="inv-item"><input type="checkbox" class="inv-chk"> Antena</label>
+<label class="inv-item"><input type="checkbox" class="inv-chk"> Herramientas</label>
+<label class="inv-item"><input type="checkbox" class="inv-chk"> Emblemas</label>
+<label class="inv-item"><input type="checkbox" class="inv-chk"> Triángulos</label>
+<label class="inv-item"><input type="checkbox" class="inv-chk"> Llanta refacción</label>
+<label class="inv-item"><input type="checkbox" class="inv-chk"> Estéreo</label>
+<label class="inv-item"><input type="checkbox" class="inv-chk"> Extintor</label>
+</div>
+</div>
+<button class="btn-principal" onclick="generarOrden()">✅ GUARDAR ORDEN</button>
+</div>
+<div id="caja-orden" class="oculto">
+<div class="aviso-exito">✅ Orden guardada correctamente</div>
+<div class="vista-previa" id="texto-orden"></div>
+<button id="btn-copiar-orden" class="btn-copiar" onclick="copiarOrden()">📋 COPIAR ORDEN</button>
+<p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp</p>
+</div>
+<div class="lista-ordenes">
+<h3>📂 Ordenes Guardadas</h3>
+<div id="lista-ordenes"><p class="cargando">Cargando...</p></div>
+</div>
+</div>
 
-async function enviarIA(){
-  const texto=document.getElementById('ia-texto').value.trim();
-  if(!texto)return;
-  const ch=document.getElementById('ia-chat');
-  ch.innerHTML+=`<div class="ia-mensaje ia-usuario">${texto}</div>`;
-  document.getElementById('ia-texto').value='';
-  const r=document.createElement('div');
-  r.className='ia-mensaje ia-asistente';
-  r.textContent='🔄 Consultando...';
-  ch.appendChild(r);
-  ch.scrollTop=ch.scrollHeight;
-  try{
-    const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
-      method:'POST',
-      headers:{
-        'Authorization':`Bearer ${API_KEY}`,
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify({
-        model:'openai/gpt-4o-mini',
-        messages:[
-          {role:'system',content:'Sos asistente automotriz experto. Respondé en español, claro, ordenado por puntos y fácil de entender. Explicá códigos de error P0xxx, procedimientos, pares de apriete, valores de ajuste y diagnóstico de fallas.'},
-          {role:'user',content:texto}
-        ]
-      })
-    });
-    if(!res.ok)throw new Error(`HTTP ${res.status}`);
-    const d=await res.json();
-    if(d.error)throw new Error(d.error.message);
-    r.textContent=d.choices?.[0]?.message?.content||'Sin respuesta';
-  }catch(e){
-    r.innerHTML=`<strong>⚠️ No se pudo conectar:</strong> ${e.message}<br>
-    <em>Probá estas opciones:</em><br>
-    • Revisá tu conexión a internet<br>
-    • Subí la página a GitHub Pages<br>
-    • Si la clave se agota, avisame y te paso otra`;
+<div id="sec-asistente" class="oculto">
+<h2>🤖 Asistente Técnico — IA</h2>
+<div class="ia-rapidas">
+<span class="ia-pregunta" onclick="pregRapida('Dame un resumen de turnos, clientes y total facturado')">📊 Resumen</span>
+<span class="ia-pregunta" onclick="pregRapida('¿Qué revisar si el motor no arranca en frío?')">🔧 No arranca</span>
+<span class="ia-pregunta" onclick="pregRapida('Códigos P0300 y P0301 — qué son y cómo solucionarlos')">🔍 Códigos OBD</span>
+<span class="ia-pregunta" onclick="pregRapida('Guía paso a paso para cambio de aceite y filtros')">🛢️ Aceite</span>
+</div>
+<div class="ia-mensajes" id="ia-chat">
+<div class="ia-mensaje ia-asistente">🔧 ¡Hola! Conectado a AUTO REGINA. ¿En qué te ayudo?</div>
+</div>
+<div class="ia-fila">
+<input type="text" id="ia-texto" placeholder="Tu consulta..." onkeydown="if(event.key==='Enter')enviarIA()">
+<button class="ia-enviar" onclick="enviarIA()">Enviar</button>
+</div>
+</div>
+  </div>
+  den() {
+  const texto = document.getElementById('texto-orden').textContent;
+  const btn = document.getElementById('btn-copiar-orden');
+  try {
+    await navigator.clipboard.writeText(texto);
+    btn.textContent = '✅ COPIADO';
+    btn.classList.add('btn-copiado');
+    setTimeout(() => {
+      btn.textContent = '📋 COPIAR ORDEN';
+      btn.classList.remove('btn-copiado');
+    }, 3000);
+  } catch {
+    const area = document.getElementById('area-copiado');
+    area.value = texto;
+    area.select();
+    document.execCommand('copy');
+    btn.textContent = '✅ COPIADO';
+    btn.classList.add('btn-copiado');
+    setTimeout(() => {
+      btn.textContent = '📋 COPIAR ORDEN';
+      btn.classList.remove('btn-copiado');
+    }, 3000);
   }
-  ch.scrollTop=ch.scrollHeight;
 }
-
-function mostrar(s){document.querySelectorAll('[id^="sec-"]').forEach(x=>x.classList.add('oculto'));document.querySelectorAll('.pestaña').forEach(x=>{x.classList.remove('activa');x.classList.add('inactiva');});document.getElementById(`sec-${s}`).classList.remove('oculto');event.target.classList.add('activa');event.target.classList.remove('inactiva');if(s==='turnos')cargarTurnos();if(s==='clientes'){cargarClientes();cargarSelectClientes();}if(s==='orden'&&!document.getElementById('cuerpo-tabla').children.length)agregarFila();if(s==='asistente')verificarConexionIA();}
-function verificarConexionIA(){const ch=document.getElementById('ia-chat');ch.innerHTML='<div class="ia-mensaje ia-asistente">🔧 Listo! Preguntame sobre códigos de falla, reparaciones, pares de apriete o cualquier consulta técnica.</div>';}
-function abrirAcceso(){document.getElementById('modal-acceso').style.display='flex';}
-function cerrarAcceso(){document.getElementById('modal-acceso').style.display='none';document.getElementById('error-clave').style.display='none';}
-function salir(){document.getElementById('pantalla-taller').classList.add('oculto');document.getElementById('pantalla-cliente').classList.remove('oculto');if(suscripcionTurnos)suscripcionTurnos();}
-function ingresar(){if(document.getElementById('clave').value===CLAVE){cerrarAcceso();document.getElementById('pantalla-cliente').classList.add('oculto');document.getElementById('pantalla-taller').classList.remove('oculto');mostrar('turnos');cargarSelectClientes();verificarConexion();document.getElementById('fecha-ingreso').value=hoy;document.getElementById('fecha').min=hoy;document.getElementById('nro-folio').value='PENDIENTE';}else{document.getElementById('error-clave').style.display='block';}}
-document.addEventListener('DOMContentLoaded',()=>{document.getElementById('fecha').min=hoy;document.getElementById('fecha-ingreso').value=hoy;});
 </script>
 </body>
 </html>
