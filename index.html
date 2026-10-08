@@ -3,332 +3,753 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AUTO REGINA — Turnos y Servicios</title>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, where, getDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-const firebaseConfig = {
-apiKey: "AIzaSyAPKOuYBpHuqyEVNJOENPUH1113OBvykyk",
-authDomain: "autoregina.firebaseapp.com",
-projectId: "autoregina",
-storageBucket: "autoregina.firebasestorage.app",
-messagingSenderId: "525939629424",
-appId: "1:525939629424:web:2a609a232758782859c3b5"
-};
-const app = initializeApp(firebaseConfig);
-window.db = getFirestore(app);
-window.Firestore = { collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, orderBy, serverTimestamp, where, getDoc };
-</script>
+<title>FINANZAS — Casa & Empresa</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#4F46E5">
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,Arial,sans-serif;}
-body{background:#F0F4FC;min-height:100vh;padding:16px;max-width:720px;margin:0 auto;padding-bottom:40px;}
-.cabecera{background:linear-gradient(180deg,#0F2B5C 0%,#0F2B48 100%);color:white;padding:24px 20px;border-radius:20px;text-align:center;margin-bottom:16px;}
-.cabecera h1{font-size:22px;margin-bottom:6px;}
-.servicios{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#F5D76E;font-weight:600;}
-.aviso{background:#FFF7E0;border:2px solid #F59E0B;border-radius:14px;padding:16px;margin-bottom:20px;text-align:center;}
-.numero-grande{font-size:20px;font-weight:900;color:#B45309;margin:6px 0;letter-spacing:1px;}
-.pestañas{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;}
-.pestaña{padding:10px 14px;border-radius:12px;font-weight:700;font-size:13px;white-space:nowrap;cursor:pointer;border:none;}
-.pestaña.activa{background:#0F2B48;color:white;}
-.pestaña.inactiva{background:white;color:#64748B;}
-.pestaña.salir{background:#FEE2E2;color:#B91C1C;margin-left:auto;}
-.form-seccion{background:white;border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(15,43,72,.08);}
-h2{font-size:20px;font-weight:800;color:#0F2B48;margin-bottom:16px;}
-h3{font-size:16px;font-weight:700;color:#0F2B48;margin:20px 0 12px;padding-bottom:6px;border-bottom:2px solid #0F2B48;}
-label{display:block;margin:10px 0 4px;font-weight:600;color:#334155;font-size:13px;}
-input,select,textarea{width:100%;padding:10px 12px;border:1px solid #CBD5E1;border-radius:6px;font-size:14px;background:#FAFCFF;}
-input:focus,select:focus,textarea:focus{outline:none;border-color:#0F2B48;}
-.fila{display:flex;gap:10px;flex-wrap:wrap;}
-.fila>div{flex:1;min-width:100px;}
-.fila-3{display:flex;gap:8px;flex-wrap:wrap;}
-.fila-3>div{flex:1;min-width:110px;}
-.btn-principal{width:100%;background:#0F2B48;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:800;margin-top:20px;cursor:pointer;}
-.btn-copiar{width:100%;background:#10B981;color:white;padding:14px;border:none;border-radius:12px;font-size:16px;font-weight:700;margin-top:16px;cursor:pointer;transition:all .2s;}
-.btn-copiar:active{transform:scale(.98);}
-.btn-copiado{background:#059669 !important;}
-.btn-chico{padding:8px 12px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin:4px;}
-.btn-guardar{background:#10B981;color:white;}
-.btn-eliminar{background:#FEE2E2;color:#B91C1C;}
-.btn-editar{background:#DBEAFE;color:#1E40AF;}
-.acceso-taller{width:100%;background:transparent;color:#0F2B48;border:2px solid #0F2B48;padding:14px;border-radius:12px;font-size:15px;font-weight:700;margin-top:20px;cursor:pointer;}
-.modal{position:fixed;inset:0;background:rgba(15,43,72,.85);display:none;align-items:center;justify-content:center;padding:20px;z-index:100;}
-.modal-caja{background:white;padding:24px;border-radius:16px;width:100%;max-width:340px;}
-.modal-caja button{width:100%;padding:12px;border:none;border-radius:10px;font-size:15px;font-weight:700;margin-top:10px;cursor:pointer;}
-.btn-ingresar{background:#0F2B48;color:white;}
-.btn-volver{background:#E5E7EB;color:#374151;}
-.error{color:#EF4444;text-align:center;margin-top:12px;display:none;}
-.vista-previa{background:white;border:2px solid #0F52BA;border-radius:16px;padding:20px;margin-top:20px;white-space:pre-wrap;font-size:12px;line-height:1.5;}
-.oculto{display:none !important;}
-.lista-item{background:white;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.sin-datos{text-align:center;padding:30px;color:#64748B;}
-.acciones{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
-.area-copiado{position:fixed;left:-9999px;top:0;opacity:0;pointer-events:none;}
-.orden-cabecera{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0F52BA;padding-bottom:12px;margin-bottom:12px;}
-.orden-logo{text-align:center;flex:1;}
-.orden-logo h2{margin:0 0 4px 0;font-size:18px;color:#0F52BA;}
-.orden-dir{font-size:12px;color:#333;line-height:1.4;}
-.orden-folio{text-align:right;min-width:140px;}
-.orden-folio label{font-weight:700;color:#0F52BA;}
-.orden-folio input{text-align:right;font-weight:700;border:none;border-bottom:1px solid #999;background:transparent;}
-.seccion-datos{border:1px solid #CBD5E1;border-radius:8px;padding:14px;margin-bottom:14px;}
-.seccion-titulo{background:#0F52BA;color:white;padding:8px 14px;font-weight:700;border-radius:6px 6px 0 0;margin:-14px -14px 12px -14px;}
-.tabla-trabajos{width:100%;border-collapse:collapse;margin:12px 0;}
-.tabla-trabajos th,.tabla-trabajos td{border:1px solid #CBD5E1;padding:8px 6px;font-size:13px;}
-.tabla-trabajos th{background:#0F52BA;color:white;font-weight:700;}
-.tabla-trabajos .cant{width:15%;text-align:center;}
-.tabla-trabajos .desc{width:50%;}
-.tabla-trabajos .precio{width:20%;text-align:right;}
-.tabla-trabajos .importe{width:15%;text-align:right;font-weight:bold;color:#0F2B48;}
-.tabla-trabajos input{border:1px solid #E2E8F0;background:#FAFCFF;padding:6px;width:100%;font-size:14px;border-radius:4px;}
-.fila-total{background:#E6F0FA;font-weight:800;font-size:18px;color:#0F52BA;}
-.fila-total td{border:none;padding:12px 8px;text-align:right;}
-.fila-iva{font-size:13px;color:#333;}
-.fila-iva input{width:auto;margin-left:6px;}
-.inventario-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px;}
-.inv-item{display:flex;align-items:center;gap:6px;font-size:13px;}
-.inv-item input{width:auto;}
-.check-linea{display:flex;align-items:center;gap:6px;margin:6px 0;}
-.cargando{text-align:center;padding:20px;color:#165DFF;font-weight:600;}
-.estado{display:inline-block;padding:4px 10px;border-radius:12px;font-size:12px;font-weight:700;}
-.estado-pendiente{background:#FEF3C7;color:#92400E;}
-.estado-confirmado{background:#DBEAFE;color:#1E40AF;}
-.estado-atendido{background:#D1FAE5;color:#065F46;}
-.aviso-exito{background:#D1FAE5;border:2px solid #10B981;border-radius:12px;padding:12px;text-align:center;margin-top:12px;color:#065F46;font-weight:600;}
-.ia-mensajes{max-height:350px;overflow-y:auto;padding:16px;background:#F8FAFC;border-radius:16px;margin-bottom:12px;}
-.ia-mensaje{margin-bottom:14px;padding:12px 16px;border-radius:16px;max-width:90%;line-height:1.6;white-space:pre-wrap;}
-.ia-usuario{background:#DBEAFE;color:#1E3A8A;margin-left:auto;border-bottom-right-radius:6px;}
-.ia-asistente{background:#E0F2FE;color:#0C4A6E;margin-right:auto;border-bottom-left-radius:6px;}
-.ia-pensando{font-style:italic;color:#64748B;}
-.ia-rapidas{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
-.ia-pregunta{background:#F1F5F9;border:1px solid #CBD5E1;border-radius:20px;padding:10px 16px;font-size:13px;cursor:pointer;transition:.2s;}
-.ia-pregunta:hover{background:#E0F2FE;border-color:#0F2B48;}
-.ia-fila{display:flex;gap:10px;}
-.ia-fila input{flex:1;margin:0;}
-.ia-enviar{background:linear-gradient(135deg,#0F2B48,#165DFF);color:white;border:none;border-radius:12px;padding:14px 20px;font-weight:700;cursor:pointer;white-space:nowrap;}
-.btn-agregar-fila{background:#E0F2FE;color:#0C4A6E;border:none;border-radius:8px;padding:10px 16px;font-weight:600;cursor:pointer;margin:10px 0;}
-.lista-ordenes{margin-top:30px;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-tap-highlight-color:transparent;}
+:root{
+  --pri:#4F46E5; --priClaro:#7C3AED;
+  --exito:#10B981; --alerta:#EF4444; --aviso:#F59E0B;
+  --fondo:#EEF2FF; --tarjeta:#FFFFFF; --texto:#1E293B; --textoSuave:#64748B;
+  --borde:#E2E8F0; --sombra:0 2px 8px rgba(79,70,229,.12);
+}
+body{background:var(--fondo);min-height:100vh;padding:16px;max-width:540px;margin:0 auto;padding-bottom:80px;}
+.oculto{display:none!important}
+
+#pantalla-login{position:fixed;inset:0;background:linear-gradient(135deg,#4F46E5,#7C3AED);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:999}
+.login-tarjeta{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.login-tarjeta h2{text-align:center;color:var(--pri);margin-bottom:24px}
+.login-tarjeta input{width:100%;padding:12px 16px;margin-bottom:12px;border:2px solid var(--borde);border-radius:12px;font-size:16px}
+.btn{border:none;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:600;cursor:pointer;transition:transform .15s}
+.btn:active{transform:scale(.97)}
+.btn-principal{background:var(--pri);color:#fff;width:100%}
+.btn-secundario{background:#F1F5F9;color:var(--texto);margin-top:8px}
+.btn-chico{padding:8px 12px;font-size:14px;border-radius:10px;border:none;cursor:pointer}
+.btn-verde{background:var(--exito);color:#fff}
+.btn-rojo{background:var(--alerta);color:#fff}
+.btn-amarillo{background:var(--aviso);color:#fff}
+.btn-oferta{background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff}
+
+.nav{position:sticky;top:0;background:#fff;border-radius:14px;padding:10px;display:flex;gap:6px;margin-bottom:20px;box-shadow:var(--sombra);z-index:10;overflow-x:auto}
+.nav-btn{flex:1 0 auto;border:none;background:transparent;padding:10px 8px;border-radius:10px;font-size:13px;font-weight:600;color:var(--textoSuave);white-space:nowrap}
+.nav-btn.activo{background:var(--pri);color:#fff}
+
+.tarjeta{background:var(--tarjeta);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:var(--sombra)}
+.tarjeta h3{font-size:17px;margin-bottom:14px;color:var(--texto)}
+.etiqueta{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-left:4px}
+.et-unidad{background:#E0F2FE;color:#0369A1}
+.et-kilo{background:#D1FAE5;color:#047857}
+.et-oferta{background:#FEF3C7;color:#92400E}
+.et-pagado{background:#D1FAE5;color:#065F46}
+.et-no{background:#FEE2E2;color:#991B1B}
+.et-efectivo{background:#FEF3C7;color:#92400E}
+.et-transf{background:#E0E7FF;color:#3730A3}
+
+.grupo{margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--textoSuave);margin-bottom:4px}
+input,select{width:100%;padding:11px 14px;border:2px solid var(--borde);border-radius:10px;font-size:15px;background:#fff}
+input:focus,select:focus{border-color:var(--pri);outline:none}
+.fila-doble{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fila-triple{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+
+.lista-item{padding:14px;border-bottom:1px solid var(--borde);display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.lista-item:last-child{border-bottom:none}
+.item-acciones{display:flex;gap:6px;flex-shrink:0}
+.sin-datos{text-align:center;color:var(--textoSuave);padding:24px;font-size:14px}
+.cargando{text-align:center;padding:20px;color:var(--pri);font-weight:600}
+
+.resumen-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.res-caja{border-radius:12px;padding:14px;text-align:center}
+.res-caja h4{font-size:13px;font-weight:500;margin-bottom:4px;opacity:.8}
+.res-caja .monto{font-size:19px;font-weight:700}
+.empr{background:#EFF6FF;color:#1E40AF}
+.casa{background:#FDF2F8;color:#BE185D}
+
+.pie{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--borde);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;max-width:540px;margin:0 auto;border-radius:16px 16px 0 0}
+.usuario{font-size:13px;color:var(--textoSuave)}
+.salir{border:none;background:#FEE2E2;color:#991B1B;padding:8px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+
+.oferta-item{background:#FFFBEB;border:2px solid #FCD34D;border-radius:10px;padding:10px;margin-bottom:8px}
+.oferta-titulo{font-weight:700;color:#92400E;margin-bottom:4px}
+.aviso-conexion{background:#E0F2FE;border:1px solid #0369A1;padding:10px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#0369A1;text-align:center}
+.aviso-error{background:#FEE2E2;border:1px solid #EF4444;padding:10px;border-radius:8px;margin-bottom:15px;font-size:14px;color:#991B1B;text-align:center}
 </style>
 </head>
 <body>
-<textarea id="area-copiado" class="area-copiado"></textarea>
 
-<div id="pantalla-cliente">
-<div class="cabecera">
-<h1>AUTO REGINA</h1>
-<div class="servicios"><span>⚙️ Mecánica</span><span>⚡ Electricidad</span><span>🖥️ Inyección</span></div>
-</div>
-<div class="aviso">
-<p>📞 <strong>ANTES DE PEDIR TU TURNO:</strong></p>
-<p>1️⃣ Guardá: <span class="numero-grande">+54 9 2984 54-8329</span></p>
-<p>2️⃣ Completá tus datos abajo 👇</p>
-<p>3️⃣ Tocá el botón para copiar y mandalo por WhatsApp</p>
-</div>
-<div class="form-seccion">
-<h2 style="text-align:center;">📅 Pedí tu Turno</h2>
-<label>Fecha</label><input type="date" id="fecha">
-<label>Horario</label>
-<select id="horario"><option value="">Seleccioná</option><option>Mañana — 09:00 a 12:00</option><option>Tarde — 15:00 a 18:00</option></select>
-<label>Tu Nombre</label><input type="text" id="nombre" placeholder="Nombre y Apellido">
-<label>Teléfono / WhatsApp</label><input type="tel" id="telefono" placeholder="2984 548329">
-<label>Vehículo</label><input type="text" id="vehiculo" placeholder="Marca, modelo, año">
-<label>Servicio</label>
-<select id="servicio">
-<option value="">Seleccioná</option>
-<option>Mecánica General</option><option>Electricidad</option><option>Inyección Electrónica</option>
-<option>Revisión / Mantenimiento</option><option>Cambio de aceite</option><option>Frenos / Embrague</option>
-<option>Diagnóstico / Escaneo</option><option>Otros</option>
-</select>
-<button class="btn-principal" onclick="generarTurno()">✅ GENERAR TURNO</button>
-<div id="caja-turno" class="oculto">
-<div class="aviso-exito">✅ ¡Listo! Mensaje generado</div>
-<div class="vista-previa" id="texto-turno"></div>
-<button id="btn-copiar-turno" class="btn-copiar" onclick="copiarTurno()">📋 TOCÁ ACÁ PARA COPIAR</button>
-<p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp y mandalo</p>
-</div>
-</div>
-<button class="acceso-taller" onclick="abrirAcceso()">🔧 Acceso del Taller</button>
-</div>
-
-<div class="modal" id="modal-acceso">
-<div class="modal-caja">
-<h3 style="text-align:center;color:#0F2B48;">🔧 ACCESO TALLER</h3>
-<label>Contraseña</label><input type="password" id="clave" placeholder="Escribí la contraseña">
-<button class="btn-ingresar" onclick="ingresar()">INGRESAR</button>
-<button class="btn-volver" onclick="cerrarAcceso()">Volver</button>
-<p class="error" id="error-clave">Contraseña incorrecta</p>
-</div>
-</div>
-
-<div id="pantalla-taller" class="oculto">
-<div class="cabecera">
-<h1>AUTO REGINA — TALLER</h1>
-<div class="servicios"><span>⚙️ Mecánica</span><span>⚡ Electricidad</span><span>🖥️ Inyección</span></div>
-</div>
-<div class="pestañas">
-<button class="pestaña activa" onclick="mostrar('turnos')">📋 Turnos</button>
-<button class="pestaña inactiva" onclick="mostrar('clientes')">👥 Clientes</button>
-<button class="pestaña inactiva" onclick="mostrar('orden')">📝 Ordenes</button>
-<button class="pestaña inactiva" onclick="mostrar('asistente')">🤖 IA</button>
-<button class="pestaña salir" onclick="salir()">🚪 Salir</button>
-</div>
-
-<div id="sec-turnos">
-<h2>📋 Turnos Recibidos</h2>
-<div id="lista-turnos"><p class="cargando">Cargando...</p></div>
-</div>
-
-<div id="sec-clientes" class="oculto">
-<h2>👥 Clientes</h2>
-<div class="form-seccion">
-<h3>Agregar Cliente</h3>
-<label>Nombre *</label><input type="text" id="cli-nombre" placeholder="Nombre y Apellido">
-<label>Teléfono *</label><input type="tel" id="cli-tel" placeholder="2984 548329">
-<label>Vehículo</label><input type="text" id="cli-auto" placeholder="Marca, modelo, año">
-<div class="fila"><button class="btn-guardar" onclick="guardarCliente()">✅ GUARDAR</button></div>
-</div>
-<h3>📂 Lista de Clientes</h3>
-<div id="lista-clientes"><p class="cargando">Cargando...</p></div>
-</div>
-
-<div id="sec-orden" class="oculto">
-<h2>📝 Ordenes de Servicio</h2>
-<div class="form-seccion">
-<h3>➕ Nueva Orden</h3>
-<div class="orden-cabecera">
-<div class="orden-logo">
-<h2>ORDEN DE SERVICIO</h2>
-<div class="orden-dir"><strong>AUTO REGINA</strong><br>Juan Rotter 316<br>Villa Regina<br>Tel. 2984548329</div>
-</div>
-<div class="orden-folio"><label>Nº FOLIO</label><input type="text" id="folio" placeholder="0001"></div>
-</div>
-<div class="seccion-datos">
-<div class="seccion-titulo">DATOS DEL VEHÍCULO</div>
-<div class="fila-3">
-<div><label>Marca</label><input type="text" id="marca"></div>
-<div><label>Modelo</label><input type="text" id="modelo"></div>
-<div><label>Color</label><input type="text" id="color"></div>
-</div>
-<div class="fila-3">
-<div><label>Kilometraje</label><input type="text" id="km"></div>
-<div><label>Patente</label><input type="text" id="placa"></div>
-<div><label>Nº Serie</label><input type="text" id="nserie"></div>
-</div>
-<div class="fila-3">
-<div><label>Ingreso</label><input type="date" id="fecha-ingreso"></div>
-<div><label>Salida</label><input type="date" id="fecha-salida"></div>
-<div></div>
-</div>
-<div class="fila">
-<div class="check-linea"><input type="checkbox" id="grua"><label for="grua">Grúa</label></div>
-<div class="check-linea"><input type="checkbox" id="siem"><label for="siem">S.I.E.M.</label></div>
-</div>
-</div>
-<div class="seccion-datos">
-<div class="seccion-titulo">DATOS DEL CLIENTE</div>
-<label>Seleccionar Cliente</label>
-<select id="orden-cli" onchange="cargarCliente()"><option value="">-- Elegir cliente --</option></select>
-<div class="fila-3" style="margin-top:10px;">
-<div><label>Nombre</label><input type="text" id="orden-nombre"></div>
-<div><label>Teléfono</label><input type="tel" id="orden-tel"></div>
-<div><label>Email</label><input type="email" id="orden-email"></div>
-</div>
-</div>
-<div class="seccion-datos">
-<div class="seccion-titulo">TRABAJOS REALIZADOS</div>
-<table class="tabla-trabajos" id="tabla-trabajos">
-<thead>
-<tr>
-<th class="cant">Cant.</th>
-<th class="desc">Descripción</th>
-<th class="precio">P. Unit.</th>
-<th class="importe">Total</th>
-</tr>
-</thead>
-<tbody id="cuerpo-tabla"></tbody>
-<tfoot>
-<tr class="fila-iva">
-<td colspan="3" style="text-align:right;padding-right:12px;">I.V.A. incluido</td>
-<td><input type="checkbox" id="chk-iva"></td>
-</tr>
-<tr class="fila-total">
-<td colspan="3">TOTAL $</td>
-<td id="total-general">0,00</td>
-</tr>
-</tfoot>
-</table>
-<button type="button" class="btn-agregar-fila" onclick="agregarFila()">➕ AGREGAR LÍNEA</button>
-</div>
-<div class="seccion-datos">
-<div class="seccion-titulo">OBSERVACIONES</div>
-<textarea id="obs" rows="3" placeholder="Estado del vehículo..."></textarea>
-</div>
-<div class="seccion-datos">
-<div class="seccion-titulo">INVENTARIO</div>
-<div class="inventario-grid">
-<label class="inv-item"><input type="checkbox" class="inv-chk"> Gato</label>
-<label class="inv-item"><input type="checkbox" class="inv-chk"> Antena</label>
-<label class="inv-item"><input type="checkbox" class="inv-chk"> Herramientas</label>
-<label class="inv-item"><input type="checkbox" class="inv-chk"> Emblemas</label>
-<label class="inv-item"><input type="checkbox" class="inv-chk"> Triángulos</label>
-<label class="inv-item"><input type="checkbox" class="inv-chk"> Llanta refacción</label>
-<label class="inv-item"><input type="checkbox" class="inv-chk"> Estéreo</label>
-<label class="inv-item"><input type="checkbox" class="inv-chk"> Extintor</label>
-</div>
-</div>
-<button class="btn-principal" onclick="generarOrden()">✅ GUARDAR ORDEN</button>
-</div>
-<div id="caja-orden" class="oculto">
-<div class="aviso-exito">✅ Orden guardada correctamente</div>
-<div class="vista-previa" id="texto-orden"></div>
-<button id="btn-copiar-orden" class="btn-copiar" onclick="copiarOrden()">📋 COPIAR ORDEN</button>
-<p style="text-align:center;margin:12px 0;color:#10B981;font-weight:bold;">👇 Pegalo en WhatsApp</p>
-</div>
-<div class="lista-ordenes">
-<h3>📂 Ordenes Guardadas</h3>
-<div id="lista-ordenes"><p class="cargando">Cargando...</p></div>
-</div>
-</div>
-
-<div id="sec-asistente" class="oculto">
-<h2>🤖 Asistente Técnico — IA</h2>
-<div class="ia-rapidas">
-<span class="ia-pregunta" onclick="pregRapida('Dame un resumen de turnos, clientes y total facturado')">📊 Resumen</span>
-<span class="ia-pregunta" onclick="pregRapida('¿Qué revisar si el motor no arranca en frío?')">🔧 No arranca</span>
-<span class="ia-pregunta" onclick="pregRapida('Códigos P0300 y P0301 — qué son y cómo solucionarlos')">🔍 Códigos OBD</span>
-<span class="ia-pregunta" onclick="pregRapida('Guía paso a paso para cambio de aceite y filtros')">🛢️ Aceite</span>
-</div>
-<div class="ia-mensajes" id="ia-chat">
-<div class="ia-mensaje ia-asistente">🔧 ¡Hola! Conectado a AUTO REGINA. ¿En qué te ayudo?</div>
-</div>
-<div class="ia-fila">
-<input type="text" id="ia-texto" placeholder="Tu consulta..." onkeydown="if(event.key==='Enter')enviarIA()">
-<button class="ia-enviar" onclick="enviarIA()">Enviar</button>
-</div>
-</div>
+<div id="pantalla-login">
+  <div class="login-tarjeta">
+    <h2>💰 FINANZAS</h2>
+    <div id="aviso-conexion" class="aviso-conexion oculto">🔌 Conectando a la nube...</div>
+    <div id="aviso-error" class="aviso-error oculto">❌ Sin conexión — se guarda solo en este celular</div>
+    <input id="usuario-nombre" placeholder="Tu nombre" autocomplete="username">
+    <button class="btn btn-principal" onclick="entrar()">Ingresar</button>
+    <button class="btn btn-secundario" onclick="cambiarUsuario()">Cambiar usuario</button>
   </div>
-  den() {
-  const texto = document.getElementById('texto-orden').textContent;
-  const btn = document.getElementById('btn-copiar-orden');
-  try {
-    await navigator.clipboard.writeText(texto);
-    btn.textContent = '✅ COPIADO';
-    btn.classList.add('btn-copiado');
-    setTimeout(() => {
-      btn.textContent = '📋 COPIAR ORDEN';
-      btn.classList.remove('btn-copiado');
-    }, 3000);
-  } catch {
-    const area = document.getElementById('area-copiado');
-    area.value = texto;
-    area.select();
-    document.execCommand('copy');
-    btn.textContent = '✅ COPIADO';
-    btn.classList.add('btn-copiado');
-    setTimeout(() => {
-      btn.textContent = '📋 COPIAR ORDEN';
-      btn.classList.remove('btn-copiado');
-    }, 3000);
+</div>
+
+<div id="app" class="oculto">
+  <div class="nav">
+    <button class="nav-btn activo" data-pantalla="resumen" onclick="irA('resumen')">Resumen</button>
+    <button class="nav-btn" data-pantalla="emprendimiento" onclick="irA('emprendimiento')">Emprendimiento</button>
+    <button class="nav-btn" data-pantalla="casa" onclick="irA('casa')">Casa</button>
+  </div>
+
+  <div id="resumen" class="pantalla">
+    <div class="resumen-grid">
+      <div class="res-caja empr">
+        <h4>Emprendimiento</h4>
+        <div class="monto" id="res-empr">$0</div>
+      </div>
+      <div class="res-caja casa">
+        <h4>Casa</h4>
+        <div class="monto" id="res-casa">$0</div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h3>🔥 Ofertas y Paquetes</h3>
+      <div class="grupo">
+        <label>Nombre de la oferta</label>
+        <input id="oferta-nombre" placeholder="ej: Sticker, Tarjeta...">
+      </div>
+      <div class="fila-doble grupo">
+        <div>
+          <label>Cantidad</label>
+          <input type="number" id="oferta-cantidad" min="1" placeholder="ej: 4">
+        </div>
+        <div>
+          <label>Precio oferta $</label>
+          <input type="number" id="oferta-precio" placeholder="ej: 1000">
+        </div>
+      </div>
+      <button class="btn btn-oferta" style="width:auto" onclick="guardarOferta()">Agregar Oferta</button>
+      <div id="lista-ofertas" style="margin-top:14px">
+        <div class="sin-datos" style="padding:10px 0;font-size:13px">Sin ofertas cargadas</div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h3>📦 Productos / Servicios por Unidad</h3>
+      <div class="grupo">
+        <label>Nombre</label>
+        <input id="prod-u-nombre" placeholder="ej: Impresión A4, Sticker...">
+      </div>
+      <div class="fila-doble grupo">
+        <div>
+          <label>Precio por unidad $</label>
+          <input type="number" id="prod-u-precio" placeholder="0">
+        </div>
+        <div>
+          <label>Stock</label>
+          <input type="number" id="prod-u-stock" placeholder="0">
+        </div>
+      </div>
+      <button class="btn btn-principal" style="width:auto" onclick="guardarProductoUnidad()">Agregar</button>
+    </div>
+
+    <div class="tarjeta">
+      <h3>⚖️ Productos por Kilo</h3>
+      <div class="grupo">
+        <label>Nombre</label>
+        <input id="prod-k-nombre" placeholder="ej: Masa, Producto...">
+      </div>
+      <div class="fila-triple grupo">
+        <div>
+          <label>½ kg $</label>
+          <input type="number" id="prod-k-mediokg" placeholder="0">
+        </div>
+        <div>
+          <label>1 kg $</label>
+          <input type="number" id="prod-k-1kg" placeholder="0">
+        </div>
+        <div>
+          <label>2 kg $</label>
+          <input type="number" id="prod-k-2kg" placeholder="0">
+        </div>
+      </div>
+      <div class="grupo">
+        <label>Stock</label>
+        <input type="number" id="prod-k-stock" placeholder="0">
+      </div>
+      <button class="btn btn-principal" style="width:auto" onclick="guardarProductoKilo()">Agregar</button>
+    </div>
+
+    <div class="tarjeta">
+      <h3>🛒 Registrar Venta</h3>
+      <div class="grupo">
+        <label>Tipo de producto</label>
+        <select id="venta-tipo" onchange="cambiarTipoVenta()">
+          <option value="">Seleccionar tipo</option>
+          <option value="oferta">🔥 Oferta / Paquete</option>
+          <option value="unidad">📦 Por Unidad</option>
+          <option value="kilo">⚖️ Por Kilo</option>
+        </select>
+      </div>
+      
+      <div id="bloque-oferta" class="oculto">
+        <div class="grupo">
+          <label>Oferta</label>
+          <select id="venta-oferta" onchange="calcularTotalOferta()">
+            <option value="">Seleccionar oferta</option>
+          </select>
+        </div>
+        <div class="grupo">
+          <label>Total $</label>
+          <input type="text" id="venta-o-total" value="$0" readonly style="font-weight:bold;background:#FFFBEB">
+        </div>
+      </div>
+      
+      <div id="bloque-unidad" class="oculto">
+        <div class="grupo">
+          <label>Producto / Servicio</label>
+          <select id="venta-u-producto" onchange="calcularTotalUnidad()">
+            <option value="">Seleccionar</option>
+          </select>
+        </div>
+        <div class="fila-doble grupo">
+          <div>
+            <label>Cantidad</label>
+            <input type="number" id="venta-u-cantidad" min="1" value="1" oninput="calcularTotalUnidad()">
+          </div>
+          <div>
+            <label>Total $</label>
+            <input type="text" id="venta-u-total" value="$0" readonly style="font-weight:bold">
+          </div>
+        </div>
+      </div>
+      
+      <div id="bloque-kilo" class="oculto">
+        <div class="grupo">
+          <label>Producto</label>
+          <select id="venta-k-producto" onchange="preciosKilo()">
+            <option value="">Seleccionar</option>
+          </select>
+        </div>
+        <div class="grupo">
+          <label>Formato</label>
+          <select id="venta-k-formato" onchange="calcularTotalKilo()">
+            <option value="">Elegir</option>
+            <option value="medio">½ kg</option>
+            <option value="uno">1 kg</option>
+            <option value="dos">2 kg</option>
+          </select>
+        </div>
+        <div class="grupo">
+          <label>Total $</label>
+          <input type="text" id="venta-k-total" value="$0" readonly style="font-weight:bold">
+        </div>
+      </div>
+      
+      <div class="grupo">
+        <label>Cliente</label>
+        <input id="venta-cliente" placeholder="Nombre del cliente">
+      </div>
+      <button class="btn btn-verde btn-chico" onclick="registrarVenta()">✅ Registrar Venta</button>
+    </div>
+
+    <div class="tarjeta">
+      <h3>📋 Historial de Ventas</h3>
+      <div id="lista-ventas"><div class="cargando">Cargando...</div></div>
+    </div>
+  </div>
+
+  <div id="emprendimiento" class="pantalla oculto">
+    <div class="tarjeta">
+      <h3>💵 Ingreso Manual</h3>
+      <div class="grupo">
+        <label>Concepto</label>
+        <input id="empr-ing-concepto" placeholder="ej: Venta">
+      </div>
+      <div class="grupo">
+        <label>Monto $</label>
+        <input type="number" id="empr-ing-monto" placeholder="0">
+      </div>
+      <button class="btn btn-verde btn-chico" onclick="agregarMov('empr','ingreso')">Agregar Ingreso</button>
+    </div>
+    <div class="tarjeta">
+      <h3>📤 Gasto / Inversión</h3>
+      <div class="grupo">
+        <label>Concepto</label>
+        <input id="empr-egr-concepto" placeholder="ej: Materiales">
+      </div>
+      <div class="grupo">
+        <label>Monto $</label>
+        <input type="number" id="empr-egr-monto" placeholder="0">
+      </div>
+      <button class="btn btn-rojo btn-chico" onclick="agregarMov('empr','egreso')">Agregar Egreso</button>
+    </div>
+    <div class="tarjeta">
+      <h3>Movimientos</h3>
+      <div id="lista-empr"><div class="cargando">Cargando...</div></div>
+    </div>
+  </div>
+
+  <div id="casa" class="pantalla oculto">
+    <div class="tarjeta">
+      <h3>💵 Ingreso</h3>
+      <div class="grupo">
+        <label>Concepto</label>
+        <input id="casa-ing-concepto" placeholder="ej: Sueldo">
+      </div>
+      <div class="grupo">
+        <label>Monto $</label>
+        <input type="number" id="casa-ing-monto" placeholder="0">
+      </div>
+      <button class="btn btn-verde btn-chico" onclick="agregarMov('casa','ingreso')">Agregar Ingreso</button>
+    </div>
+    <div class="tarjeta">
+      <h3>📤 Gasto</h3>
+      <div class="grupo">
+        <label>Concepto</label>
+        <input id="casa-egr-concepto" placeholder="ej: Luz, Compras">
+      </div>
+      <div class="grupo">
+        <label>Monto $</label>
+        <input type="number" id="casa-egr-monto" placeholder="0">
+      </div>
+      <button class="btn btn-rojo btn-chico" onclick="agregarMov('casa','egreso')">Agregar Gasto</button>
+    </div>
+    <div class="tarjeta">
+      <h3>Movimientos</h3>
+      <div id="lista-casa"><div class="cargando">Cargando...</div></div>
+    </div>
+  </div>
+
+  <div class="pie">
+    <span class="usuario" id="nombre-usuario"></span>
+    <button class="salir" onclick="salir()">Salir</button>
+  </div>
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBYz9W6ACWu8RS0vV-Q-wa0OEzBJo5uw4Q",
+  authDomain: "finanzascasemp.firebaseapp.com",
+  projectId: "finanzascasemp",
+  storageBucket: "finanzascasemp.firebasestorage.app",
+  messagingSenderId: "86108642828",
+  appId: "1:86108642828:web:592e30f129781591e0d829"
+};
+
+let db = null;
+let usoLocal = false;
+let datosLocal = {
+  ofertas: [], productosU: [], productosK: [], ventas: [], movEmpr: [], movCasa: []
+};
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  document.getElementById('aviso-conexion').classList.remove('oculto');
+  setTimeout(() => {
+    document.getElementById('aviso-conexion').textContent = '✅ Conectado a la nube';
+    setTimeout(() => document.getElementById('aviso-conexion').classList.add('oculto'), 2000);
+  }, 500);
+} catch (e) {
+  console.log('Sin Firebase, uso local');
+  usoLocal = true;
+  cargarDatosLocal();
+  document.getElementById('aviso-error').classList.remove('oculto');
+}
+
+let usuarioActivo = localStorage.getItem('finanzas_usuario') || '';
+
+function guardarDatosLocal(){
+  localStorage.setItem('finanzas_datos', JSON.stringify(datosLocal));
+}
+function cargarDatosLocal(){
+  const g = localStorage.getItem('finanzas_datos');
+  if(g) datosLocal = JSON.parse(g);
+}
+
+function entrar(){
+  const nom=document.getElementById('usuario-nombre').value.trim();
+  if(!nom) return alert('Escribe tu nombre');
+  usuarioActivo=nom;
+  localStorage.setItem('finanzas_usuario',nom);
+  document.getElementById('pantalla-login').classList.add('oculto');
+  document.getElementById('app').classList.remove('oculto');
+  document.getElementById('nombre-usuario').textContent=nom;
+  setTimeout(()=>cargarResumen(), 100);
+}
+function cambiarUsuario(){ localStorage.removeItem('finanzas_usuario'); document.getElementById('usuario-nombre').value=''; }
+function salir(){
+  usuarioActivo=''; localStorage.removeItem('finanzas_usuario');
+  document.getElementById('app').classList.add('oculto');
+  document.getElementById('pantalla-login').classList.remove('oculto');
+}
+if(usuarioActivo){ document.getElementById('usuario-nombre').value=usuarioActivo; entrar(); }
+
+function irA(id){
+  document.querySelectorAll('.pantalla').forEach(p=>p.classList.add('oculto'));
+  document.getElementById(id).classList.remove('oculto');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('activo'));
+  document.querySelector(`[data-pantalla="${id}"]`).classList.add('activo');
+  if(id==='resumen') cargarResumen();
+  if(id==='emprendimiento') cargarMovimientos('empr');
+  if(id==='casa') cargarMovimientos('casa');
+}
+
+function cambiarTipoVenta(){
+  const t=document.getElementById('venta-tipo').value;
+  document.getElementById('bloque-oferta').classList.toggle('oculto', t!=='oferta');
+  document.getElementById('bloque-unidad').classList.toggle('oculto', t!=='unidad');
+  document.getElementById('bloque-kilo').classList.toggle('oculto', t!=='kilo');
+}
+
+async function guardarOferta(){
+  const nom=document.getElementById('oferta-nombre').value.trim();
+  const cant=Number(document.getElementById('oferta-cantidad').value);
+  const precio=Number(document.getElementById('oferta-precio').value);
+  if(!nom || !cant || !precio) return alert('Completa todos los datos');
+  
+  if(!usoLocal){
+    await db.collection('ofertas').add({
+      nombre:nom, cantidad:cant, precio:precio, usuario:usuarioActivo, creado:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }else{
+    datosLocal.ofertas.unshift({id:Date.now(), nombre:nom, cantidad:cant, precio:precio, creado:Date.now()});
+    guardarDatosLocal();
   }
+  
+  document.getElementById('oferta-nombre').value='';
+  document.getElementById('oferta-cantidad').value='';
+  document.getElementById('oferta-precio').value='';
+  alert('✅ Oferta guardada');
+  cargarResumen();
+}
+
+async function cargarResumen(){
+  let ofertas=[], productosU=[], productosK=[], ventas=[], movEmpr=[], movCasa=[];
+  
+  if(!usoLocal){
+    try{
+      const [o1, o2, o3, o4, o5, o6] = await Promise.all([
+        db.collection('ofertas').orderBy('creado','desc').get(),
+        db.collection('productos_unidad').orderBy('creado','desc').get(),
+        db.collection('productos_kilo').orderBy('creado','desc').get(),
+        db.collection('ventas').orderBy('creado','desc').get(),
+        db.collection('movimientos_empr').orderBy('creado','desc').get(),
+        db.collection('movimientos_casa').orderBy('creado','desc').get()
+      ]);
+      ofertas = o1.docs.map(d=>({id:d.id,...d.data()}));
+      productosU = o2.docs.map(d=>({id:d.id,...d.data()}));
+      productosK = o3.docs.map(d=>({id:d.id,...d.data()}));
+      ventas = o4.docs.map(d=>({id:d.id,...d.data()}));
+      movEmpr = o5.docs.map(d=>({id:d.id,...d.data()}));
+      movCasa = o6.docs.map(d=>({id:d.id,...d.data()}));
+    }catch(e){
+      console.log('Error Firebase, paso a local');
+      usoLocal=true;
+      cargarDatosLocal();
+      ofertas=datosLocal.ofertas;
+      productosU=datosLocal.productosU;
+      productosK=datosLocal.productosK;
+      ventas=datosLocal.ventas;
+      movEmpr=datosLocal.movEmpr;
+      movCasa=datosLocal.movCasa;
+    }
+  }else{
+    ofertas=datosLocal.ofertas;
+    productosU=datosLocal.productosU;
+    productosK=datosLocal.productosK;
+    ventas=datosLocal.ventas;
+    movEmpr=datosLocal.movEmpr;
+    movCasa=datosLocal.movCasa;
+  }
+
+  const listaOfertas=document.getElementById('lista-ofertas');
+  const selOferta=document.getElementById('venta-oferta');
+  const selProdU=document.getElementById('venta-u-producto');
+  const selProdK=document.getElementById('venta-k-producto');
+
+  if(!ofertas.length){
+    listaOfertas.innerHTML='<div class="sin-datos">Sin ofertas cargadas</div>';
+  }else{
+    listaOfertas.innerHTML=ofertas.map(o=>`
+      <div class="oferta-item">
+        <div class="oferta-titulo">${o.nombre}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span>${o.cantidad} → $${o.precio.toLocaleString()}</span>
+          <button class="btn-chico btn-rojo" style="padding:4px 8px;font-size:12px" onclick="eliminarOferta('${o.id}')">✕</button>
+        </div>
+      </div>`).join('');
+  }
+
+  selOferta.innerHTML='<option value="">Seleccionar oferta</option>';
+  ofertas.forEach(o=>selOferta.innerHTML+=`<option value="${o.id}" data-precio="${o.precio}">${o.nombre} — ${o.cantidad}x = $${o.precio.toLocaleString()}</option>`);
+
+  selProdU.innerHTML='<option value="">Seleccionar</option>';
+  productosU.forEach(p=>selProdU.innerHTML+=`<option value="${p.id}" data-precio="${p.precio}">${p.nombre} - $${p.precio.toLocaleString()}/u</option>`);
+
+  selProdK.innerHTML='<option value="">Seleccionar</option>';
+  productosK.forEach(p=>{
+    selProdK.innerHTML+=`<option value="${p.id}" data-medio="${p.medio||0}" data-uno="${p.uno||0}" data-dos="${p.dos||0}">${p.nombre}</option>`;
+  });
+
+  const ingEmpr = movEmpr.filter(m=>m.tipo==='ingreso').reduce((a,b)=>a+(b.monto||0),0);
+  const egEmpr = movEmpr.filter(m=>m.tipo==='egreso').reduce((a,b)=>a+(b.monto||0),0);
+  const ingCasa = movCasa.filter(m=>m.tipo==='ingreso').reduce((a,b)=>a+(b.monto||0),0);
+  const egCasa = movCasa.filter(m=>m.tipo==='egreso').reduce((a,b)=>a+(b.monto||0),0);
+  
+  document.getElementById('res-empr').textContent='$'+(ingEmpr-egEmpr).toLocaleString();
+  document.getElementById('res-casa').textContent='$'+(ingCasa-egCasa).toLocaleString();
+
+  const listaVentas=document.getElementById('lista-ventas');
+  if(!ventas.length){
+    listaVentas.innerHTML='<div class="sin-datos">Sin ventas registradas</div>';
+  }else{
+    listaVentas.innerHTML=ventas.map(v=>{
+      let detalle='', etiquetaTipo='';
+      if(v.tipo==='oferta'){
+        detalle=`🔥 ${v.nombre} — ${v.cantidad} unid.`;
+        etiquetaTipo='<span class="etiqueta et-oferta">OFERTA</span>';
+      }else if(v.tipo==='unidad'){
+        detalle=`${v.nombre} × ${v.cantidad} unid.`;
+        etiquetaTipo='<span class="etiqueta et-unidad">Unidad</span>';
+      }else{
+        const fmtTexto={medio:'½ kg',uno:'1 kg',dos:'2 kg'}[v.formato];
+        detalle=`${v.nombre} — ${fmtTexto}`;
+        etiquetaTipo='<span class="etiqueta et-kilo">Kilo</span>';
+      }
+      const fecha = v.creado ? (typeof v.creado==='object'?new Date(v.creado.seconds*1000).toLocaleString('es-AR'):new Date(v.creado).toLocaleString('es-AR')) : '';
+      return `
+      <div class="lista-item">
+        <div>
+          <div><strong>${detalle}</strong> ${etiquetaTipo}</div>
+          <div style="font-size:13px;color:var(--textoSuave)">Cliente: ${v.cliente} | ${fecha}</div>
+          <div style="font-weight:700">$${v.monto.toLocaleString()}</div>
+          <span class="etiqueta ${v.pagado?'et-pagado':'et-no'}">${v.pagado?'Pagado':'No pagado'}</span>
+          ${v.pagado?`<span class="etiqueta ${v.metodo==='efectivo'?'et-efectivo':'et-transf'}">${v.metodo}</span>`:''}
+        </div>
+        <div class="item-acciones">
+          <button class="btn-chico ${v.pagado?'btn-amarillo':'btn-verde'}" onclick="togglePagado('${v.id}', ${!v.pagado})">${v.pagado?'Cambiar':'Pagar'}</button>
+          <button class="btn-chico btn-rojo" onclick="eliminarVenta('${v.id}')">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+async function eliminarOferta(id){
+  if(!confirm('¿Eliminar esta oferta?'))return;
+  if(!usoLocal) await db.collection('ofertas').doc(id).delete();
+  else {datosLocal.ofertas=datosLocal.ofertas.filter(o=>String(o.id)!==String(id)); guardarDatosLocal();}
+  cargarResumen();
+}
+
+function calcularTotalOferta(){
+  const sel=document.getElementById('venta-oferta');
+  if(!sel.value) return document.getElementById('venta-o-total').value='$0';
+  const precio=Number(sel.options[sel.selectedIndex].dataset.precio);
+  document.getElementById('venta-o-total').value='$'+precio.toLocaleString();
+}
+
+async function guardarProductoUnidad(){
+  const nom=document.getElementById('prod-u-nombre').value.trim();
+  const precio=Number(document.getElementById('prod-u-precio').value);
+  if(!nom || !precio) return alert('Nombre y precio son obligatorios');
+  
+  if(!usoLocal){
+    await db.collection('productos_unidad').add({
+      nombre:nom, precio:precio, stock:Number(document.getElementById('prod-u-stock').value)||0,
+      usuario:usuarioActivo, creado:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }else{
+    datosLocal.productosU.unshift({id:Date.now(), nombre:nom, precio:precio, stock:Number(document.getElementById('prod-u-stock').value)||0, creado:Date.now()});
+    guardarDatosLocal();
+  }
+  
+  document.getElementById('prod-u-nombre').value='';
+  document.getElementById('prod-u-precio').value='';
+  document.getElementById('prod-u-stock').value='';
+  alert('✅ Producto guardado');
+  cargarResumen();
+}
+
+function calcularTotalUnidad(){
+  const sel=document.getElementById('venta-u-producto');
+  const cant=Number(document.getElementById('venta-u-cantidad').value)||1;
+  if(!sel.value) return document.getElementById('venta-u-total').value='$0';
+  const precio=Number(sel.options[sel.selectedIndex].dataset.precio);
+  document.getElementById('venta-u-total').value='$'+(precio*cant).toLocaleString();
+}
+
+async function guardarProductoKilo(){
+  const nom=document.getElementById('prod-k-nombre').value.trim();
+  if(!nom) return alert('Escribe el nombre');
+  
+  const datos = {
+    nombre:nom,
+    medio:Number(document.getElementById('prod-k-mediokg').value)||0,
+    uno:Number(document.getElementById('prod-k-1kg').value)||0,
+    dos:Number(document.getElementById('prod-k-2kg').value)||0,
+    stock:Number(document.getElementById('prod-k-stock').value)||0,
+    usuario:usuarioActivo
+  };
+
+  if(!usoLocal){
+    await db.collection('productos_kilo').add({...datos, creado:firebase.firestore.FieldValue.serverTimestamp()});
+  }else{
+    datosLocal.productosK.unshift({id:Date.now(), ...datos, creado:Date.now()});
+    guardarDatosLocal();
+  }
+  
+  document.getElementById('prod-k-nombre').value='';
+  document.getElementById('prod-k-mediokg').value='';
+  document.getElementById('prod-k-1kg').value='';
+  document.getElementById('prod-k-2kg').value='';
+  document.getElementById('prod-k-stock').value='';
+  alert('✅ Producto guardado');
+  cargarResumen();
+}
+
+function preciosKilo(){}
+
+function calcularTotalKilo(){
+  const sel=document.getElementById('venta-k-producto');
+  const fmt=document.getElementById('venta-k-formato').value;
+  if(!sel.value || !fmt) return document.getElementById('venta-k-total').value='$0';
+  const precio=Number(sel.options[sel.selectedIndex].dataset[fmt])||0;
+  document.getElementById('venta-k-total').value='$'+precio.toLocaleString();
+}
+
+async function registrarVenta(){
+  const tipo=document.getElementById('venta-tipo').value;
+  const cliente=document.getElementById('venta-cliente').value.trim()||'Sin nombre';
+  let monto=0, nombreVenta='', cantidad=1, formato='';
+  
+  if(tipo==='oferta'){
+    const sel=document.getElementById('venta-oferta');
+    if(!sel.value) return alert('Selecciona una oferta');
+    monto=Number(document.getElementById('venta-o-total').value.replace(/[$\.]/g,''));
+    nombreVenta=sel.options[sel.selectedIndex].textContent.split(' — ')[0];
+  }else if(tipo==='unidad'){
+    const sel=document.getElementById('venta-u-producto');
+    if(!sel.value) return alert('Selecciona un producto');
+    monto=Number(document.getElementById('venta-u-total').value.replace(/[$\.]/g,''));
+    nombreVenta=sel.options[sel.selectedIndex].textContent.split(' - ')[0];
+    cantidad=Number(document.getElementById('venta-u-cantidad').value)||1;
+  }else if(tipo==='kilo'){
+    const sel=document.getElementById('venta-k-producto');
+    formato=document.getElementById('venta-k-formato').value;
+    if(!sel.value || !formato) return alert('Completa todos los datos');
+    monto=Number(document.getElementById('venta-k-total').value.replace(/[$\.]/g,''));
+    nombreVenta=sel.options[sel.selectedIndex].textContent;
+  }else{
+    return alert('Elige tipo de producto');
+  }
+
+  const venta = {tipo, nombre:nombreVenta, cantidad, formato, monto, cliente, pagado:false, metodo:'', usuario:usuarioActivo};
+  const mov = {tipo:'ingreso', concepto:`Venta: ${nombreVenta} — Cliente: ${cliente}`, monto, fuente:'venta', usuario:usuarioActivo};
+
+  if(!usoLocal){
+    await db.collection('ventas').add({...venta, creado:firebase.firestore.FieldValue.serverTimestamp()});
+    await db.collection('movimientos_empr').add({...mov, creado:firebase.firestore.FieldValue.serverTimestamp()});
+  }else{
+    datosLocal.ventas.unshift({id:Date.now(), ...venta, creado:Date.now()});
+    datosLocal.movEmpr.unshift({id:Date.now()+1, ...mov, creado:Date.now()});
+    guardarDatosLocal();
+  }
+
+  document.getElementById('venta-tipo').value='';
+  document.getElementById('venta-cliente').value='';
+  cambiarTipoVenta();
+  alert('✅ Venta registrada');
+  cargarResumen();
+}
+
+async function togglePagado(id, estado){
+  let metodo='';
+  if(estado) metodo=prompt('¿Efectivo o transferencia?')?.toLowerCase().includes('efec')?'efectivo':'transferencia';
+  
+  if(!usoLocal){
+    await db.collection('ventas').doc(id).update({pagado:estado, metodo});
+  }else{
+    const v=datosLocal.ventas.find(x=>String(x.id)===String(id));
+    if(v){v.pagado=estado;v.metodo=metodo;guardarDatosLocal();}
+  }
+  cargarResumen();
+}
+
+async function eliminarVenta(id){
+  if(!confirm('¿Eliminar esta venta?'))return;
+  if(!usoLocal) await db.collection('ventas').doc(id).delete();
+  else {datosLocal.ventas=datosLocal.ventas.filter(x=>String(x.id)!==String(id)); guardarDatosLocal();}
+  cargarResumen();
+}
+
+async function agregarMov(area,tipo){
+  const concepto=document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-concepto`).value.trim();
+  const monto=Number(document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-monto`).value);
+  if(!concepto || !monto) return alert('Completa todos los datos');
+  
+  const m = {tipo, concepto, monto, usuario:usuarioActivo};
+  if(!usoLocal){
+    await db.collection(`movimientos_${area}`).add({...m, creado:firebase.firestore.FieldValue.serverTimestamp()});
+  }else{
+    if(area==='empr') datosLocal.movEmpr.unshift({id:Date.now(), ...m, creado:Date.now()});
+    else datosLocal.movCasa.unshift({id:Date.now(), ...m, creado:Date.now()});
+    guardarDatosLocal();
+  }
+  
+  document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-concepto`).value='';
+  document.getElementById(`${area}-${tipo==='ingreso'?'ing':'egr'}-monto`).value='';
+  alert('✅ Guardado');
+  cargarMovimientos(area);
+}
+
+async function cargarMovimientos(area){
+  let datos=[];
+  if(!usoLocal){
+    const snap=await db.collection(`movimientos_${area}`).orderBy('creado','desc').get();
+    datos=snap.docs.map(d=>({id:d.id,...d.data()}));
+  }else{
+    datos=area==='empr'?datosLocal.movEmpr:datosLocal.movCasa;
+  }
+  
+  const lista=document.getElementById(`lista-${area}`);
+  if(!datos.length){
+    lista.innerHTML='<div class="sin-datos">Sin movimientos</div>';
+    return;
+  }
+  lista.innerHTML=datos.map(m=>{
+    const fecha = m.creado ? (typeof m.creado==='object'?new Date(m.creado.seconds*1000).toLocaleString('es-AR'):new Date(m.creado).toLocaleString('es-AR')) : '';
+    const etiquetaFuente = m.fuente==='venta' ? '<span class="etiqueta et-oferta" style="font-size:10px">VENTA</span>' : '';
+    return `
+    <div class="lista-item">
+      <div>
+        <div style="color:${m.tipo==='ingreso'?'var(--exito)':'var(--alerta)'}">
+          ${m.tipo==='ingreso'?'⬆ INGRESO':'⬇ EGRESO'} ${etiquetaFuente}
+        </div>
+        <strong>${m.concepto}</strong>
+        <div style="font-size:12px;color:var(--textoSuave)">${fecha}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700;color:${m.tipo==='ingreso'?'var(--exito)':'var(--alerta)'}">
+          ${m.tipo==='ingreso'?'+':'-'} $${m.monto.toLocaleString()}
+        </div>
+        <button class="btn-chico btn-rojo" onclick="eliminarMov('${area}','${m.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function eliminarMov(area,id){
+  if(!confirm('¿Eliminar este movimiento?'))return;
+  if(!usoLocal) await db.collection(`movimientos_${area}`).doc(id).delete();
+  else {
+    if(area==='empr') datosLocal.movEmpr=datosLocal.movEmpr.filter(x=>String(x.id)!==String(id));
+    else datosLocal.movCasa=datosLocal.movCasa.filter(x=>String(x.id)!==String(id));
+    guardarDatosLocal();
+  }
+  cargarMovimientos(area);
 }
 </script>
 </body>
